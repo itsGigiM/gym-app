@@ -2,7 +2,6 @@ package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.Trainee;
 import org.junit.jupiter.api.*;
-import com.example.taskspring.repository.TraineesInMemoryDAO;
 import com.example.taskspring.service.TraineeService;
 
 import java.time.LocalDate;

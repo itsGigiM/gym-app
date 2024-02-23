@@ -1,9 +1,7 @@
 package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.utils.InMemoryStorage;
 import org.junit.jupiter.api.*;
-import com.example.taskspring.repository.TrainersInMemoryDAO;
 import com.example.taskspring.service.TrainerService;
 
 import static org.junit.jupiter.api.Assertions.*;
