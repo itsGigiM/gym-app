@@ -1,4 +1,4 @@
-package model;
+package com.example.taskspring.model;
 
 public enum TrainingType {
     CARDIO,

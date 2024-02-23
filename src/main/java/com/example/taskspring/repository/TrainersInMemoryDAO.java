@@ -1,27 +1,30 @@
-package repository;
+package com.example.taskspring.repository;
 
-import model.Trainer;
+import com.example.taskspring.model.Trainer;
+import com.example.taskspring.utils.InMemoryStorage;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 @Repository
+@AllArgsConstructor
 public class TrainersInMemoryDAO implements TrainersDAO{
-    private final HashMap<String, Trainer> map = new HashMap<>();
+    private InMemoryStorage storage;
     public void add(Trainer trainer) {
-        map.put(trainer.getUserId(), trainer);
+        storage.getTrainersData().put(trainer.getTrainerId(), trainer);
     }
 
     public boolean exists(String userId) {
-        return map.containsKey(userId);
+        return storage.getTrainersData().containsKey(userId);
     }
 
     public Trainer get(String userId) {
-        return map.get(userId);
+        return storage.getTrainersData().get(userId);
     }
 
     public ArrayList<Trainer> getAll() {
-        return new ArrayList<>(map.values());
+        return new ArrayList<>(storage.getTrainersData().values());
     }
 
     public void set(Trainer trainer) {
@@ -29,6 +32,6 @@ public class TrainersInMemoryDAO implements TrainersDAO{
     }
 
     public String toString(){
-        return map.toString();
+        return storage.getTrainersData().toString();
     }
 }

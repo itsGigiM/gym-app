@@ -1,0 +1,64 @@
+{
+  "Trainers": [
+    {
+      "firstName": "Gigi",
+      "lastName": "Mirziashvili",
+      "username": "Gigi.Mirziashvili",
+      "password": "password",
+      "isActive": true,
+      "trainerId": "1033",
+      "specialization": "BOXING"
+    },
+    {
+      "firstName": "Epam",
+      "lastName": "Epamashvili",
+      "username": "Epam.Epamashvili",
+      "password": "password",
+      "isActive": true,
+      "trainerId": "1034",
+      "specialization": "JIUJITSU"
+    }
+  ],
+  "Trainees": [
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "username": "John.Doe",
+      "password": "password",
+      "isActive": "true",
+      "traineeId": "1030",
+      "address": "Tbilisi",
+      "dateOfBirth": "2002-01-10"
+    },
+    {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "username": "Jane.Doe",
+      "password": "password",
+      "isActive": "true",
+      "traineeId": "1029",
+      "address": "Batumi",
+      "dateOfBirth": "2003-02-15"
+    }
+  ],
+  "Trainings": [
+    {
+      "trainingId": "1",
+      "traineeId": "1030",
+      "trainerId": "1033",
+      "trainingName": "MORNING BOXING",
+      "trainingType": "BOXING",
+      "trainingDate": "2024-01-01",
+      "duration": 2
+    },
+    {
+      "trainingId": "2",
+      "traineeId": "1029",
+      "trainerId": "1034",
+      "trainingName": "EVENING JIUJITSU",
+      "trainingType": "JIUJITSU",
+      "trainingDate": "2024-02-22",
+      "duration": 2
+    }
+  ]
+}

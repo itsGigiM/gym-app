@@ -1,43 +1,50 @@
-package service;
+package com.example.taskspring.service;
 
 
 import lombok.AllArgsConstructor;
-import model.Training;
-import model.TrainingType;
+import com.example.taskspring.model.Training;
+import com.example.taskspring.model.TrainingType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import repository.TrainingsDAO;
+import com.example.taskspring.repository.TrainingsDAO;
 import java.time.Duration;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static utils.Constants.PASSWORD_LENGTH;
 
 // Trainee Service class supports possibility to create/select Training profile.
 @AllArgsConstructor
 @Service
-public class TrainingService {
+@Slf4j
+public class TrainingService implements ITrainingService{
 
-    private static final Logger logger = Logger.getLogger(TrainerService.class.getName());
 
     private TrainingsDAO repository;
     public String createTraining(String traineeId, String trainerId, String trainingName, TrainingType trainingType,
-                               Date trainingDate, Duration trainingDuration){
+                                 LocalDate trainingDate, Duration trainingDuration){
         String trainingId = "123";
         Training training = new Training(trainingId, traineeId, trainerId, trainingName,
                 trainingType, trainingDate, trainingDuration);
         repository.add(training);
-        logger.log(Level.INFO, "Created new trainer: " + training);
+        log.info("Created new trainer: " + training);
         return trainingId;
     }
 
 
     public Training selectTraining(String trainingId){
-        if(!repository.exists(trainingId)) throw new NoSuchElementException("Training not found with ID: " + trainingId);
+        CheckTraining(trainingId);
         Training training = repository.get(trainingId);
-        logger.log(Level.INFO, "Selected trainer: " + training);
+        log.info("Selected trainer: " + training);
         return training;
+    }
+
+    public String toString(){
+        return repository.toString();
+    }
+
+    private void CheckTraining(String trainingId) {
+        String errorMessage = "Training not found with ID: " + trainingId;
+        log.error(errorMessage);
+        throw new NoSuchElementException(errorMessage);
     }
 
 }

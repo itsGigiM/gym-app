@@ -1,9 +1,11 @@
-package com.example.taskspring;
+package com.example.taskspring.daoTests;
 
-import model.*;
+import com.example.taskspring.model.Trainee;
+import com.example.taskspring.utils.InMemoryStorage;
 import org.junit.jupiter.api.*;
-import repository.TraineesInMemoryDAO;
+import com.example.taskspring.repository.TraineesInMemoryDAO;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,12 +16,13 @@ public class TraineesInMemoryDAOTests {
 
     @BeforeEach
     public void setUpRepository() {
-        repo = new TraineesInMemoryDAO();
+        InMemoryStorage memo = new InMemoryStorage();
+        repo = new TraineesInMemoryDAO(memo);
     }
     @Test
     public void testAddAndGet() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "1033", "Tbilisi", new Date());
+                "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
 
         assertTrue(repo.exists("1033"));
@@ -29,7 +32,7 @@ public class TraineesInMemoryDAOTests {
     @Test
     public void testRemove() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "1033", "Tbilisi", new Date());
+                "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
         assertTrue(repo.exists("1033"));
 
@@ -40,7 +43,7 @@ public class TraineesInMemoryDAOTests {
     @Test
     public void testSet() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "1033", "Tbilisi", new Date());
+                "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
         trainee.setFirstName("Epam");
         repo.set(trainee);
@@ -50,10 +53,10 @@ public class TraineesInMemoryDAOTests {
     @Test
     public void testGetAll() {
         Trainee trainee1 = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "1033", "Tbilisi", new Date());
+                "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
 
         Trainee trainee2 = new Trainee("Gigi", "Epam", "Gigi.Epam",
-                "password", true, "1034", "Tbilisi", new Date());
+                "password", true, "1034", "Tbilisi", LocalDate.of(2022, 2, 2));
 
         repo.add(trainee1);
         repo.add(trainee2);
@@ -70,10 +73,10 @@ public class TraineesInMemoryDAOTests {
         assertSame("{}", repo.toString());
 
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "1033", "Tbilisi", new Date(2024, 1, 1));
+                "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
 
-        assertEquals("{1033=Trainee(userId=1033, address=Tbilisi, dateOfBirth=Fri Feb 01 00:00:00 GET 3924)}", repo.toString());
+        assertEquals("{1033=Trainee(traineeId=1033, address=Tbilisi, dateOfBirth=2022-02-02)}", repo.toString());
 
 
     }

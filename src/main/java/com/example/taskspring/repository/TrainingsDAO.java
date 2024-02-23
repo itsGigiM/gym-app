@@ -1,6 +1,6 @@
-package repository;
+package com.example.taskspring.repository;
 
-import model.Training;
+import com.example.taskspring.model.Training;
 
 import java.util.ArrayList;
 

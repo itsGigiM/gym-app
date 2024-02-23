@@ -1,11 +1,11 @@
-package model;
+package com.example.taskspring.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Duration;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class Training {
     private String trainerId;
     private String trainingName;
     private TrainingType trainingType;
-    private Date trainingDate;
+    private LocalDate trainingDate;
     private Duration duration;
 
 }

@@ -1,8 +1,9 @@
-package com.example.taskspring;
+package com.example.taskspring.daoTests;
 
-import model.*;
+import com.example.taskspring.model.Trainer;
+import com.example.taskspring.utils.InMemoryStorage;
 import org.junit.jupiter.api.*;
-import repository.TrainersInMemoryDAO;
+import com.example.taskspring.repository.TrainersInMemoryDAO;
 
 import java.util.List;
 
@@ -13,7 +14,8 @@ public class TrainersInMemoryDAOTests {
 
     @BeforeEach
     public void setUpRepository() {
-        repo = new TrainersInMemoryDAO();
+        InMemoryStorage memo = new InMemoryStorage();
+        repo = new TrainersInMemoryDAO(memo);
     }
     @Test
     public void testAddAndGet() {
@@ -61,7 +63,7 @@ public class TrainersInMemoryDAOTests {
                 "password", true, "BOX", "1033");
         repo.add(trainer);
 
-        assertEquals("{1033=Trainer(specialization=BOX, userId=1033)}", repo.toString());
+        assertEquals("{1033=Trainer(specialization=BOX, trainerId=1033)}", repo.toString());
 
 
     }

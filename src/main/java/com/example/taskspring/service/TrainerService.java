@@ -1,51 +1,61 @@
-package service;
+package com.example.taskspring.service;
 
 
-import lombok.AllArgsConstructor;
-import model.Trainer;
+import com.example.taskspring.model.Trainer;
+import com.example.taskspring.utils.IUsernameGenerator;
+import com.example.taskspring.utils.PasswordGenerator;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import repository.TrainersDAO;
-import utils.PasswordGenerator;
-import utils.UsernameGenerator;
-
+import com.example.taskspring.repository.TrainersDAO;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static utils.Constants.PASSWORD_LENGTH;
 
 // Trainee Service class supports possibility to create/update/select Trainer profile.
-@AllArgsConstructor
 @Service
-public class TrainerService {
+@Slf4j
+public class TrainerService implements ITrainerService{
 
-    private static final Logger logger = Logger.getLogger(TrainerService.class.getName());
-
+    @Value("${password.length}")
+    private int passwordLength;
+    @Autowired
     private TrainersDAO repository;
-    public void createTrainer(String firstName, String lastName, boolean isActive, String userId,
+    @Autowired
+    private IUsernameGenerator usernameGenerator;
+    public void createTrainer(String firstName, String lastName, boolean isActive, String trainerId,
                               String specialization){
-        String trainerUsername = UsernameGenerator.generateUsername(firstName, lastName);
-        String password = PasswordGenerator.generatePassword(PASSWORD_LENGTH);
-        Trainer trainer = new Trainer(firstName, lastName, trainerUsername, password,
-                isActive, specialization, userId);
+        String username = usernameGenerator.generateUsername(firstName, lastName);
+        String password = PasswordGenerator.generatePassword(passwordLength);
+        Trainer trainer = new Trainer(firstName, lastName, username, password,
+                isActive, specialization, trainerId);
         repository.add(trainer);
-        logger.log(Level.INFO, "Created new trainer: " + trainer);
+        log.info("Created new trainer: " + trainer);
     }
 
-    public void updateTrainer(String userId, Trainer trainer){
-        if(trainer == null) throw new IllegalArgumentException("Trainer cannot be null");
-        if(!repository.exists(userId)) throw new NoSuchElementException("User not found: " + userId);
-        trainer.setUserId(userId);
+    public void updateTrainer(String trainerId, Trainer trainer){
+        if(trainer == null){
+            String errorMessage = "Trainer can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        CheckUser(trainerId);
+        trainer.setTrainerId(trainerId);
         repository.set(trainer);
-        logger.log(Level.INFO, "Updated trainer: " + trainer);
+        log.info("Updated trainer: " + trainer);
     }
 
 
-    public Trainer selectTrainer(String userId){
-        if(!repository.exists(userId)) throw new NoSuchElementException("User not found with ID: " + userId);
-        Trainer trainer = repository.get(userId);
-        logger.log(Level.INFO, "Selected trainer: " + trainer);
+    public Trainer selectTrainer(String trainerId){
+        CheckUser(trainerId);
+        Trainer trainer = repository.get(trainerId);
+        log.info("Selected trainer: " + trainer);
         return trainer;
+    }
+
+    private void CheckUser(String trainerId) {
+        String errorMessage = "User not found with ID: " + trainerId;
+        log.error(errorMessage);
+        throw new NoSuchElementException(errorMessage);
     }
 
 }

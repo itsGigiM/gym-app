@@ -1,51 +1,36 @@
 package com.example.taskspring;
 
-import model.*;
+import com.example.taskspring.model.*;
 import org.junit.jupiter.api.Test;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static utils.Constants.PASSWORD_LENGTH;
+import static org.junit.jupiter.api.Assertions.*;
+import static com.example.taskspring.utils.Constants.PASSWORD_LENGTH;
 
-public class ModelsTest {
-
-    @Test
-    public void testUser() {
-        User user = new User("Gigi", "Mirziashvili", "Gigi.Mirziashvili" +
-                "", "password", true);
-
-        assertEquals("Gigi", user.getFirstName());
-        assertEquals("Mirziashvili", user.getLastName());
-        assertEquals("Gigi.Mirziashvili", user.getUsername());
-        assertEquals("password", user.getPassword());
-        assertTrue(user.isActive());
-    }
+public class ModelsTests {
     @Test
     public void testTrainee() {
-        String firstName = "Gigi";
-        String lastName = "Mirziashvili";
-        String username = "Gigi.Mirziashvili";
         String password = "a".repeat(PASSWORD_LENGTH);
-        boolean isActive = true;
-        String userId = "1033";
-        String address = "Tbilisi";
-        Date dateOfBirth = new Date(2023, 2, 2);
+        LocalDate dateOfBirth = LocalDate.of(2022, 2, 2);
 
-        Trainee trainee = new Trainee(firstName, lastName, username, password, isActive, userId, address, dateOfBirth);
+        Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
+                password, true, "1033", "Tbilisi", dateOfBirth);
 
-        assertEquals(firstName, trainee.getFirstName());
-        assertEquals(lastName, trainee.getLastName());
-        assertEquals(username, trainee.getUsername());
+        Trainee nullTrainee = new Trainee();
+
+        assertEquals("Gigi", trainee.getFirstName());
+        assertEquals("Mirziashvili", trainee.getLastName());
+        assertEquals("Gigi.Mirziashvili", trainee.getUsername());
         assertEquals(password, trainee.getPassword());
         assertTrue(trainee.isActive());
-        assertEquals(userId, trainee.getUserId());
-        assertEquals(address, trainee.getAddress());
+        assertEquals("1033", trainee.getTraineeId());
+        assertEquals("Tbilisi", trainee.getAddress());
         assertEquals(dateOfBirth, trainee.getDateOfBirth());
+        assertNull(nullTrainee.getUsername());
+        assertNotSame("", trainee.toString());
+        assertNotSame(-1, trainee.hashCode());
     }
 
     @Test
@@ -54,25 +39,35 @@ public class ModelsTest {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 password, true, "Box", "12345");
 
+        Trainer nullTrainer = new Trainer();
+
         assertEquals("Gigi", trainer.getFirstName());
         assertEquals("Mirziashvili", trainer.getLastName());
         assertEquals("Gigi.Mirziashvili", trainer.getUsername());
         assertEquals(password, trainer.getPassword());
         assertTrue(trainer.isActive());
         assertEquals("Box", trainer.getSpecialization());
-        assertEquals("12345", trainer.getUserId());
+        assertEquals("12345", trainer.getTrainerId());
+        assertNull(nullTrainer.getUsername());
+        assertNotSame("", trainer.toString());
+        assertNotSame(-1, trainer.hashCode());
     }
 
     @Test
     public void testTraining() {
-        Training training = new Training("12345", "67890",
-                "Box", TrainingType.BOXING, new Date(2024, Calendar.MARCH, 30), Duration.ofMinutes(30));
+        Training training = new Training("1000", "12345", "67890",
+                "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofMinutes(30));
 
+        Training nullTraining = new Training();
+        assertEquals("1000", training.getTrainingId());
         assertEquals("12345", training.getTraineeId());
         assertEquals("67890", training.getTrainerId());
         assertEquals("Box", training.getTrainingName());
         assertEquals(TrainingType.BOXING, training.getTrainingType());
-        assertEquals(training.getTrainingDate(), new Date(2024, Calendar.MARCH, 30));
+        assertEquals(training.getTrainingDate(), LocalDate.of(2022, 2, 2));
         assertEquals(Duration.ofMinutes(30), training.getDuration());
+        assertNull(nullTraining.getTrainingName());
+        assertNotSame("", training.toString());
+
     }
 }

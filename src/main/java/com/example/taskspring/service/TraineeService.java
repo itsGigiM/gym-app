@@ -1,57 +1,74 @@
-package service;
+package com.example.taskspring.service;
 
 
-import lombok.AllArgsConstructor;
-import model.Trainee;
+import com.example.taskspring.repository.TraineesDAO;
+import com.example.taskspring.utils.IUsernameGenerator;
+import com.example.taskspring.utils.PasswordGenerator;
+import com.example.taskspring.model.Trainee;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import repository.TraineesDAO;
-import utils.PasswordGenerator;
-import utils.UsernameGenerator;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static utils.Constants.PASSWORD_LENGTH;
 
 // Trainee Service class supports possibility to create/update/delete/select Trainee profile.
-@AllArgsConstructor
 @Service
-public class TraineeService {
+@Slf4j
+public class TraineeService implements ITraineeService{
 
-    private static final Logger logger = Logger.getLogger(TraineeService.class.getName());
-
+    @Autowired
     private TraineesDAO repository;
-    public void createTrainee(String firstName, String lastName, boolean isActive, String userId,
-                               String address, Date dateOfBirth){
-        String username = UsernameGenerator.generateUsername(firstName, lastName);
-        String password = PasswordGenerator.generatePassword(PASSWORD_LENGTH);
+    @Autowired
+    private IUsernameGenerator usernameGenerator;
+
+    @Value("${password.length}")
+    private int passwordLength;
+
+    public void createTrainee(String firstName, String lastName, boolean isActive, String traineeId,
+                               String address, LocalDate dateOfBirth){
+        String username = usernameGenerator.generateUsername(firstName, lastName);
+        String password = PasswordGenerator.generatePassword(passwordLength);
         Trainee trainee = new Trainee(firstName, lastName, username, password,
-                isActive, userId, address, dateOfBirth);
+                isActive, traineeId, address, dateOfBirth);
         repository.add(trainee);
-        logger.log(Level.INFO, "Created new trainee: " + trainee);
+        log.info("Created new trainee: " + trainee);
     }
 
-    public void updateTrainee(String userId, Trainee trainee){
-        if(trainee == null) throw new IllegalArgumentException("Trainee cannot be null");
-        if(!repository.exists(userId)) throw new NoSuchElementException("User not found: " + userId);
-        trainee.setUserId(userId);
+    public void updateTrainee(String traineeId, Trainee trainee){
+        if(trainee == null){
+            String errorMessage = "Trainee can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        CheckUser(traineeId);
+        trainee.setTraineeId(traineeId);
         repository.set(trainee);
-        logger.log(Level.INFO, "Updated trainee: " + trainee);
+        log.info("Updated trainee: " + trainee);
     }
 
-    public void deleteTrainee(String userId){
-        if(!repository.exists(userId)) throw new NoSuchElementException("User not found with ID: " + userId);
-        repository.remove(userId);
-        logger.log(Level.INFO, "removed trainee #" + userId);
+    public void deleteTrainee(String traineeId){
+        CheckUser(traineeId);
+        repository.remove(traineeId);
+        log.info("removed trainee #" + traineeId);
     }
 
-    public Trainee selectTrainee(String userId){
-        if(!repository.exists(userId)) throw new NoSuchElementException("User not found with ID: " + userId);
-        Trainee trainee = repository.get(userId);
-        logger.log(Level.INFO, "Selected trainee: " + trainee);
+    public Trainee selectTrainee(String traineeId){
+        CheckUser(traineeId);
+        Trainee trainee = repository.get(traineeId);
+        log.info("Selected trainee: " + trainee);
         return trainee;
+    }
+
+    public String toString(){
+        return repository.toString();
+    }
+
+    private void CheckUser(String traineeId) {
+        String errorMessage = "User not found with ID: " + traineeId;
+        log.error(errorMessage);
+        throw new NoSuchElementException(errorMessage);
     }
 
 }
