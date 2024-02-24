@@ -6,7 +6,6 @@ import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import com.example.taskspring.model.Trainee;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,15 @@ import java.util.NoSuchElementException;
 @Service
 @Slf4j
 public class TraineeService implements ITraineeService{
-
-    @Autowired
-    private TraineesDAO repository;
-    @Autowired
-    private IUsernameGenerator usernameGenerator;
-
     @Value("${password.length}")
     private int passwordLength;
+    private final TraineesDAO repository;
+    private final IUsernameGenerator usernameGenerator;
+
+    public TraineeService(TraineesDAO repository, IUsernameGenerator usernameGenerator){
+        this.repository = repository;
+        this.usernameGenerator = usernameGenerator;
+    }
 
     public void createTrainee(String firstName, String lastName, boolean isActive, String traineeId,
                                String address, LocalDate dateOfBirth){
@@ -66,6 +66,7 @@ public class TraineeService implements ITraineeService{
     }
 
     private void CheckUser(String traineeId) {
+        if(repository.exists(traineeId)) return;
         String errorMessage = "User not found with ID: " + traineeId;
         log.error(errorMessage);
         throw new NoSuchElementException(errorMessage);

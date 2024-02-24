@@ -7,12 +7,11 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static com.example.taskspring.utils.Constants.PASSWORD_LENGTH;
 
 public class ModelsTests {
     @Test
     public void testTrainee() {
-        String password = "a".repeat(PASSWORD_LENGTH);
+        String password = "a".repeat(10);
         LocalDate dateOfBirth = LocalDate.of(2022, 2, 2);
 
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
@@ -35,7 +34,7 @@ public class ModelsTests {
 
     @Test
     public void testTrainer() {
-        String password = "a".repeat(PASSWORD_LENGTH);
+        String password = "a".repeat(10);
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 password, true, "Box", "12345");
 

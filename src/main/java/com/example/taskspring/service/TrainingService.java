@@ -42,6 +42,7 @@ public class TrainingService implements ITrainingService{
     }
 
     private void CheckTraining(String trainingId) {
+        if(repository.exists(trainingId)) return;
         String errorMessage = "Training not found with ID: " + trainingId;
         log.error(errorMessage);
         throw new NoSuchElementException(errorMessage);

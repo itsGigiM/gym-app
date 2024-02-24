@@ -75,7 +75,8 @@ public class TraineesInMemoryDAOTests {
                 "password", true, "1033", "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
 
-        assertEquals("{1033=Trainee(traineeId=1033, address=Tbilisi, dateOfBirth=2022-02-02)}", repo.toString());
+        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, traineeId='1033', address='Tbilisi', dateOfBirth=2022-02-02} }"
+                , repo.toString());
 
 
     }

@@ -5,7 +5,6 @@ import com.example.taskspring.model.Trainer;
 import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.example.taskspring.repository.TrainersDAO;
@@ -18,10 +17,13 @@ public class TrainerService implements ITrainerService{
 
     @Value("${password.length}")
     private int passwordLength;
-    @Autowired
-    private TrainersDAO repository;
-    @Autowired
-    private IUsernameGenerator usernameGenerator;
+    private final TrainersDAO repository;
+    private final IUsernameGenerator usernameGenerator;
+
+    public TrainerService(TrainersDAO repository, IUsernameGenerator usernameGenerator){
+        this.repository = repository;
+        this.usernameGenerator = usernameGenerator;
+    }
     public void createTrainer(String firstName, String lastName, boolean isActive, String trainerId,
                               String specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
@@ -53,6 +55,7 @@ public class TrainerService implements ITrainerService{
     }
 
     private void CheckUser(String trainerId) {
+        if(repository.exists(trainerId)) return;
         String errorMessage = "User not found with ID: " + trainerId;
         log.error(errorMessage);
         throw new NoSuchElementException(errorMessage);

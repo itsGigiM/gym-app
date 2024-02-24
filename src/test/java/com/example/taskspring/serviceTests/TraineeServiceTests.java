@@ -1,6 +1,10 @@
 package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.Trainee;
+import com.example.taskspring.repository.TraineesInMemoryDAO;
+import com.example.taskspring.repository.TrainersInMemoryDAO;
+import com.example.taskspring.utils.InMemoryStorage;
+import com.example.taskspring.utils.UsernameGenerator;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.service.TraineeService;
 
@@ -14,7 +18,9 @@ public class TraineeServiceTests {
 
     @BeforeEach
     public void setUpService() {
-        service = new TraineeService();
+        InMemoryStorage memo = new InMemoryStorage();
+        service = new TraineeService(new TraineesInMemoryDAO(memo),
+                new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)));
     }
     @Test
     public void testCreateAndSelect() {
