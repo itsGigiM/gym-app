@@ -5,14 +5,17 @@ import com.example.taskspring.repository.TraineesInMemoryDAO;
 import com.example.taskspring.repository.TrainersInMemoryDAO;
 import com.example.taskspring.utils.InMemoryStorage;
 import com.example.taskspring.utils.UsernameGenerator;
+import lombok.Setter;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.service.TraineeService;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 public class TraineeServiceTests {
     private TraineeService service;
 
