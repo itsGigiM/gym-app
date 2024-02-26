@@ -15,9 +15,9 @@ public class TaskSpringApplication {
 		ApplicationContext applicationContext = SpringApplication.run(TaskSpringApplication.class, args);
 		GymAppFacade facade = applicationContext.getBean(GymAppFacade.class);
 		System.out.println(facade);
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, "10"
+		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, 10L
 		, "Kutaisi", LocalDate.of(2005, 9, 21));
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, "14"
+		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, 14L
 				, "Kutaisi", LocalDate.of(2005, 9, 21));
 		System.out.println(facade);
 

@@ -1,17 +1,16 @@
 package com.example.taskspring.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Trainer extends User{
     private String specialization;
-    private String trainerId;
+    private Long trainerId;
     public Trainer(String firstName, String lastName, String username, String password, boolean isActive,
-                   String specialization, String trainerId) {
+                   String specialization, Long trainerId) {
         super(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
         this.trainerId = trainerId;

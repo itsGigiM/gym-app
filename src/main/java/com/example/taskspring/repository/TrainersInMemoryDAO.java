@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 @Repository
 @AllArgsConstructor
 public class TrainersInMemoryDAO implements TrainersDAO{
@@ -15,11 +14,11 @@ public class TrainersInMemoryDAO implements TrainersDAO{
         storage.getTrainersData().put(trainer.getTrainerId(), trainer);
     }
 
-    public boolean exists(String userId) {
+    public boolean exists(Long userId) {
         return storage.getTrainersData().containsKey(userId);
     }
 
-    public Trainer get(String userId) {
+    public Trainer get(Long userId) {
         return storage.getTrainersData().get(userId);
     }
 

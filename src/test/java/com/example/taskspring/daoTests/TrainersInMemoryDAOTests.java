@@ -20,30 +20,30 @@ public class TrainersInMemoryDAOTests {
     @Test
     public void testAddAndGet() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", "1033");
+                "password", true, "Box", 1033L);
         repo.add(trainer);
 
-        assertTrue(repo.exists("1033"));
-        assertEquals(trainer, repo.get("1033"));
+        assertTrue(repo.exists(1033L));
+        assertEquals(trainer, repo.get(1033L));
     }
 
     @Test
     public void testSet() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", "1033");
+                "password", true, "Box", 1033L);
         repo.add(trainer);
         trainer.setFirstName("Epam");
         repo.set(trainer);
-        assertSame("Epam", repo.get("1033").getFirstName());
+        assertSame("Epam", repo.get(1033L).getFirstName());
     }
 
     @Test
     public void testGetAll() {
         Trainer trainer1 = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", "1033");
+                "password", true, "Box", 1033L);
 
         Trainer trainer2 = new Trainer("Gigi", "Epam", "Gigi.Mirziashvili",
-                "password", true, "Box", "1034");
+                "password", true, "Box", 1034L);
 
         repo.add(trainer1);
         repo.add(trainer2);
@@ -60,7 +60,7 @@ public class TrainersInMemoryDAOTests {
         assertSame("{}", repo.toString());
 
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "BOX", "1033");
+                "password", true, "BOX", 1033L);
         repo.add(trainer);
 
         assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, specialization='BOX', trainerId='1033'} }",

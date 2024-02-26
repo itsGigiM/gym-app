@@ -22,9 +22,9 @@ public class TrainingServiceTests {
     }
     @Test
     public void testCreateAndSelect() {
-        String trainingId = service.createTraining("1032", "1033", "BOXING", TrainingType.BOXING,
+        service.createTraining(10L,1032L, 1033L, "BOXING", TrainingType.BOXING,
                 LocalDate.of(2022, 2, 2), Duration.ofHours(1));
-        assertEquals(service.selectTraining(trainingId).getTrainingName(), "BOXING");
+        assertEquals(service.selectTraining(10L).getTrainingName(), "BOXING");
     }
 
 }

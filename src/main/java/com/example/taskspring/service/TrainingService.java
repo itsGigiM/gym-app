@@ -19,18 +19,16 @@ public class TrainingService implements ITrainingService{
 
 
     private TrainingsDAO repository;
-    public String createTraining(String traineeId, String trainerId, String trainingName, TrainingType trainingType,
+    public void createTraining(Long trainingId, Long traineeId, Long trainerId, String trainingName, TrainingType trainingType,
                                  LocalDate trainingDate, Duration trainingDuration){
-        String trainingId = "123";
         Training training = new Training(trainingId, traineeId, trainerId, trainingName,
                 trainingType, trainingDate, trainingDuration);
         repository.add(training);
         log.info("Created new trainer: " + training);
-        return trainingId;
     }
 
 
-    public Training selectTraining(String trainingId){
+    public Training selectTraining(Long trainingId){
         CheckTraining(trainingId);
         Training training = repository.get(trainingId);
         log.info("Selected trainer: " + training);
@@ -41,7 +39,7 @@ public class TrainingService implements ITrainingService{
         return repository.toString();
     }
 
-    private void CheckTraining(String trainingId) {
+    private void CheckTraining(Long trainingId) {
         if(repository.exists(trainingId)) return;
         String errorMessage = "Training not found with ID: " + trainingId;
         log.error(errorMessage);

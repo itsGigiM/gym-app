@@ -3,11 +3,9 @@ package com.example.taskspring.repository;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.utils.InMemoryStorage;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 @Repository
 @AllArgsConstructor
 public class TraineesInMemoryDAO implements TraineesDAO {
@@ -16,15 +14,15 @@ public class TraineesInMemoryDAO implements TraineesDAO {
         storage.getTraineesData().put(trainee.getTraineeId(), trainee);
     }
 
-    public boolean exists(String userId) {
+    public boolean exists(Long userId) {
         return storage.getTraineesData().containsKey(userId);
     }
 
-    public void remove(String userId) {
+    public void remove(Long userId) {
         storage.getTraineesData().remove(userId);
     }
 
-    public Trainee get(String userId) {
+    public Trainee get(Long userId) {
         return storage.getTraineesData().get(userId);
     }
 

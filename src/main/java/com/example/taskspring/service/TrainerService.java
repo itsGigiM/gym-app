@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 public class TrainerService implements ITrainerService{
 
     @Value("${password.length}")
-    private int passwordLength;
+    private int passwordLength = 10;
     private final TrainersDAO repository;
     private final IUsernameGenerator usernameGenerator;
 
@@ -24,7 +24,7 @@ public class TrainerService implements ITrainerService{
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
     }
-    public void createTrainer(String firstName, String lastName, boolean isActive, String trainerId,
+    public void createTrainer(String firstName, String lastName, boolean isActive, Long trainerId,
                               String specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
@@ -34,7 +34,7 @@ public class TrainerService implements ITrainerService{
         log.info("Created new trainer: " + trainer);
     }
 
-    public void updateTrainer(String trainerId, Trainer trainer){
+    public void updateTrainer(Long trainerId, Trainer trainer){
         if(trainer == null){
             String errorMessage = "Trainer can not be null";
             log.error(errorMessage);
@@ -47,14 +47,14 @@ public class TrainerService implements ITrainerService{
     }
 
 
-    public Trainer selectTrainer(String trainerId){
+    public Trainer selectTrainer(Long trainerId){
         CheckUser(trainerId);
         Trainer trainer = repository.get(trainerId);
         log.info("Selected trainer: " + trainer);
         return trainer;
     }
 
-    private void CheckUser(String trainerId) {
+    private void CheckUser(Long trainerId) {
         if(repository.exists(trainerId)) return;
         String errorMessage = "User not found with ID: " + trainerId;
         log.error(errorMessage);

@@ -20,18 +20,18 @@ public class TrainerServiceTests {
                 new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)));
     }    @Test
     public void testCreateAndSelect() {
-        service.createTrainer("Gigi", "Mirziashvili", true, "1033",
+        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
                 "BOXING");
-        assertEquals(service.selectTrainer("1033").getUsername(), "Gigi.Mirziashvili");
+        assertEquals(service.selectTrainer(1033L).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
     public void testUpdate() {
-        service.createTrainer("Gigi", "Mirziashvili", true, "1033",
+        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
                 "BOXING");
-        Trainer trainer = service.selectTrainer("1033");
+        Trainer trainer = service.selectTrainer(1033L);
         trainer.setFirstName("Epam");
-        service.updateTrainer("1033", trainer);
-        assertEquals(service.selectTrainer("1033").getFirstName(), "Epam");
+        service.updateTrainer(1033L, trainer);
+        assertEquals(service.selectTrainer(1033L).getFirstName(), "Epam");
     }
 }

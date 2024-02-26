@@ -5,10 +5,10 @@ import com.example.taskspring.model.Training;
 import java.util.ArrayList;
 
 public interface TrainingsDAO {
-    public void add(Training trainee);
-    public boolean exists(String trainingId);
+    public void add(Training training);
+    public boolean exists(Long trainingId);
 
-    public Training get(String trainingId);
+    public Training get(Long trainingId);
 
     public ArrayList<Training> getAll();
 }

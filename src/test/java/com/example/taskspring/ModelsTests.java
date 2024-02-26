@@ -15,7 +15,7 @@ public class ModelsTests {
         LocalDate dateOfBirth = LocalDate.of(2022, 2, 2);
 
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, "1033", "Tbilisi", dateOfBirth);
+                password, true, 1033L, "Tbilisi", dateOfBirth);
 
         Trainee nullTrainee = new Trainee();
 
@@ -24,7 +24,7 @@ public class ModelsTests {
         assertEquals("Gigi.Mirziashvili", trainee.getUsername());
         assertEquals(password, trainee.getPassword());
         assertTrue(trainee.isActive());
-        assertEquals("1033", trainee.getTraineeId());
+        assertEquals(1033L, trainee.getTraineeId());
         assertEquals("Tbilisi", trainee.getAddress());
         assertEquals(dateOfBirth, trainee.getDateOfBirth());
         assertNull(nullTrainee.getUsername());
@@ -36,7 +36,7 @@ public class ModelsTests {
     public void testTrainer() {
         String password = "a".repeat(10);
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, "Box", "12345");
+                password, true, "Box", 12345L);
 
         Trainer nullTrainer = new Trainer();
 
@@ -46,7 +46,7 @@ public class ModelsTests {
         assertEquals(password, trainer.getPassword());
         assertTrue(trainer.isActive());
         assertEquals("Box", trainer.getSpecialization());
-        assertEquals("12345", trainer.getTrainerId());
+        assertEquals(12345L, trainer.getTrainerId());
         assertNull(nullTrainer.getUsername());
         assertNotSame("", trainer.toString());
         assertNotSame(-1, trainer.hashCode());
@@ -54,13 +54,13 @@ public class ModelsTests {
 
     @Test
     public void testTraining() {
-        Training training = new Training("1000", "12345", "67890",
+        Training training = new Training(1000L, 12345L, 67890L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofMinutes(30));
 
         Training nullTraining = new Training();
-        assertEquals("1000", training.getTrainingId());
-        assertEquals("12345", training.getTraineeId());
-        assertEquals("67890", training.getTrainerId());
+        assertEquals(1000L, training.getTrainingId());
+        assertEquals(12345L, training.getTraineeId());
+        assertEquals(67890L, training.getTrainerId());
         assertEquals("Box", training.getTrainingName());
         assertEquals(TrainingType.BOXING, training.getTrainingType());
         assertEquals(training.getTrainingDate(), LocalDate.of(2022, 2, 2));

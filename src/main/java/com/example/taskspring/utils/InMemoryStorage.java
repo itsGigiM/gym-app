@@ -15,8 +15,8 @@ import java.util.Map;
 @Component
 @Data
 public class InMemoryStorage {
-    private Map<String, Trainee> traineesData = new HashMap<>();
-    private Map<String, Trainer> trainersData = new HashMap<>();
-    private Map<String, Training> trainingsData = new HashMap<>();
+    private Map<Long, Trainee> traineesData = new HashMap<>();
+    private Map<Long, Trainer> trainersData = new HashMap<>();
+    private Map<Long, Training> trainingsData = new HashMap<>();
 
 }

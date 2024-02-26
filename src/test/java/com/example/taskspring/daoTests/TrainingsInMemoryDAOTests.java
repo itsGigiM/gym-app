@@ -23,21 +23,21 @@ public class TrainingsInMemoryDAOTests {
     }
     @Test
     public void testAddAndGet() {
-        Training training = new Training("1033", "10", "12",
+        Training training = new Training(1033L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training);
 
-        assertTrue(repo.exists("1033"));
-        assertEquals(training, repo.get("1033"));
+        assertTrue(repo.exists(1033L));
+        assertEquals(training, repo.get(1033L));
     }
 
     @Test
     public void testGetAll() {
-        Training training1 = new Training("1034", "10", "12",
+        Training training1 = new Training(1034L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training1);
 
-        Training training2 = new Training("1035", "10", "12",
+        Training training2 = new Training(1035L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training2);
 
@@ -53,7 +53,7 @@ public class TrainingsInMemoryDAOTests {
     public void testToString() {
         assertSame("{}", repo.toString());
 
-        Training training = new Training("1033", "10", "12",
+        Training training = new Training(1033L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training);
 

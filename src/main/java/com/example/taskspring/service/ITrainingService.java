@@ -7,8 +7,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 public interface ITrainingService {
-    public String createTraining(String traineeId, String trainerId, String trainingName, TrainingType trainingType,
+    public void createTraining(Long trainingId, Long traineeId, Long trainerId, String trainingName, TrainingType trainingType,
                                  LocalDate trainingDate, Duration trainingDuration);
 
-    public Training selectTraining(String trainingId);
+    public Training selectTraining(Long trainingId);
 }

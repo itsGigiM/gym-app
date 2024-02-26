@@ -7,9 +7,9 @@ import java.util.ArrayList;
 public interface TrainersDAO {
     public void add(Trainer trainee);
 
-    public boolean exists(String userId);
+    public boolean exists(Long userId);
 
-    public Trainer get(String userId);
+    public Trainer get(Long userId);
 
     public ArrayList<Trainer> getAll();
 

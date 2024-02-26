@@ -1,8 +1,6 @@
 package com.example.taskspring.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -11,10 +9,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Training {
-    private String trainingId;
+    private Long trainingId;
 
-    private String traineeId;
-    private String trainerId;
+    private Long traineeId;
+    private Long trainerId;
     private String trainingName;
     private TrainingType trainingType;
     private LocalDate trainingDate;

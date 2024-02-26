@@ -24,28 +24,28 @@ public class TraineeServiceTests {
     }
     @Test
     public void testCreateAndSelect() {
-        service.createTrainee("Gigi", "Mirziashvili", true, "1033",
+        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        assertEquals(service.selectTrainee("1033").getUsername(), "Gigi.Mirziashvili");
+        assertEquals(service.selectTrainee(1033L).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
     public void testDelete() {
-        service.createTrainee("Gigi", "Mirziashvili", true, "1033",
+        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        service.deleteTrainee("1033");
+        service.deleteTrainee(1033L);
         assertThrows(NoSuchElementException.class, () -> {
-            service.selectTrainee("1033");
+            service.selectTrainee(1033L);
         });
     }
 
     @Test
     public void testUpdate() {
-        service.createTrainee("Gigi", "Mirziashvili", true, "1033",
+        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        Trainee trainee = service.selectTrainee("1033");
+        Trainee trainee = service.selectTrainee(1033L);
         trainee.setFirstName("Epam");
-        service.updateTrainee("1033", trainee);
-        assertEquals(service.selectTrainee("1033").getFirstName(), "Epam");
+        service.updateTrainee(1033L, trainee);
+        assertEquals(service.selectTrainee(1033L).getFirstName(), "Epam");
     }
 }

@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class TraineeService implements ITraineeService{
     @Value("${password.length}")
-    private int passwordLength;
+    private int passwordLength = 10;
     private final TraineesDAO repository;
     private final IUsernameGenerator usernameGenerator;
 
@@ -26,7 +26,7 @@ public class TraineeService implements ITraineeService{
         this.usernameGenerator = usernameGenerator;
     }
 
-    public void createTrainee(String firstName, String lastName, boolean isActive, String traineeId,
+    public void createTrainee(String firstName, String lastName, boolean isActive, Long traineeId,
                                String address, LocalDate dateOfBirth){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
@@ -36,7 +36,7 @@ public class TraineeService implements ITraineeService{
         log.info("Created new trainee: " + trainee);
     }
 
-    public void updateTrainee(String traineeId, Trainee trainee){
+    public void updateTrainee(Long traineeId, Trainee trainee){
         if(trainee == null){
             String errorMessage = "Trainee can not be null";
             log.error(errorMessage);
@@ -48,13 +48,13 @@ public class TraineeService implements ITraineeService{
         log.info("Updated trainee: " + trainee);
     }
 
-    public void deleteTrainee(String traineeId){
+    public void deleteTrainee(Long traineeId){
         CheckUser(traineeId);
         repository.remove(traineeId);
         log.info("removed trainee #" + traineeId);
     }
 
-    public Trainee selectTrainee(String traineeId){
+    public Trainee selectTrainee(Long traineeId){
         CheckUser(traineeId);
         Trainee trainee = repository.get(traineeId);
         log.info("Selected trainee: " + trainee);
@@ -65,7 +65,7 @@ public class TraineeService implements ITraineeService{
         return repository.toString();
     }
 
-    private void CheckUser(String traineeId) {
+    private void CheckUser(Long traineeId) {
         if(repository.exists(traineeId)) return;
         String errorMessage = "User not found with ID: " + traineeId;
         log.error(errorMessage);
