@@ -20,7 +20,7 @@
 //
 //@Component
 //@Slf4j
-//public class MemoryInitializer implements BeanPostProcessor {
+//public class SQLMemoryInitializer implements BeanPostProcessor {
 //    @Value("${data.file}")
 //    private Resource configFile;
 //

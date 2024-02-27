@@ -20,6 +20,11 @@ public class TaskSpringApplication {
 		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, 14L
 				, "Kutaisi", LocalDate.of(2005, 9, 21));
 		System.out.println(facade);
+		try {
+			facade.getTraineeService().deleteTrainee(53L, "Malkhaz.Chaburgia", "l1GkUSNnlJ");
+		}catch (Exception e){
+			System.out.println(e.toString());
+		}
 
 
 	}

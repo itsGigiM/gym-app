@@ -1,5 +1,6 @@
 package com.example.taskspring.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Duration;
@@ -8,14 +9,26 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "trainings")
 public class Training {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long trainingId;
-
-    private Long traineeId;
-    private Long trainerId;
+    @ManyToOne
+    @JoinColumn(name = "trainee_id")
+    private Trainee traineeId;
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainerId;
+    @Column(nullable = false)
     private String trainingName;
-    private TrainingType trainingType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "training_type")
+    private TrainingType.TrainingTypeEnum trainingType;
+    @Column(nullable = false)
     private LocalDate trainingDate;
+    @Column(nullable = false)
     private Duration duration;
 
 }

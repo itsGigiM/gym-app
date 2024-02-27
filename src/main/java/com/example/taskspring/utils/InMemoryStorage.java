@@ -6,13 +6,13 @@ import com.example.taskspring.model.Training;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 @Getter
 @Setter
-@Component
+@Repository
 @Data
 public class InMemoryStorage {
     private Map<Long, Trainee> traineesData = new HashMap<>();
