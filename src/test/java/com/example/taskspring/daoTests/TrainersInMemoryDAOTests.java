@@ -1,7 +1,8 @@
 package com.example.taskspring.daoTests;
 
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.utils.InMemoryStorage;
+import com.example.taskspring.model.TrainingType;
+import com.example.taskspring.repository.InMemoryStorage;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.repository.TrainersInMemoryDAO;
 
@@ -20,7 +21,7 @@ public class TrainersInMemoryDAOTests {
     @Test
     public void testAddAndGet() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", 1033L);
+                "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
 
         assertTrue(repo.exists(1033L));
@@ -30,7 +31,7 @@ public class TrainersInMemoryDAOTests {
     @Test
     public void testSet() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", 1033L);
+                "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
         trainer.setFirstName("Epam");
         repo.set(trainer);
@@ -40,10 +41,10 @@ public class TrainersInMemoryDAOTests {
     @Test
     public void testGetAll() {
         Trainer trainer1 = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "Box", 1033L);
+                "password", true, TrainingType.BOXING, 1033L);
 
         Trainer trainer2 = new Trainer("Gigi", "Epam", "Gigi.Mirziashvili",
-                "password", true, "Box", 1034L);
+                "password", true, TrainingType.BOXING, 1034L);
 
         repo.add(trainer1);
         repo.add(trainer2);
@@ -60,10 +61,10 @@ public class TrainersInMemoryDAOTests {
         assertSame("{}", repo.toString());
 
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "password", true, "BOX", 1033L);
+                "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
 
-        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, specialization='BOX', trainerId='1033'} }",
+        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, specialization='BOXING', trainerId='1033'} }",
                 repo.toString());
 
 

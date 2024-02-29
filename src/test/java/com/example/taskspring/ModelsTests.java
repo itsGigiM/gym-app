@@ -36,7 +36,7 @@ public class ModelsTests {
     public void testTrainer() {
         String password = "a".repeat(10);
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, "Box", 12345L);
+                password, true, TrainingType.BOXING, 12345L);
 
         Trainer nullTrainer = new Trainer();
 
@@ -45,7 +45,7 @@ public class ModelsTests {
         assertEquals("Gigi.Mirziashvili", trainer.getUsername());
         assertEquals(password, trainer.getPassword());
         assertTrue(trainer.isActive());
-        assertEquals("Box", trainer.getSpecialization());
+        assertEquals(TrainingType.BOXING, trainer.getSpecialization());
         assertEquals(12345L, trainer.getTrainerId());
         assertNull(nullTrainer.getUsername());
         assertNotSame("", trainer.toString());

@@ -1,12 +1,15 @@
 package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.Trainer;
+import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.repository.TraineesInMemoryDAO;
 import com.example.taskspring.repository.TrainersInMemoryDAO;
-import com.example.taskspring.utils.InMemoryStorage;
+import com.example.taskspring.repository.InMemoryStorage;
 import com.example.taskspring.utils.UsernameGenerator;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.service.TrainerService;
+
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,17 +24,31 @@ public class TrainerServiceTests {
     }    @Test
     public void testCreateAndSelect() {
         service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
-                "BOXING");
+                TrainingType.BOXING);
         assertEquals(service.selectTrainer(1033L).getUsername(), "Gigi.Mirziashvili");
+    }
+
+    @Test
+    public void testSelectInvalidUser() {
+        assertThrows(NoSuchElementException.class, () -> service.selectTrainer(1033L));
     }
 
     @Test
     public void testUpdate() {
         service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
-                "BOXING");
+                TrainingType.BOXING);
         Trainer trainer = service.selectTrainer(1033L);
         trainer.setFirstName("Epam");
         service.updateTrainer(1033L, trainer);
         assertEquals(service.selectTrainer(1033L).getFirstName(), "Epam");
+    }
+
+    @Test
+    public void testUpdateNullTrainee() {
+        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
+                TrainingType.BOXING);
+        Trainer trainer = service.selectTrainer(1033L);
+        trainer.setFirstName("Epam");
+        assertThrows(IllegalArgumentException.class, () -> service.updateTrainer(1033L, null));
     }
 }

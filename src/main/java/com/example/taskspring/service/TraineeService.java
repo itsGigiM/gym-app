@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 @Service
 @Slf4j
 public class TraineeService implements ITraineeService{
-    @Value("${password.length:10}")
+    @Value("${password.length}")
     private int passwordLength;
     private final TraineesDAO repository;
     private final IUsernameGenerator usernameGenerator;
@@ -59,10 +59,6 @@ public class TraineeService implements ITraineeService{
         Trainee trainee = repository.get(traineeId);
         log.info("Selected trainee: " + trainee);
         return trainee;
-    }
-
-    public String toString(){
-        return repository.toString();
     }
 
     private void CheckUser(Long traineeId) {

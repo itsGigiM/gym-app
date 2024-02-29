@@ -35,10 +35,6 @@ public class TrainingService implements ITrainingService{
         return training;
     }
 
-    public String toString(){
-        return repository.toString();
-    }
-
     private void CheckTraining(Long trainingId) {
         if(repository.exists(trainingId)) return;
         String errorMessage = "Training not found with ID: " + trainingId;

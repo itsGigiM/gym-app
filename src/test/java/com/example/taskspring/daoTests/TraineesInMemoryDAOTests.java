@@ -1,7 +1,7 @@
 package com.example.taskspring.daoTests;
 
 import com.example.taskspring.model.Trainee;
-import com.example.taskspring.utils.InMemoryStorage;
+import com.example.taskspring.repository.InMemoryStorage;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.repository.TraineesInMemoryDAO;
 

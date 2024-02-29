@@ -3,14 +3,10 @@ package com.example.taskspring.serviceTests;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.repository.TraineesInMemoryDAO;
 import com.example.taskspring.repository.TrainersInMemoryDAO;
-import com.example.taskspring.utils.InMemoryStorage;
+import com.example.taskspring.repository.InMemoryStorage;
 import com.example.taskspring.utils.UsernameGenerator;
-import lombok.Setter;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.service.TraineeService;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -50,5 +46,14 @@ public class TraineeServiceTests {
         trainee.setFirstName("Epam");
         service.updateTrainee(1033L, trainee);
         assertEquals(service.selectTrainee(1033L).getFirstName(), "Epam");
+    }
+
+    @Test
+    public void testUpdateNullTrainee() {
+        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
+                "Tbilisi", LocalDate.of(2022, 2, 2));
+        Trainee trainee = service.selectTrainee(1033L);
+        trainee.setFirstName("Epam");
+        assertThrows(IllegalArgumentException.class, () -> service.updateTrainee(1033L, null));
     }
 }

@@ -1,7 +1,6 @@
 package com.example.taskspring.repository;
 
 import com.example.taskspring.model.Trainee;
-import com.example.taskspring.utils.InMemoryStorage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
