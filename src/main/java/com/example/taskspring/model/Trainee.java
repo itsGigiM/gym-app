@@ -20,12 +20,15 @@ public class Trainee extends User{
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToMany(mappedBy = "trainees")
     private Set<Trainer> trainers = new HashSet<>();
+
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
+    private Set<Training> trainings = new HashSet<>();
 
     public Trainee(String firstName, String lastName, String username,
                    String password, boolean isActive, Long traineeId, String address, LocalDate dateOfBirth) {

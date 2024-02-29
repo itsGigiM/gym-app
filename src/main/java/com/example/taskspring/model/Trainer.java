@@ -19,7 +19,7 @@ public class Trainer extends User{
 
     private Long trainerId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 

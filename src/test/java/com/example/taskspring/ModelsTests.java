@@ -36,7 +36,7 @@ public class ModelsTests {
     public void testTrainer() {
         String password = "a".repeat(10);
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, "Box", 12345L);
+                password, true, TrainingType.TrainingTypeEnum.BOXING, 12345L);
 
         Trainer nullTrainer = new Trainer();
 
@@ -45,7 +45,7 @@ public class ModelsTests {
         assertEquals("Gigi.Mirziashvili", trainer.getUsername());
         assertEquals(password, trainer.getPassword());
         assertTrue(trainer.isActive());
-        assertEquals("Box", trainer.getSpecialization());
+        assertEquals(TrainingType.TrainingTypeEnum.BOXING, trainer.getSpecialization());
         assertEquals(12345L, trainer.getTrainerId());
         assertNull(nullTrainer.getUsername());
         assertNotSame("", trainer.toString());
@@ -54,19 +54,22 @@ public class ModelsTests {
 
     @Test
     public void testTraining() {
-        Training training = new Training(1000L, 12345L, 67890L,
-                "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofMinutes(30));
+        Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
+                "password", true, TrainingType.TrainingTypeEnum.BOXING, 12345L);
+        Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
+                "password", true, 1033L, "Tbilisi", LocalDate.of(2022, 2, 2));
+        Training training = new Training(1000L, trainee, trainer,
+                "Box", TrainingType.TrainingTypeEnum.BOXING, LocalDate.of(2022, 2, 2), Duration.ofMinutes(30));
 
         Training nullTraining = new Training();
         assertEquals(1000L, training.getTrainingId());
-        assertEquals(12345L, training.getTraineeId());
-        assertEquals(67890L, training.getTrainerId());
+        assertEquals(1033L, training.getTrainee().getTraineeId());
+        assertEquals(12345L, training.getTrainer().getTrainerId());
         assertEquals("Box", training.getTrainingName());
-        assertEquals(TrainingType.BOXING, training.getTrainingType());
+        assertEquals(TrainingType.TrainingTypeEnum.BOXING, training.getTrainingType());
         assertEquals(training.getTrainingDate(), LocalDate.of(2022, 2, 2));
         assertEquals(Duration.ofMinutes(30), training.getDuration());
         assertNull(nullTraining.getTrainingName());
         assertNotSame("", training.toString());
-
     }
 }

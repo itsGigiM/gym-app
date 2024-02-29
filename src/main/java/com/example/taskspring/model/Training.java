@@ -17,10 +17,10 @@ public class Training {
     private Long trainingId;
     @ManyToOne
     @JoinColumn(name = "trainee_id")
-    private Trainee traineeId;
+    private Trainee trainee;
     @ManyToOne
     @JoinColumn(name = "trainer_id")
-    private Trainer trainerId;
+    private Trainer trainer;
     @Column(nullable = false)
     private String trainingName;
     @Enumerated(EnumType.STRING)

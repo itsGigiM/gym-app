@@ -1,6 +1,7 @@
 package com.example.taskspring.service;
 
 
+import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.TraineesRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.IUsernameGenerator;
@@ -14,13 +15,14 @@ import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 // Trainee Service class supports possibility to create/update/delete/select Trainee profile.
 @Service
 @Slf4j
 public class TraineeService implements ITraineeService{
     @Value("${password.length:10}")
-    private int passwordLength;
+    private int passwordLength = 10;
     private final TraineesRepository repository;
     private final IUsernameGenerator usernameGenerator;
     private final Authenticator authenticator;
@@ -62,11 +64,43 @@ public class TraineeService implements ITraineeService{
         log.info("removed trainee #" + traineeId);
     }
 
+    public void deleteTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainee t = repository.findByUsername(traineeUsername)
+                .orElseThrow(() -> new NoSuchElementException("Trainee not found with username: " + traineeUsername));
+        repository.delete(t);
+        log.info("removed trainee " + traineeUsername);
+    }
+
     public Trainee selectTrainee(Long traineeId, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainee t = CheckUser(traineeId);
         log.info("Selected trainee: " + t);
         return t;
+    }
+
+    public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainee t = CheckUser(traineeId);
+        t.setPassword(newPassword);
+        repository.save(t);
+        log.info("Password changed for trainee #" + traineeId);
+    }
+
+    public void activateDeactivateTrainee(Long traineeId, boolean isActive, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainee t = CheckUser(traineeId);
+        t.setActive(isActive);
+        repository.save(t);
+        log.info("Active status changed for trainee #" + traineeId);
+    }
+
+    public void updateTrainersList(Long traineeId, Set<Trainer> trainers) {
+        Trainee t = repository.findById(traineeId)
+                .orElseThrow(() -> new NoSuchElementException("Trainee not found with ID: " + traineeId));
+        t.setTrainers(trainers);
+        repository.save(t);
+        log.info("trainee #" + traineeId + "'s trainers list updated");
     }
 
     public String toString(){

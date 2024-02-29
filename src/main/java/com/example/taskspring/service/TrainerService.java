@@ -1,6 +1,7 @@
 package com.example.taskspring.service;
 
 
+import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.repository.TrainersRepository;
@@ -72,6 +73,22 @@ public class TrainerService implements ITrainerService{
             log.error(errorMessage);
             throw new NoSuchElementException(errorMessage);
         });
+    }
+
+    public void changeTrainerPassword(Long trainerId, String newPassword, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainer t = CheckUser(trainerId);
+        t.setPassword(newPassword);
+        repository.save(t);
+        log.info("Password changed for trainee #" + trainerId);
+    }
+
+    public void activateDeactivateTrainer(Long trainerId, boolean isActive, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainer t = CheckUser(trainerId);
+        t.setActive(isActive);
+        repository.save(t);
+        log.info("Active status changed for trainee #" + trainerId);
     }
 
 }
