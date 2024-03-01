@@ -3,6 +3,7 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.TrainingType;
+import com.example.taskspring.utils.IDGenerator;
 import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -16,23 +17,26 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class TrainerService implements ITrainerService{
 
-    @Value("${password.length}")
-    private int passwordLength;
+    private final int passwordLength;
     private final TrainersDAO repository;
     private final IUsernameGenerator usernameGenerator;
 
-    public TrainerService(TrainersDAO repository, IUsernameGenerator usernameGenerator){
+    public TrainerService(TrainersDAO repository, IUsernameGenerator usernameGenerator,
+                          @Value("${password.length}") int passwordLength){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
+        this.passwordLength = passwordLength;
     }
-    public void createTrainer(String firstName, String lastName, boolean isActive, Long trainerId,
+    public Long createTrainer(String firstName, String lastName, boolean isActive,
                               TrainingType specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
+        Long trainerId = IDGenerator.generate();
         Trainer trainer = new Trainer(firstName, lastName, username, password,
                 isActive, specialization, trainerId);
         repository.add(trainer);
         log.info("Created new trainer: " + trainer);
+        return trainerId;
     }
 
     public void updateTrainer(Long trainerId, Trainer trainer){

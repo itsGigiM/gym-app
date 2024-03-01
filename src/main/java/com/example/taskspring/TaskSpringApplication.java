@@ -14,12 +14,10 @@ public class TaskSpringApplication {
 
 		ApplicationContext applicationContext = SpringApplication.run(TaskSpringApplication.class, args);
 		GymAppFacade facade = applicationContext.getBean(GymAppFacade.class);
-		System.out.println(facade);
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, 10L
+		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true
 		, "Kutaisi", LocalDate.of(2005, 9, 21));
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true, 14L
+		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true
 				, "Kutaisi", LocalDate.of(2005, 9, 21));
-		System.out.println(facade);
 
 
 	}

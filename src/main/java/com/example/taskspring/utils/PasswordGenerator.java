@@ -12,7 +12,6 @@ public class PasswordGenerator {
 
     public static String generatePassword(int n) {
         if (n <= 0) {
-            System.out.println(n);
             throw new IllegalArgumentException("Password n must be greater than zero.");
         }
 

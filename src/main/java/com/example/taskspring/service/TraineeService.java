@@ -2,9 +2,11 @@ package com.example.taskspring.service;
 
 
 import com.example.taskspring.repository.TraineesDAO;
+import com.example.taskspring.utils.IDGenerator;
 import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import com.example.taskspring.model.Trainee;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,24 +18,28 @@ import java.util.NoSuchElementException;
 @Service
 @Slf4j
 public class TraineeService implements ITraineeService{
-    @Value("${password.length}")
-    private int passwordLength;
+
+    private final int passwordLength;
     private final TraineesDAO repository;
     private final IUsernameGenerator usernameGenerator;
 
-    public TraineeService(TraineesDAO repository, IUsernameGenerator usernameGenerator){
+    public TraineeService(TraineesDAO repository, IUsernameGenerator usernameGenerator,
+                          @Value("${password.length}") int passwordLength){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
+        this.passwordLength = passwordLength;
     }
 
-    public void createTrainee(String firstName, String lastName, boolean isActive, Long traineeId,
+    public Long createTrainee(String firstName, String lastName, boolean isActive,
                                String address, LocalDate dateOfBirth){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
+        Long traineeId = IDGenerator.generate();
         Trainee trainee = new Trainee(firstName, lastName, username, password,
                 isActive, traineeId, address, dateOfBirth);
         repository.add(trainee);
         log.info("Created new trainee: " + trainee);
+        return traineeId;
     }
 
     public void updateTrainee(Long traineeId, Trainee trainee){

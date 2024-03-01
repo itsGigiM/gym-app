@@ -37,7 +37,12 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<version>2.16.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

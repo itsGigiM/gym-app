@@ -3,11 +3,13 @@ package com.example.taskspring.daoTests;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.repository.InMemoryStorage;
+import com.example.taskspring.repository.TraineesInMemoryDAO;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.repository.TrainingsInMemoryDAO;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

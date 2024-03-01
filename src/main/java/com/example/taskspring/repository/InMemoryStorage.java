@@ -3,6 +3,7 @@ package com.example.taskspring.repository;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -10,11 +11,10 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 @Getter
-@Setter
 @Component
 public class InMemoryStorage {
-    private Map<Long, Trainee> traineesData = new HashMap<>();
-    private Map<Long, Trainer> trainersData = new HashMap<>();
-    private Map<Long, Training> trainingsData = new HashMap<>();
+    private final Map<Long, Trainee> traineesData = new HashMap<>();
+    private final Map<Long, Trainer> trainersData = new HashMap<>();
+    private final Map<Long, Training> trainingsData = new HashMap<>();
 
 }

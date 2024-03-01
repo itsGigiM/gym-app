@@ -20,12 +20,12 @@ public class TrainerServiceTests {
     public void setUpService() {
         InMemoryStorage memo = new InMemoryStorage();
         service = new TrainerService(new TrainersInMemoryDAO(memo),
-                new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)));
+                new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)), 10);
     }    @Test
     public void testCreateAndSelect() {
-        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
+        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
-        assertEquals(service.selectTrainer(1033L).getUsername(), "Gigi.Mirziashvili");
+        assertEquals(service.selectTrainer(trainerId).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
@@ -35,20 +35,20 @@ public class TrainerServiceTests {
 
     @Test
     public void testUpdate() {
-        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
+        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
-        Trainer trainer = service.selectTrainer(1033L);
+        Trainer trainer = service.selectTrainer(trainerId);
         trainer.setFirstName("Epam");
-        service.updateTrainer(1033L, trainer);
-        assertEquals(service.selectTrainer(1033L).getFirstName(), "Epam");
+        service.updateTrainer(trainerId, trainer);
+        assertEquals(service.selectTrainer(trainerId).getFirstName(), "Epam");
     }
 
     @Test
     public void testUpdateNullTrainee() {
-        service.createTrainer("Gigi", "Mirziashvili", true, 1033L,
+        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
-        Trainer trainer = service.selectTrainer(1033L);
+        Trainer trainer = service.selectTrainer(trainerId);
         trainer.setFirstName("Epam");
-        assertThrows(IllegalArgumentException.class, () -> service.updateTrainer(1033L, null));
+        assertThrows(IllegalArgumentException.class, () -> service.updateTrainer(trainerId, null));
     }
 }

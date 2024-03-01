@@ -7,6 +7,11 @@ import com.example.taskspring.repository.InMemoryStorage;
 import com.example.taskspring.utils.UsernameGenerator;
 import org.junit.jupiter.api.*;
 import com.example.taskspring.service.TraineeService;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -19,20 +24,20 @@ public class TraineeServiceTests {
     public void setUpService() {
         InMemoryStorage memo = new InMemoryStorage();
         service = new TraineeService(new TraineesInMemoryDAO(memo),
-                new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)));
+                new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)), 10);
     }
     @Test
     public void testCreateAndSelect() {
-        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
+        Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        assertEquals(service.selectTrainee(1033L).getUsername(), "Gigi.Mirziashvili");
+        assertEquals(service.selectTrainee(traineeId).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
     public void testDelete() {
-        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
+        Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        service.deleteTrainee(1033L);
+        service.deleteTrainee(traineeId);
         assertThrows(NoSuchElementException.class, () -> {
             service.selectTrainee(1033L);
         });
@@ -40,20 +45,20 @@ public class TraineeServiceTests {
 
     @Test
     public void testUpdate() {
-        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
+        Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        Trainee trainee = service.selectTrainee(1033L);
+        Trainee trainee = service.selectTrainee(traineeId);
         trainee.setFirstName("Epam");
-        service.updateTrainee(1033L, trainee);
-        assertEquals(service.selectTrainee(1033L).getFirstName(), "Epam");
+        service.updateTrainee(traineeId, trainee);
+        assertEquals(service.selectTrainee(traineeId).getFirstName(), "Epam");
     }
 
     @Test
     public void testUpdateNullTrainee() {
-        service.createTrainee("Gigi", "Mirziashvili", true, 1033L,
+        Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
-        Trainee trainee = service.selectTrainee(1033L);
+        Trainee trainee = service.selectTrainee(traineeId);
         trainee.setFirstName("Epam");
-        assertThrows(IllegalArgumentException.class, () -> service.updateTrainee(1033L, null));
+        assertThrows(IllegalArgumentException.class, () -> service.updateTrainee(traineeId, null));
     }
 }

@@ -5,7 +5,7 @@ import com.example.taskspring.model.Trainee;
 import java.time.LocalDate;
 
 public interface ITraineeService {
-    public void createTrainee(String firstName, String lastName, boolean isActive, Long traineeId,
+    public Long createTrainee(String firstName, String lastName, boolean isActive,
                               String address, LocalDate dateOfBirth);
 
     public void updateTrainee(Long traineeId, Trainee trainee);
