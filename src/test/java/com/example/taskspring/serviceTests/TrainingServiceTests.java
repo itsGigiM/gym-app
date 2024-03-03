@@ -22,14 +22,14 @@ public class TrainingServiceTests {
         service = new TrainingService(repo);
     }
     @Test
-    public void testCreateAndSelect() {
+    public void createTrainingAndRetrieveIt() {
         service.createTraining(10L,1032L, 1033L, "BOXING", TrainingType.BOXING,
                 LocalDate.of(2022, 2, 2), Duration.ofHours(1));
         assertEquals(service.selectTraining(10L).getTrainingName(), "BOXING");
     }
 
     @Test
-    public void testSelectInvalidTraining() {
+    public void selectInvalidTraining_ThrowsException() {
         assertThrows(NoSuchElementException.class, () -> service.selectTraining(1033L));
     }
 

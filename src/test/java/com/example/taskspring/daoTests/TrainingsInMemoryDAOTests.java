@@ -23,7 +23,7 @@ public class TrainingsInMemoryDAOTests {
         repo = new TrainingsInMemoryDAO(memo);
     }
     @Test
-    public void testAddAndGet() {
+    public void addTrainingToRepositoryAndRetrieveIt() {
         Training training = new Training(1033L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training);
@@ -33,7 +33,7 @@ public class TrainingsInMemoryDAOTests {
     }
 
     @Test
-    public void testGetAll() {
+    public void getAllTrainingsFromRepository() {
         Training training1 = new Training(1034L, 10L, 12L,
                 "Box", TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(2));
         repo.add(training1);

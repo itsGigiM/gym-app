@@ -19,7 +19,7 @@ public class TraineesInMemoryDAOTests {
         repo = new TraineesInMemoryDAO(memo);
     }
     @Test
-    public void testAddAndGet() {
+    public void addTraineeToRepositoryAndRetrieveIt() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, 1033L, "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
@@ -29,7 +29,7 @@ public class TraineesInMemoryDAOTests {
     }
 
     @Test
-    public void testRemove() {
+    public void removeTraineeFromRepository() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, 1033L, "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
@@ -40,7 +40,7 @@ public class TraineesInMemoryDAOTests {
     }
 
     @Test
-    public void testSet() {
+    public void setExistingTrainersName() {
         Trainee trainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, 1033L, "Tbilisi", LocalDate.of(2022, 2, 2));
         repo.add(trainee);
@@ -50,7 +50,7 @@ public class TraineesInMemoryDAOTests {
     }
 
     @Test
-    public void testGetAll() {
+    public void getAllTraineesFromRepository() {
         Trainee trainee1 = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, 1033L, "Tbilisi", LocalDate.of(2022, 2, 2));
 

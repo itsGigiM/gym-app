@@ -19,7 +19,7 @@ public class TrainersInMemoryDAOTests {
         repo = new TrainersInMemoryDAO(memo);
     }
     @Test
-    public void testAddAndGet() {
+    public void addTrainerToRepositoryAndRetrieveIt() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
@@ -29,7 +29,7 @@ public class TrainersInMemoryDAOTests {
     }
 
     @Test
-    public void testSet() {
+    public void setExistingTraineesName() {
         Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
@@ -39,7 +39,7 @@ public class TrainersInMemoryDAOTests {
     }
 
     @Test
-    public void testGetAll() {
+    public void getAllTrainersFromRepository() {
         Trainer trainer1 = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true, TrainingType.BOXING, 1033L);
 

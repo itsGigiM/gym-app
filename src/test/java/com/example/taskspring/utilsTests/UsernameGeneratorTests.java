@@ -29,13 +29,13 @@ public class UsernameGeneratorTests {
     }
 
     @Test
-    public void generateUsernameTest(){
+    public void generateUsername(){
         String username = usernameGenerator.generateUsername("John", "Doe");
         assertEquals(username, "John.Doe");
     }
 
     @Test
-    public void generateUsernameWithSuffixTest(){
+    public void generateUsernameWithSuffix(){
         traineesInMemoryDAO.add(new Trainee("John", "Doe", "John.Doe",
                 "password", true, 2000L, "Tbilisi", LocalDate.of(2005, 10, 10)));
         String username = usernameGenerator.generateUsername("John", "Doe");

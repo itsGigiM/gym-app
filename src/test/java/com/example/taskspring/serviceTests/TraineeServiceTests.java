@@ -27,14 +27,14 @@ public class TraineeServiceTests {
                 new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)), 10);
     }
     @Test
-    public void testCreateAndSelect() {
+    public void CreateTraineeAndRetrieveIt() {
         Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
         assertEquals(service.selectTrainee(traineeId).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
-    public void testDelete() {
+    public void DeleteExistingTrainee() {
         Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
         service.deleteTrainee(traineeId);
@@ -44,7 +44,7 @@ public class TraineeServiceTests {
     }
 
     @Test
-    public void testUpdate() {
+    public void UpdateNameOfExistingTrainee() {
         Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
         Trainee trainee = service.selectTrainee(traineeId);
@@ -54,7 +54,7 @@ public class TraineeServiceTests {
     }
 
     @Test
-    public void testUpdateNullTrainee() {
+    public void UpdateNameOfNonExistingTrainee_throwsException() {
         Long traineeId = service.createTrainee("Gigi", "Mirziashvili", true,
                 "Tbilisi", LocalDate.of(2022, 2, 2));
         Trainee trainee = service.selectTrainee(traineeId);

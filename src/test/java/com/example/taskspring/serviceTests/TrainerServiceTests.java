@@ -22,19 +22,19 @@ public class TrainerServiceTests {
         service = new TrainerService(new TrainersInMemoryDAO(memo),
                 new UsernameGenerator(new TraineesInMemoryDAO(memo), new TrainersInMemoryDAO(memo)), 10);
     }    @Test
-    public void testCreateAndSelect() {
+    public void createTrainerAndRetrieveIt() {
         Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
         assertEquals(service.selectTrainer(trainerId).getUsername(), "Gigi.Mirziashvili");
     }
 
     @Test
-    public void testSelectInvalidUser() {
+    public void selectInvalidUser_ThrowsException() {
         assertThrows(NoSuchElementException.class, () -> service.selectTrainer(1033L));
     }
 
     @Test
-    public void testUpdate() {
+    public void updateExistingTrainersUsername() {
         Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
         Trainer trainer = service.selectTrainer(trainerId);
@@ -44,7 +44,7 @@ public class TrainerServiceTests {
     }
 
     @Test
-    public void testUpdateNullTrainee() {
+    public void updateNameOfNonExistingTrainer_throwsException() {
         Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
                 TrainingType.BOXING);
         Trainer trainer = service.selectTrainer(trainerId);
