@@ -6,17 +6,17 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class Trainer extends User{
+public class Trainer{
     @Enumerated(EnumType.STRING)
     @Column(name = "specialization")
     private TrainingType.TrainingTypeEnum specialization;
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long trainerId;
 
     @OneToOne(cascade = CascadeType.REMOVE)
@@ -31,15 +31,26 @@ public class Trainer extends User{
     )
     private Set<Trainee> trainees = new HashSet<>();
 
-    public Trainer(String firstName, String lastName, String username, String password, boolean isActive,
-                   TrainingType.TrainingTypeEnum specialization, Long trainerId) {
-        super(firstName, lastName, username, password, isActive);
+    public Trainer(String firstName, String lastName, String username,
+                   String password, boolean isActive, TrainingType.TrainingTypeEnum specialization) {
+        this.user = new User(firstName, lastName, username, password, isActive);
+        this.specialization = specialization;
+    }
+
+    public Trainer(Long trainerId, String firstName, String lastName, String username,
+                   String password, boolean isActive, TrainingType.TrainingTypeEnum specialization) {
+        this.user = new User(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
         this.trainerId = trainerId;
     }
 
+    public Trainer(User user, TrainingType.TrainingTypeEnum specialization) {
+        this.user = user;
+        this.specialization = specialization;
+    }
+
     public String toString(){
-        return  "Trainee{" + super.toString() +
+        return  "Trainee{" + user.toString() +
                 "specialization='" + specialization + '\'' +
                 ", trainerId='" + trainerId + '\'' +
                 "} ";

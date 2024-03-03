@@ -1,6 +1,5 @@
 package com.example.taskspring.repository;
 
-import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
 import org.springframework.data.jpa.repository.Query;
@@ -14,20 +13,20 @@ import java.util.Optional;
 
 @Repository
 public interface TrainersRepository extends CrudRepository<Trainer, Long> {
-    Optional<Trainer> findByUsername(String username);
+    Optional<Trainer> findByUserUsername(String username);
 
-    @Query("SELECT t FROM Training t WHERE t.trainer.username = :trainerUsername " +
+    @Query("SELECT t FROM Training t WHERE t.trainer.user.username = :trainerUsername " +
             "AND (:fromDate IS NULL OR t.trainingDate >= :fromDate) " +
             "AND (:toDate IS NULL OR t.trainingDate <= :toDate) " +
-            "AND (:traineeName IS NULL OR t.trainee.username = :trainerName)")
-    List<Training> findTraineeTrainings(
-            @Param("trainerUsername") String traineeUsername,
+            "AND (:traineeName IS NULL OR t.trainee.user.username = :traineeName)")
+    List<Training> findTrainerTrainings(
+            @Param("trainerUsername") String trainerUsername,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate,
             @Param("traineeName") String traineeName
     );
 
     @Query("SELECT DISTINCT t FROM Trainer t " +
-            "WHERE t NOT IN (SELECT DISTINCT tr.trainer FROM Training tr WHERE tr.trainee.username = :traineeUsername)")
+            "WHERE t NOT IN (SELECT DISTINCT tr.trainer FROM Training tr WHERE tr.trainee.user.username = :traineeUsername)")
     List<Trainer> findUnassignedTrainers(@Param("traineeUsername") String traineeUsername);
 }

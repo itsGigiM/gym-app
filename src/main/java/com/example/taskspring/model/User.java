@@ -7,9 +7,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class User {
+public class User {
     public User(String firstName, String lastName, String username, String password, boolean isActive) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,11 +29,12 @@ public abstract class User {
     @Column(nullable = false)
     private boolean isActive;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     public String toString(){
-        return  "firstName='" + firstName + '\'' +
+        return  "id=" + id + '\'' +
+                "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", username=" + username +
                 ", password=" + password +

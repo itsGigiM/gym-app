@@ -26,12 +26,12 @@ public class UsernameGenerator implements IUsernameGenerator {
 
     private boolean storageContainsUsername(String username) {
         for(Trainee t : traineesDAO.getAll()){
-            if(username.equals(t.getUsername())){
+            if(username.equals(t.getUser().getUsername())){
                 return true;
             }
         }
         for(Trainer t : trainersDAO.getAll()){
-            if(username.equals(t.getUsername())){
+            if(username.equals(t.getUser().getUsername())){
                 return true;
             }
         }

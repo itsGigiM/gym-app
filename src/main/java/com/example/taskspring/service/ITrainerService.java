@@ -6,7 +6,7 @@ import com.example.taskspring.model.TrainingType;
 import javax.naming.AuthenticationException;
 
 public interface ITrainerService {
-    public void createTrainer(String firstName, String lastName, boolean isActive, Long trainerId,
+    public void createTrainer(String firstName, String lastName, boolean isActive,
                               TrainingType.TrainingTypeEnum specialization);
 
     public void updateTrainer(Long trainerId, Trainer trainer, String username, String password) throws AuthenticationException;

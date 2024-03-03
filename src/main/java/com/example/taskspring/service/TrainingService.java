@@ -3,6 +3,8 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
+import com.example.taskspring.repository.TraineesRepository;
+import com.example.taskspring.repository.TrainersRepository;
 import com.example.taskspring.repository.TrainingsRepository;
 import com.example.taskspring.utils.Authenticator;
 import lombok.AllArgsConstructor;
@@ -10,7 +12,6 @@ import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.example.taskspring.repository.TrainingsDAO;
 
 import javax.naming.AuthenticationException;
 import java.time.Duration;
@@ -26,11 +27,22 @@ public class TrainingService implements ITrainingService{
 
 
     private final TrainingsRepository repository;
+
+    private final TraineesRepository traineesRepository;
+    private final TrainersRepository trainersRepository;
     private final Authenticator authenticator;
 
-    public void createTraining(Long trainingId, Trainee trainee, Trainer trainer, String trainingName, TrainingType.TrainingTypeEnum trainingType,
+    public void createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType.TrainingTypeEnum trainingType,
                                LocalDate trainingDate, Duration trainingDuration, String username, String password) throws AuthenticationException {
-        Training training = new Training(trainingId, trainee, trainer, trainingName,
+        if(traineesRepository.findByUserUsername(trainee.getUser().getUsername()).isEmpty() ||
+                trainersRepository.findByUserUsername(trainer.getUser().getUsername()).isEmpty()
+        ){
+            String errorMessage = "Trainer or Trainee not found";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+
+        }
+        Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         authenticator.authenticate(username, password);
         repository.save(training);

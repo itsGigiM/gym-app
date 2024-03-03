@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public interface ITraineeService {
-    public void createTrainee(String firstName, String lastName, boolean isActive, Long traineeId,
+    public void createTrainee(String firstName, String lastName, boolean isActive,
                               String address, LocalDate dateOfBirth);
 
     public void updateTrainee(Long traineeId, Trainee trainee, String username, String password) throws AuthenticationException;

@@ -16,8 +16,8 @@ public class SQLUsernameGenerator implements IUsernameGenerator{
     public String generateUsername(String firstName, String lastName) {
         String username = firstName + "." + lastName;
         int n = 1;
-        while(trainersRepository.findByUsername(username).isPresent() ||
-                traineesRepository.findByUsername(username).isPresent()
+        while(trainersRepository.findByUserUsername(username).isPresent() ||
+                traineesRepository.findByUserUsername(username).isPresent()
         ){
             username = firstName + "." + lastName + n;
             n++;

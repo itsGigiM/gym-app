@@ -7,13 +7,13 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "trainings")
+@AllArgsConstructor
 public class Training {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trainingId;
     @ManyToOne
     @JoinColumn(name = "trainee_id")
@@ -31,4 +31,14 @@ public class Training {
     @Column(nullable = false)
     private Duration duration;
 
+    public Training(Trainee trainee, Trainer trainer, String trainingName,
+                    TrainingType.TrainingTypeEnum trainingType,
+                    LocalDate trainingDate, Duration duration) {
+        this.trainee = trainee;
+        this.trainer = trainer;
+        this.trainingName = trainingName;
+        this.trainingType = trainingType;
+        this.trainingDate = trainingDate;
+        this.duration = duration;
+    }
 }

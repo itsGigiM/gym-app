@@ -1,71 +1,77 @@
-//package com.example.taskspring.repositoryTests;
-//
-//import com.example.taskspring.model.Trainer;
-//import com.example.taskspring.utils.InMemoryStorage;
-//import org.junit.jupiter.api.*;
-//import com.example.taskspring.repository.TrainersInMemoryDAO;
-//
-//import java.util.List;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//public class TrainersRepositoryTests {
-//    private TrainersInMemoryDAO repo;
-//
-//    @BeforeEach
-//    public void setUpRepository() {
-//        InMemoryStorage memo = new InMemoryStorage();
-//        repo = new TrainersInMemoryDAO(memo);
-//    }
-//    @Test
-//    public void testAddAndGet() {
-//        Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-//                "password", true, "Box", 1033L);
-//        repo.add(trainer);
-//
-//        assertTrue(repo.exists(1033L));
-//        assertEquals(trainer, repo.get(1033L));
-//    }
-//
-//    @Test
-//    public void testSet() {
-//        Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-//                "password", true, "Box", 1033L);
-//        repo.add(trainer);
-//        trainer.setFirstName("Epam");
-//        repo.set(trainer);
-//        assertSame("Epam", repo.get(1033L).getFirstName());
-//    }
-//
-//    @Test
-//    public void testGetAll() {
-//        Trainer trainer1 = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-//                "password", true, "Box", 1033L);
-//
-//        Trainer trainer2 = new Trainer("Gigi", "Epam", "Gigi.Mirziashvili",
-//                "password", true, "Box", 1034L);
-//
-//        repo.add(trainer1);
-//        repo.add(trainer2);
-//        List<Trainer> l = repo.getAll();
-//
-//        assertTrue(l.contains(trainer1));
-//        assertTrue(l.contains(trainer2));
-//        assertEquals(l.size(), 2);
-//
-//    }
-//
-//    @Test
-//    public void testToString() {
-//        assertSame("{}", repo.toString());
-//
-//        Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-//                "password", true, "BOX", 1033L);
-//        repo.add(trainer);
-//
-//        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, specialization='BOX', trainerId='1033'} }",
-//                repo.toString());
-//
-//
-//    }
-//}
+package com.example.taskspring.repositoryTests;
+
+import com.example.taskspring.model.*;
+import com.example.taskspring.repository.TraineesRepository;
+import com.example.taskspring.repository.TrainersRepository;
+import com.example.taskspring.repository.TrainingsRepository;
+import com.example.taskspring.repository.UsersRepository;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class TrainersRepositoryTests {
+    @Autowired
+    private TrainersRepository trainersRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private TraineesRepository traineesRepository;
+
+    @Autowired
+    private TrainingsRepository trainingsRepository;
+
+    @Test
+    public void testAddAndGet() {
+        User user = new User("Gigi", "Mirziashvili", "Gigilo.Mirziashvili",
+                "password", true);
+
+        Trainer trainee = new Trainer(user, TrainingType.TrainingTypeEnum.BOXING);
+
+        usersRepository.save(trainee.getUser());
+
+        Trainer savedTrainer = trainersRepository.save(trainee);
+
+        assertNotNull(savedTrainer);
+        assertEquals(trainee.getTrainerId(), savedTrainer.getTrainerId());
+    }
+
+    @Test
+    public void testFindTraineeTrainings() {
+
+        User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
+        User trainerUser = new User("TrainerFirst", "TrainerLast", "trainer_username", "password", true);
+
+        usersRepository.save(traineeUser);
+        usersRepository.save(trainerUser);
+
+        Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
+        Trainer trainer = new Trainer(trainerUser, TrainingType.TrainingTypeEnum.BOXING);
+
+        traineesRepository.save(trainee);
+        trainersRepository.save(trainer);
+
+        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.TrainingTypeEnum.BOXING,
+                LocalDate.of(2024, 1, 10), Duration.ofHours(1));
+        trainingsRepository.save(training);
+
+        List<Training> trainingList = trainersRepository.findTrainerTrainings(trainer.getUser().getUsername(),
+                LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 15),
+                "trainee_username");
+
+        assertEquals(trainingList.size(), 1);
+        assertEquals(trainingList.get(0), training);
+    }
+
+}
