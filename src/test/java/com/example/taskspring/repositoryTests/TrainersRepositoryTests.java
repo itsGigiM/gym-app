@@ -33,11 +33,11 @@ public class TrainersRepositoryTests {
     private TrainingsRepository trainingsRepository;
 
     @Test
-    public void testAddAndGet() {
+    public void addTrainerAndRetrieveItFromRepository() {
         User user = new User("Gigi", "Mirziashvili", "Gigilo.Mirziashvili",
                 "password", true);
 
-        Trainer trainee = new Trainer(user, TrainingType.TrainingTypeEnum.BOXING);
+        Trainer trainee = new Trainer(user, TrainingType.BOXING);
 
         usersRepository.save(trainee.getUser());
 
@@ -48,7 +48,7 @@ public class TrainersRepositoryTests {
     }
 
     @Test
-    public void testFindTraineeTrainings() {
+    public void findTrainerTrainingsWithContext() {
 
         User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
         User trainerUser = new User("TrainerFirst", "TrainerLast", "trainer_username", "password", true);
@@ -57,12 +57,12 @@ public class TrainersRepositoryTests {
         usersRepository.save(trainerUser);
 
         Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
-        Trainer trainer = new Trainer(trainerUser, TrainingType.TrainingTypeEnum.BOXING);
+        Trainer trainer = new Trainer(trainerUser, TrainingType.BOXING);
 
         traineesRepository.save(trainee);
         trainersRepository.save(trainer);
 
-        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.TrainingTypeEnum.BOXING,
+        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.BOXING,
                 LocalDate.of(2024, 1, 10), Duration.ofHours(1));
         trainingsRepository.save(training);
 
@@ -72,6 +72,35 @@ public class TrainersRepositoryTests {
 
         assertEquals(trainingList.size(), 1);
         assertEquals(trainingList.get(0), training);
+    }
+    @Test
+    public void findUnassignedTrainersWithTraineesUsername(){
+        User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
+        User trainerUser1 = new User("TrainerFirst1", "TrainerLast1", "trainer_username1", "password", true);
+        User trainerUser2 = new User("TrainerFirst2", "TrainerLast2", "trainer_username2", "password", true);
+
+        usersRepository.save(traineeUser);
+        usersRepository.save(trainerUser1);
+        usersRepository.save(trainerUser2);
+
+        Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
+        Trainer trainer1 = new Trainer(trainerUser1, TrainingType.BOXING);
+        Trainer trainer2 = new Trainer(trainerUser2, TrainingType.BOXING);
+
+        traineesRepository.save(trainee);
+        trainersRepository.save(trainer1);
+        trainersRepository.save(trainer2);
+
+        Training training = new Training(trainee, trainer1, "Boxing session", TrainingType.BOXING,
+                LocalDate.of(2024, 1, 10), Duration.ofHours(1));
+        trainingsRepository.save(training);
+
+        List<Trainer> trainerList = trainersRepository.findUnassignedTrainers("trainee_username");
+
+        assertEquals(trainerList.size(), 1);
+        assertEquals(trainerList.get(0), trainer2);
+
+
     }
 
 }

@@ -20,7 +20,7 @@ public class Trainee{
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -23,16 +23,16 @@ public class Training {
     private Trainer trainer;
     @Column(nullable = false)
     private String trainingName;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "training_type")
-    private TrainingType.TrainingTypeEnum trainingType;
+    @ManyToOne
+    @JoinColumn(name = "training_type_id", nullable = false)
+    private TrainingType trainingType;
     @Column(nullable = false)
     private LocalDate trainingDate;
     @Column(nullable = false)
     private Duration duration;
 
     public Training(Trainee trainee, Trainer trainer, String trainingName,
-                    TrainingType.TrainingTypeEnum trainingType,
+                    TrainingType trainingType,
                     LocalDate trainingDate, Duration duration) {
         this.trainee = trainee;
         this.trainer = trainer;

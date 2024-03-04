@@ -9,30 +9,31 @@ import com.example.taskspring.repository.UsersRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 // Trainee Service class supports possibility to create/update/select Trainer profile.
 @Service
 @Slf4j
+@NoArgsConstructor
 public class TrainerService implements ITrainerService{
 
-    private final int passwordLength;
-    private final TrainersRepository repository;
+    private int passwordLength;
+    private TrainersRepository repository;
+    private UsersRepository usersRepository;
+    private IUsernameGenerator usernameGenerator;
 
-    private final UsersRepository usersRepository;
-    private final IUsernameGenerator usernameGenerator;
-
-    private final Authenticator authenticator;
+    private Authenticator authenticator;
 
 
-    public TrainerService(TrainersRepository repository, IUsernameGenerator usernameGenerator,
+    public TrainerService(IUsernameGenerator usernameGenerator, TrainersRepository repository,
                           Authenticator authenticator, @Value("${password.length}") int passwordLength, UsersRepository usersRepository){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
@@ -41,8 +42,8 @@ public class TrainerService implements ITrainerService{
         this.usersRepository = usersRepository;
     }
     @Transactional
-    public void createTrainer(String firstName, String lastName, boolean isActive,
-                              TrainingType.TrainingTypeEnum specialization){
+    public Trainer createTrainer(String firstName, String lastName, boolean isActive,
+                              TrainingType specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
         User user = new User(firstName, lastName, username,
@@ -50,8 +51,9 @@ public class TrainerService implements ITrainerService{
         usersRepository.save(user);
         log.info("Created new user: " + user);
         Trainer trainer = new Trainer(user, specialization);
-        repository.save(trainer);
+        Trainer savedTrainer = repository.save(trainer);
         log.info("Created new trainer: " + trainer);
+        return savedTrainer;
     }
 
     @Transactional
@@ -62,7 +64,7 @@ public class TrainerService implements ITrainerService{
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
-        CheckUser(trainerId);
+        checkUser(trainerId);
         trainer.setTrainerId(trainerId);
         repository.save(trainer);
         log.info("Updated trainer: " + trainer);
@@ -71,24 +73,24 @@ public class TrainerService implements ITrainerService{
 
     public Trainer selectTrainer(Long trainerId, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainer t = CheckUser(trainerId);
+        Trainer t = checkUser(trainerId);
         log.info("Selected trainer: " + t);
         return t;
     }
 
-    private Trainer CheckUser(Long trainerId) {
+    private Trainer checkUser(Long trainerId) {
         Optional<Trainer> t =  repository.findById(trainerId);
         String errorMessage = "User not found with ID: " + trainerId;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
-            throw new NoSuchElementException(errorMessage);
+            throw new EntityNotFoundException(errorMessage);
         });
     }
 
     @Transactional
     public void changeTrainerPassword(Long trainerId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainer t = CheckUser(trainerId);
+        Trainer t = checkUser(trainerId);
         t.getUser().setPassword(newPassword);
         repository.save(t);
         log.info("Password changed for trainee #" + trainerId);
@@ -97,7 +99,7 @@ public class TrainerService implements ITrainerService{
     @Transactional
     public void activateDeactivateTrainer(Long trainerId, boolean isActive, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainer t = CheckUser(trainerId);
+        Trainer t = checkUser(trainerId);
         t.getUser().setActive(isActive);
         repository.save(t);
         log.info("Active status changed for trainee #" + trainerId);

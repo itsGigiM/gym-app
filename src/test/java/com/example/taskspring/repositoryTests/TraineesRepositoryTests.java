@@ -34,7 +34,7 @@ public class TraineesRepositoryTests {
 
 
     @Test
-    public void testAddAndGet() {
+    public void addTraineeAndRetrieveItFromRepository() {
 
         User user = new User("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true);
@@ -48,7 +48,7 @@ public class TraineesRepositoryTests {
     }
 
     @Test
-    public void testFindByUsername() {
+    public void findTraineeByUsername() {
 
         User user = new User("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 "password", true);
@@ -61,7 +61,7 @@ public class TraineesRepositoryTests {
     }
 
     @Test
-    public void testFindTraineeTrainings() {
+    public void findTraineeTrainingsWithContext() {
 
         User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
         User trainerUser = new User("TrainerFirst", "TrainerLast", "trainer_username", "password", true);
@@ -70,18 +70,18 @@ public class TraineesRepositoryTests {
         usersRepository.save(trainerUser);
 
         Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
-        Trainer trainer = new Trainer(trainerUser, TrainingType.TrainingTypeEnum.BOXING);
+        Trainer trainer = new Trainer(trainerUser, TrainingType.BOXING);
 
         traineesRepository.save(trainee);
         trainersRepository.save(trainer);
 
-        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.TrainingTypeEnum.BOXING,
+        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.BOXING,
                 LocalDate.of(2024, 1, 10), Duration.ofHours(1));
         trainingsRepository.save(training);
 
         List<Training> trainingList = traineesRepository.findTraineeTrainings(trainee.getUser().getUsername(),
                 LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 15),
-                "trainer_username", TrainingType.TrainingTypeEnum.BOXING);
+                "trainer_username", TrainingType.BOXING);
 
         assertEquals(trainingList.size(), 1);
         assertEquals(trainingList.get(0), training);

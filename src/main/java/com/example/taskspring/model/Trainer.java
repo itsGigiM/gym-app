@@ -11,9 +11,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 public class Trainer{
-    @Enumerated(EnumType.STRING)
-    @Column(name = "specialization")
-    private TrainingType.TrainingTypeEnum specialization;
+    @ManyToOne
+    @JoinColumn(name = "specialization")
+    private TrainingType specialization;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,19 +32,19 @@ public class Trainer{
     private Set<Trainee> trainees = new HashSet<>();
 
     public Trainer(String firstName, String lastName, String username,
-                   String password, boolean isActive, TrainingType.TrainingTypeEnum specialization) {
+                   String password, boolean isActive, TrainingType specialization) {
         this.user = new User(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
     }
 
     public Trainer(Long trainerId, String firstName, String lastName, String username,
-                   String password, boolean isActive, TrainingType.TrainingTypeEnum specialization) {
+                   String password, boolean isActive, TrainingType specialization) {
         this.user = new User(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
         this.trainerId = trainerId;
     }
 
-    public Trainer(User user, TrainingType.TrainingTypeEnum specialization) {
+    public Trainer(User user, TrainingType specialization) {
         this.user = user;
         this.specialization = specialization;
     }

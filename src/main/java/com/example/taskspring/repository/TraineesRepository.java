@@ -27,6 +27,6 @@ public interface TraineesRepository extends CrudRepository<Trainee, Long> {
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate,
             @Param("trainerName") String trainerName,
-            @Param("trainingType") TrainingType.TrainingTypeEnum trainingType
+            @Param("trainingType") TrainingType trainingType
     );
 }

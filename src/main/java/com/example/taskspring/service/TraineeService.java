@@ -8,6 +8,7 @@ import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.IUsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import com.example.taskspring.model.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,32 +26,32 @@ import java.util.Set;
 public class TraineeService implements ITraineeService{
     private final int passwordLength;
     private final TraineesRepository repository;
-
     private final UsersRepository usersRepository;
     private final IUsernameGenerator usernameGenerator;
     private final Authenticator authenticator;
 
     public TraineeService(TraineesRepository repository, IUsernameGenerator usernameGenerator,
-                            Authenticator authenticator, @Value("${password.length}") int passwordLength, UsersRepository usersRepository){
-        this.repository = repository;
+                          Authenticator authenticator, @Value("${password.length}") int passwordLength, UsersRepository usersRepository){
         this.usernameGenerator = usernameGenerator;
         this.authenticator = authenticator;
         this.passwordLength = passwordLength;
+        this.repository = repository;
         this.usersRepository = usersRepository;
     }
 
     @Transactional
-    public void createTrainee(String firstName, String lastName, boolean isActive,
+    public Trainee createTrainee(String firstName, String lastName, boolean isActive,
                                String address, LocalDate dateOfBirth){
-        String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
+        String username = usernameGenerator.generateUsername(firstName, lastName);
         User user = new User(firstName, lastName, username,
                 password, isActive);
         usersRepository.save(user);
         log.info("Created new user: " + user);
         Trainee trainee = new Trainee(user, address, dateOfBirth);
-        repository.save(trainee);
+        Trainee savedTrainee = repository.save(trainee);
         log.info("Created new trainee: " + trainee);
+        return savedTrainee;
     }
 
     @Transactional
@@ -61,16 +62,16 @@ public class TraineeService implements ITraineeService{
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
-        CheckUser(traineeId);
+        checkUser(traineeId);
         trainee.setTraineeId(traineeId);
-        repository.save(trainee);
-        log.info("Updated trainee: " + trainee);
+        Trainee savedTrainee = repository.save(trainee);
+        log.info("Updated trainee: " + savedTrainee);
     }
 
     @Transactional
     public void deleteTrainee(Long traineeId, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainee t = CheckUser(traineeId);
+        Trainee t = checkUser(traineeId);
         repository.delete(t);
         log.info("removed trainee #" + traineeId);
     }
@@ -86,7 +87,7 @@ public class TraineeService implements ITraineeService{
 
     public Trainee selectTrainee(Long traineeId, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainee t = CheckUser(traineeId);
+        Trainee t = checkUser(traineeId);
         log.info("Selected trainee: " + t);
         return t;
     }
@@ -94,7 +95,7 @@ public class TraineeService implements ITraineeService{
     @Transactional
     public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainee t = CheckUser(traineeId);
+        Trainee t = checkUser(traineeId);
         t.getUser().setPassword(newPassword);
         repository.save(t);
         log.info("Password changed for trainee #" + traineeId);
@@ -103,7 +104,7 @@ public class TraineeService implements ITraineeService{
     @Transactional
     public void activateDeactivateTrainee(Long traineeId, boolean isActive, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainee t = CheckUser(traineeId);
+        Trainee t = checkUser(traineeId);
         t.getUser().setActive(isActive);
         repository.save(t);
         log.info("Active status changed for trainee #" + traineeId);
@@ -122,12 +123,12 @@ public class TraineeService implements ITraineeService{
         return repository.toString();
     }
 
-    private Trainee CheckUser(Long traineeId) {
+    private Trainee checkUser(Long traineeId) {
         Optional<Trainee> t =  repository.findById(traineeId);
         String errorMessage = "User not found with ID: " + traineeId;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
-            throw new NoSuchElementException(errorMessage);
+            throw new EntityNotFoundException(errorMessage);
         });
     }
 

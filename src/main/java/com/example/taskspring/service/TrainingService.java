@@ -10,6 +10,7 @@ import com.example.taskspring.utils.Authenticator;
 import lombok.AllArgsConstructor;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +24,17 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 @Slf4j
+@NoArgsConstructor
 public class TrainingService implements ITrainingService{
 
 
-    private final TrainingsRepository repository;
+    private TrainingsRepository repository;
 
-    private final TraineesRepository traineesRepository;
-    private final TrainersRepository trainersRepository;
-    private final Authenticator authenticator;
+    private TraineesRepository traineesRepository;
+    private TrainersRepository trainersRepository;
+    private Authenticator authenticator;
 
-    public void createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType.TrainingTypeEnum trainingType,
+    public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
                                LocalDate trainingDate, Duration trainingDuration, String username, String password) throws AuthenticationException {
         if(traineesRepository.findByUserUsername(trainee.getUser().getUsername()).isEmpty() ||
                 trainersRepository.findByUserUsername(trainer.getUser().getUsername()).isEmpty()
@@ -45,14 +47,15 @@ public class TrainingService implements ITrainingService{
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         authenticator.authenticate(username, password);
-        repository.save(training);
+        Training savedTraining = repository.save(training);
         log.info("Created new trainer: " + training);
+        return savedTraining;
     }
 
 
     public Training selectTraining(Long trainingId, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Training training = CheckTraining(trainingId);
+        Training training = checkTraining(trainingId);
         log.info("Selected trainer: " + training);
         return training;
     }
@@ -61,7 +64,7 @@ public class TrainingService implements ITrainingService{
         return repository.toString();
     }
 
-    private Training CheckTraining(Long trainingId) {
+    private Training checkTraining(Long trainingId) {
         Optional<Training> t =  repository.findById(trainingId);
         String errorMessage = "Training not found with ID: " + trainingId;
         return t.orElseThrow(() -> {
