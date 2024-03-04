@@ -8,6 +8,7 @@ import com.example.taskspring.utils.UsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.example.taskspring.repository.TrainersDAO;
@@ -22,6 +23,8 @@ public class TrainerServiceImpl implements TrainerService {
     private int passwordLength;
     private TrainersDAO repository;
     private UsernameGenerator usernameGenerator;
+
+    @Autowired
 
     public TrainerServiceImpl(TrainersDAO repository, UsernameGenerator usernameGenerator,
                               @Value("${password.length}") int passwordLength){
