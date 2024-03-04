@@ -16,7 +16,6 @@ public abstract class User {
         return  "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", username=" + username +
-                ", password=" + password +
                 ", isActive=" + isActive + ", ";
     }
 }

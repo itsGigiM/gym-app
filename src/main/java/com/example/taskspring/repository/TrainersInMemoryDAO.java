@@ -1,16 +1,20 @@
 package com.example.taskspring.repository;
 
+import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 @AllArgsConstructor
 public class TrainersInMemoryDAO implements TrainersDAO{
     private InMemoryStorage storage;
-    public void add(Trainer trainer) {
+    public Trainer add(Trainer trainer) {
         storage.getTrainersData().put(trainer.getTrainerId(), trainer);
+        return trainer;
     }
 
     public boolean exists(Long userId) {
@@ -21,12 +25,12 @@ public class TrainersInMemoryDAO implements TrainersDAO{
         return storage.getTrainersData().get(userId);
     }
 
-    public ArrayList<Trainer> getAll() {
+    public List<Trainer> getAll() {
         return new ArrayList<>(storage.getTrainersData().values());
     }
 
-    public void set(Trainer trainer) {
-        add(trainer);
+    public Trainer set(Trainer trainer) {
+        return add(trainer);
     }
 
     public String toString(){

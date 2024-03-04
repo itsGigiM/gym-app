@@ -1,11 +1,10 @@
 package com.example.taskspring.repository;
 
 import com.example.taskspring.model.Trainee;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TraineesDAO {
-    public void add(Trainee trainee);
+    public Trainee add(Trainee trainee);
 
     public boolean exists(Long userId);
 
@@ -13,7 +12,7 @@ public interface TraineesDAO {
 
     public Trainee get(Long userId);
 
-    public ArrayList<Trainee> getAll();
+    public List<Trainee> getAll();
 
-    public void set(Trainee trainee);
+    public Trainee set(Trainee trainee);
 }

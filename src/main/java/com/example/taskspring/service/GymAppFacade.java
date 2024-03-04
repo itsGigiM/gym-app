@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class GymAppFacade {
-    private ITraineeService traineeService;
-    private ITrainingService trainingService;
-    private ITrainerService trainerService;
+    private TraineeService traineeService;
+    private TrainingService trainingService;
+    private TrainerService trainerService;
 
 }

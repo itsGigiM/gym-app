@@ -1,7 +1,12 @@
 package com.example.taskspring.utils;
 
-import java.util.Random;
+import lombok.extern.slf4j.Slf4j;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.NoSuchElementException;
+
+@Slf4j
 public class PasswordGenerator {
 
     private final static char[] CHARACTERS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
@@ -16,10 +21,16 @@ public class PasswordGenerator {
         }
 
         StringBuilder password = new StringBuilder();
-        Random random = new Random();
 
-        for (int i = 0; i < n; i++) {
-            password.append(CHARACTERS[random.nextInt(CHARACTERS.length)]);
+        try {
+            SecureRandom random = SecureRandom.getInstanceStrong();
+            for (int i = 0; i < n; i++) {
+                password.append(CHARACTERS[random.nextInt(CHARACTERS.length)]);
+            }
+        }catch (NoSuchAlgorithmException e){
+            String errorMessage = "Generating process of the random failed";
+            log.error(errorMessage);
+            throw new NoSuchElementException(errorMessage);
         }
 
         return password.toString();

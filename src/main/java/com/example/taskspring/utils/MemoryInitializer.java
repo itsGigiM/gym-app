@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 
+
 @Component
 @Slf4j
 public class MemoryInitializer implements BeanPostProcessor {
@@ -37,58 +38,27 @@ public class MemoryInitializer implements BeanPostProcessor {
     private void initializeStorage(InMemoryStorage storage) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-            JsonNode node = objectMapper.readTree(configFile.getInputStream());
             log.info("Starting initializing Storage");
-            fillTraineeMap(node.get("Trainees"), storage);
-            fillTrainerMap(node.get("Trainers"), storage);
-            fillTrainingMap(node.get("Trainings"), storage);
+            JsonDataContainer root = objectMapper.readValue(configFile.getInputStream(), JsonDataContainer.class);
+            fillMaps(storage, root);
             log.info("finished initializing Storage");
         } catch (IOException e) {
-            // Handle exception
+            log.error("Error processing JSON file, initializing of the memory failed" + e);
         }
     }
 
-    private void fillTraineeMap(JsonNode node, InMemoryStorage storage) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new JavaTimeModule());
-        for (JsonNode jsonTrainee : node) {
-            try {
-                Trainee trainee = objectMapper.treeToValue(jsonTrainee, Trainee.class);
-                storage.getTraineesData().put(trainee.getTraineeId(), trainee);
-            } catch (JsonProcessingException e) {
-                log.error("Error processing node: " + jsonTrainee.toString() + "\n" + e);
-            }
+    private void fillMaps(InMemoryStorage storage, JsonDataContainer root) {
+        for(Trainee trainee : root.getTrainees()){
+            storage.getTraineesData().put(trainee.getTraineeId(), trainee);
+        }
+        for(Trainer trainer : root.getTrainers()){
+            storage.getTrainersData().put(trainer.getTrainerId(), trainer);
+        }
+        for(Training training : root.getTrainings()){
+            storage.getTrainingsData().put(training.getTrainingId(), training);
         }
     }
 
-    private void fillTrainerMap(JsonNode node, InMemoryStorage storage) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        for (JsonNode jsonTrainer : node) {
-            try {
-                Trainer trainer = objectMapper.treeToValue(jsonTrainer, Trainer.class);
-                storage.getTrainersData().put(trainer.getTrainerId(), trainer);
-            } catch (JsonProcessingException e) {
-                log.error("Error processing node: " + jsonTrainer.toString() + "\n" + e);
-            }
-        }
-    }
-
-    private void fillTrainingMap(JsonNode node, InMemoryStorage storage) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new JavaTimeModule());
-        for (JsonNode jsonTraining : node) {
-            try {
-                Training training = objectMapper.treeToValue(jsonTraining, Training.class);
-                storage.getTrainingsData().put(training.getTrainingId(), training);
-            } catch (JsonProcessingException e) {
-                log.error("Error processing node: " + jsonTraining.toString() + "\n" + e);
-            }
-        }
-    }
 }

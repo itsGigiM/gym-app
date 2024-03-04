@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 @AllArgsConstructor
 public class TraineesInMemoryDAO implements TraineesDAO {
     private InMemoryStorage storage;
-    public void add(Trainee trainee) {
+    public Trainee add(Trainee trainee) {
         storage.getTraineesData().put(trainee.getTraineeId(), trainee);
+        return trainee;
     }
 
     public boolean exists(Long userId) {
@@ -25,12 +28,12 @@ public class TraineesInMemoryDAO implements TraineesDAO {
         return storage.getTraineesData().get(userId);
     }
 
-    public ArrayList<Trainee> getAll() {
+    public List<Trainee> getAll() {
         return new ArrayList<>(storage.getTraineesData().values());
     }
 
-    public void set(Trainee trainee) {
-        add(trainee);
+    public Trainee set(Trainee trainee) {
+        return add(trainee);
     }
 
     public String toString(){

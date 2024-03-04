@@ -64,7 +64,7 @@ public class TrainersInMemoryDAOTests {
                 "password", true, TrainingType.BOXING, 1033L);
         repo.add(trainer);
 
-        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, password=password, isActive=true, specialization='BOXING', trainerId='1033'} }",
+        assertEquals("{1033=Trainee{firstName='Gigi', lastName='Mirziashvili', username=Gigi.Mirziashvili, isActive=true, specialization='BOXING', trainerId='1033'} }",
                 repo.toString());
 
 
