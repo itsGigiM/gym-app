@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Primary
 @Component
 @AllArgsConstructor
-public class SQLUsernameGenerator implements IUsernameGenerator{
+public class SQLUsernameGenerator implements UsernameGenerator {
     TraineesRepository traineesRepository;
     TrainersRepository trainersRepository;
 
