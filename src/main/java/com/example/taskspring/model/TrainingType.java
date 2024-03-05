@@ -2,22 +2,20 @@ package com.example.taskspring.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Table(name = "training_types")
 @Entity
 @Data
+@Table(name = "training_types")
+@AllArgsConstructor
+@NoArgsConstructor
 public class TrainingType {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int trainingTypeId;
 
+    @Id
+    private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TrainingTypeEnum trainingType;
-
-    public enum TrainingTypeEnum {
-        BOXING, JIUJITSU, KARATE
-    }
+    private TrainingTypeEnum trainingTypeName;
 }

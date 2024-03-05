@@ -12,8 +12,6 @@ public class TaskSpringApplication {
 
 		ApplicationContext applicationContext = SpringApplication.run(TaskSpringApplication.class, args);
 		GymAppFacade facade = applicationContext.getBean(GymAppFacade.class);
-		System.out.println(facade);
-
 
 	}
 

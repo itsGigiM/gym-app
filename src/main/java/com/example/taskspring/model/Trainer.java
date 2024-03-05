@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity
 public class Trainer{
     @ManyToOne
-    @JoinColumn(name = "specialization")
+    @JoinColumn(name = "specialization_id")
     private TrainingType specialization;
 
     @Id

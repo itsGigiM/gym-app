@@ -80,7 +80,6 @@ public class TraineeServiceImpl implements TraineeService {
         log.info("removed trainee #" + traineeId);
     }
 
-    @Transactional
     public void deleteTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainee t = repository.findByUserUsername(traineeUsername)
@@ -115,16 +114,13 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional
-    public void updateTrainersList(Long traineeId, Set<Trainer> trainers) {
+    public void updateTrainersList(Long traineeId, Set<Trainer> trainers, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
         Trainee t = repository.findById(traineeId)
                 .orElseThrow(() -> new NoSuchElementException("Trainee not found with ID: " + traineeId));
         t.setTrainers(trainers);
         repository.save(t);
         log.info("trainee #" + traineeId + "'s trainers list updated");
-    }
-
-    public String toString(){
-        return repository.toString();
     }
 
     private Trainee checkUser(Long traineeId) {

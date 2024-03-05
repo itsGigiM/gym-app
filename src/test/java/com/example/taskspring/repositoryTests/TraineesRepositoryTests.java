@@ -1,10 +1,7 @@
 package com.example.taskspring.repositoryTests;
 
 import com.example.taskspring.model.*;
-import com.example.taskspring.repository.TraineesRepository;
-import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.TrainingsRepository;
-import com.example.taskspring.repository.UsersRepository;
+import com.example.taskspring.repository.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -31,6 +28,9 @@ public class TraineesRepositoryTests {
 
     @Autowired
     private TrainingsRepository trainingsRepository;
+
+    @Autowired
+    private TrainingTypeRepository trainingTypeRepository;
 
 
     @Test
@@ -60,31 +60,33 @@ public class TraineesRepositoryTests {
         assertEquals(traineesRepository.findByUserUsername("Gigi.Mirziashvili").orElse(new Trainee()), savedTrainee);
     }
 
-//    @Test
-//    public void findTraineeTrainingsWithContext() {
-//
-//        User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
-//        User trainerUser = new User("TrainerFirst", "TrainerLast", "trainer_username", "password", true);
-//
-//        usersRepository.save(traineeUser);
-//        usersRepository.save(trainerUser);
-//
-//        Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
-//        Trainer trainer = new Trainer(trainerUser, TrainingType.BOXING);
-//
-//        traineesRepository.save(trainee);
-//        trainersRepository.save(trainer);
-//
-//        Training training = new Training(trainee, trainer, "Boxing session", TrainingType.BOXING,
-//                LocalDate.of(2024, 1, 10), Duration.ofHours(1));
-//        trainingsRepository.save(training);
-//
-//        List<Training> trainingList = traineesRepository.findTraineeTrainings(trainee.getUser().getUsername(),
-//                LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 15),
-//                "trainer_username", TrainingType.BOXING);
-//
-//        assertEquals(trainingList.size(), 1);
-//        assertEquals(trainingList.get(0), training);
-//    }
+    @Test
+    public void findTraineeTrainingsWithContext() {
+
+        User traineeUser = new User("TraineeFirst", "TraineeLast", "trainee_username", "password", true);
+        User trainerUser = new User("TrainerFirst", "TrainerLast", "trainer_username", "password", true);
+
+        usersRepository.save(traineeUser);
+        usersRepository.save(trainerUser);
+
+        TrainingType trainingType = trainingTypeRepository.getTrainingTypeByTrainingTypeName(TrainingTypeEnum.BOXING);
+
+        Trainee trainee = new Trainee(traineeUser, "TraineeAddress", LocalDate.of(2002, 7, 18));
+        Trainer trainer = new Trainer(trainerUser, trainingType);
+
+        traineesRepository.save(trainee);
+        trainersRepository.save(trainer);
+
+        Training training = new Training(trainee, trainer, "Boxing session", trainingType,
+                LocalDate.of(2024, 1, 10), Duration.ofHours(1));
+        trainingsRepository.save(training);
+
+        List<Training> trainingList = traineesRepository.findTraineeTrainings(trainee.getUser().getUsername(),
+                LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 15),
+                "trainer_username", trainingType);
+
+        assertEquals(trainingList.size(), 1);
+        assertEquals(trainingList.get(0), training);
+    }
 
 }

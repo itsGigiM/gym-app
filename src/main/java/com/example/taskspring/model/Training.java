@@ -15,19 +15,24 @@ public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trainingId;
+
     @ManyToOne
     @JoinColumn(name = "trainee_id")
     private Trainee trainee;
+
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
     @Column(nullable = false)
     private String trainingName;
+
     @ManyToOne
     @JoinColumn(name = "training_type_id", nullable = false)
     private TrainingType trainingType;
+
     @Column(nullable = false)
     private LocalDate trainingDate;
+
     @Column(nullable = false)
     private Duration duration;
 
