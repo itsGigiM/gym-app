@@ -3,7 +3,6 @@ package com.example.taskspring.serviceTests;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.TraineesRepository;
-import com.example.taskspring.repository.UsersRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,9 +31,6 @@ public class TraineeServiceImplTests {
     private TraineesRepository traineesRepository;
 
     @Mock
-    private UsersRepository usersRepository;
-
-    @Mock
     private UsernameGenerator usernameGenerator;
 
     @Mock
@@ -45,7 +41,7 @@ public class TraineeServiceImplTests {
 
     @BeforeEach
     public void setUp() {
-        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, authenticator, 10, usersRepository);
+        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, authenticator, 10);
     }
     @Test
     public void CreateTraineeAndSelectItsFirstName() throws AuthenticationException {
@@ -57,10 +53,10 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
-        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password");
+        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
 
-        assertEquals("firstname", savedTrainee.getUser().getFirstName());
-        assertEquals("firstname", selectedTrainee.getUser().getFirstName());
+        assertEquals("firstname", savedTrainee.getFirstName());
+        assertEquals("firstname", selectedTrainee.getFirstName());
     }
 
     @Test
@@ -76,11 +72,11 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        service.deleteTrainee(savedTrainee.getTraineeId(), "admin.admin", "password");
+        service.deleteTrainee(savedTrainee.getUserId(), "admin.admin", "password");
 
         assertThrows(EntityNotFoundException.class, () -> {
-            when(traineesRepository.findById(eq(savedTrainee.getTraineeId()))).thenReturn(Optional.empty());
-            service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password");
+            when(traineesRepository.findById(eq(savedTrainee.getUserId()))).thenReturn(Optional.empty());
+            service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
         });
     }
 
@@ -91,7 +87,7 @@ public class TraineeServiceImplTests {
 
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
         doNothing().when(authenticator).authenticate(anyString(), anyString());
-        when(traineesRepository.findByUserUsername(any())).thenReturn(Optional.of(mockedTrainee));
+        when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainee));
         doNothing().when(traineesRepository).delete(any());
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
@@ -100,8 +96,8 @@ public class TraineeServiceImplTests {
         service.deleteTrainee("username", "admin.admin", "password");
 
         assertThrows(EntityNotFoundException.class, () -> {
-            when(traineesRepository.findById(eq(savedTrainee.getTraineeId()))).thenReturn(Optional.empty());
-            service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password");
+            when(traineesRepository.findById(eq(savedTrainee.getUserId()))).thenReturn(Optional.empty());
+            service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
         });
     }
 
@@ -116,12 +112,12 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        savedTrainee.getUser().setFirstName("Epam");
+        savedTrainee.setFirstName("Epam");
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.updateTrainee(savedTrainee.getTraineeId(), savedTrainee, "admin.admin", "password");
+        service.updateTrainee(savedTrainee.getUserId(), savedTrainee, "admin.admin", "password");
 
-        assertEquals("Epam", service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password").
-                getUser().getFirstName());
+        assertEquals("Epam", service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+                getFirstName());
     }
 
     @Test
@@ -143,12 +139,12 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        savedTrainee.getUser().setPassword("epam");
+        savedTrainee.setPassword("epam");
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.changeTraineePassword(savedTrainee.getTraineeId(), "epam", "admin.admin", "password");
+        service.changeTraineePassword(savedTrainee.getUserId(), "epam", "admin.admin", "password");
 
-        assertEquals("epam", service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password").
-                getUser().getPassword());
+        assertEquals("epam", service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+                getPassword());
     }
 
     @Test
@@ -162,12 +158,12 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        savedTrainee.getUser().setActive(false);
+        savedTrainee.setActive(false);
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.activateDeactivateTrainee(savedTrainee.getTraineeId(), false, "admin.admin", "password");
+        service.activateDeactivateTrainee(savedTrainee.getUserId(), false, "admin.admin", "password");
 
-        assertFalse(service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password").
-                getUser().isActive());
+        assertFalse(service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+                isActive());
     }
 
     @Test
@@ -186,9 +182,9 @@ public class TraineeServiceImplTests {
                 "address", LocalDate.of(2000, 1, 1));
         savedTrainee.setTrainers(trainerSet);
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.updateTrainersList(savedTrainee.getTraineeId(), trainerSet, "admin.admin", "password");
+        service.updateTrainersList(savedTrainee.getUserId(), trainerSet, "admin.admin", "password");
 
-        assertEquals(3, service.selectTrainee(savedTrainee.getTraineeId(), "admin.admin", "password").
+        assertEquals(3, service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
                 getTrainers().size());
     }
 }

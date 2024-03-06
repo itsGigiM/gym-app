@@ -13,12 +13,12 @@ import java.util.Optional;
 
 @Repository
 public interface TrainersRepository extends CrudRepository<Trainer, Long> {
-    Optional<Trainer> findByUserUsername(String username);
+    Optional<Trainer> findByUsername(String username);
 
-    @Query("SELECT t FROM Training t WHERE t.trainer.user.username = :trainerUsername " +
+    @Query("SELECT t FROM Training t WHERE t.trainer.username = :trainerUsername " +
             "AND (:fromDate IS NULL OR t.trainingDate >= :fromDate) " +
             "AND (:toDate IS NULL OR t.trainingDate <= :toDate) " +
-            "AND (:traineeName IS NULL OR t.trainee.user.username = :traineeName)")
+            "AND (:traineeName IS NULL OR t.trainee.username = :traineeName)")
     List<Training> findTrainerTrainings(
             @Param("trainerUsername") String trainerUsername,
             @Param("fromDate") LocalDate fromDate,
@@ -27,6 +27,6 @@ public interface TrainersRepository extends CrudRepository<Trainer, Long> {
     );
 
     @Query("SELECT DISTINCT t FROM Trainer t " +
-            "WHERE t NOT IN (SELECT DISTINCT tr.trainer FROM Training tr WHERE tr.trainee.user.username = :traineeUsername)")
+            "WHERE t NOT IN (SELECT DISTINCT tr.trainer FROM Training tr WHERE tr.trainee.username = :traineeUsername)")
     List<Trainer> findUnassignedTrainers(@Param("traineeUsername") String traineeUsername);
 }

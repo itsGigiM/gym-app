@@ -11,18 +11,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Trainee{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long traineeId;
+@PrimaryKeyJoinColumn(name = "user_id")
+public class Trainee extends User{
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "address")
     private String address;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id")
-    private User user;
 
     @ManyToMany(mappedBy = "trainees")
     private Set<Trainer> trainers = new HashSet<>();
@@ -30,30 +30,23 @@ public class Trainee{
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
     private Set<Training> trainings = new HashSet<>();
 
-    public Trainee(Long traineeId, String firstName, String lastName, String username,
+    public Trainee(Long userId, String firstName, String lastName, String username,
                    String password, boolean isActive, String address, LocalDate dateOfBirth) {
-        this.user = new User(firstName, lastName, username, password, isActive);
+        super(firstName, lastName, username, password, isActive);
         this.address = address;
-        this.traineeId = traineeId;
         this.dateOfBirth = dateOfBirth;
+        this.userId = userId;
     }
 
     public Trainee(String firstName, String lastName, String username,
                    String password, boolean isActive, String address, LocalDate dateOfBirth) {
-        this.user = new User(firstName, lastName, username, password, isActive);
-        this.address = address;
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public Trainee(User user, String address, LocalDate dateOfBirth) {
-        this.user = user;
+        super(firstName, lastName, username, password, isActive);
         this.address = address;
         this.dateOfBirth = dateOfBirth;
     }
 
     public String toString(){
-        return  "Trainee{" + user.toString() +
-                "traineeId='" + traineeId + '\'' +
+        return  "Trainee{" + super.toString() +
                 ", address='" + address + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 "} ";

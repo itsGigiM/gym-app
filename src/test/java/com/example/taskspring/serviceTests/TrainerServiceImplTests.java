@@ -3,13 +3,10 @@ package com.example.taskspring.serviceTests;
 import com.example.taskspring.model.*;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.TrainingTypeRepository;
-import com.example.taskspring.repository.UsersRepository;
-import com.example.taskspring.service.TrainerServiceImpl;
 import com.example.taskspring.service.TrainerServiceImpl;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,10 +27,7 @@ public class TrainerServiceImplTests {
 
     @Mock
     private TrainersRepository trainersRepository;
-
-    @Mock
-    private UsersRepository usersRepository;
-
+    
     @Mock
     private UsernameGenerator usernameGenerator;
 
@@ -47,7 +41,7 @@ public class TrainerServiceImplTests {
 
     @BeforeEach
     public void setUp() {
-        service = new TrainerServiceImpl(usernameGenerator, trainersRepository, authenticator, 10, usersRepository);
+        service = new TrainerServiceImpl(usernameGenerator, trainersRepository, authenticator, 10);
     }
     @Test
     public void CreateTrainerAndSelectItsFirstName() throws AuthenticationException {
@@ -59,10 +53,10 @@ public class TrainerServiceImplTests {
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
         when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
-        Trainer selectedTrainer = service.selectTrainer(savedTrainer.getTrainerId(), "admin.admin", "password");
+        Trainer selectedTrainer = service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password");
 
-        assertEquals("firstname", savedTrainer.getUser().getFirstName());
-        assertEquals("firstname", selectedTrainer.getUser().getFirstName());
+        assertEquals("firstname", savedTrainer.getFirstName());
+        assertEquals("firstname", selectedTrainer.getFirstName());
     }
 
     @Test
@@ -76,12 +70,12 @@ public class TrainerServiceImplTests {
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
 
-        savedTrainer.getUser().setFirstName("Epam");
+        savedTrainer.setFirstName("Epam");
         when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
-        service.updateTrainer(savedTrainer.getTrainerId(), savedTrainer, "admin.admin", "password");
+        service.updateTrainer(savedTrainer.getUserId(), savedTrainer, "admin.admin", "password");
 
-        assertEquals("Epam", service.selectTrainer(savedTrainer.getTrainerId(), "admin.admin", "password").
-                getUser().getFirstName());
+        assertEquals("Epam", service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                getFirstName());
     }
 
     @Test
@@ -89,6 +83,14 @@ public class TrainerServiceImplTests {
         doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(IllegalArgumentException.class, () -> {
             service.updateTrainer(10L, null, "admin.admin", "password");
+        });
+    }
+
+    @Test
+    public void UpdateNonExistingTrainer_ThrowsException() throws AuthenticationException {
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        assertThrows(EntityNotFoundException.class, () -> {
+            service.updateTrainer(10L, new Trainer("f", "s", "u", "p", true, trainingType), "admin.admin", "password");
         });
     }
 
@@ -103,12 +105,12 @@ public class TrainerServiceImplTests {
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
 
-        savedTrainer.getUser().setPassword("epam");
+        savedTrainer.setPassword("epam");
         when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
-        service.changeTrainerPassword(savedTrainer.getTrainerId(), "epam", "admin.admin", "password");
+        service.changeTrainerPassword(savedTrainer.getUserId(), "epam", "admin.admin", "password");
 
-        assertEquals("epam", service.selectTrainer(savedTrainer.getTrainerId(), "admin.admin", "password").
-                getUser().getPassword());
+        assertEquals("epam", service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                getPassword());
     }
 
     @Test
@@ -122,11 +124,11 @@ public class TrainerServiceImplTests {
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
 
-        savedTrainer.getUser().setActive(false);
+        savedTrainer.setActive(false);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
-        service.activateDeactivateTrainer(savedTrainer.getTrainerId(), false, "admin.admin", "password");
+        service.activateDeactivateTrainer(savedTrainer.getUserId(), false, "admin.admin", "password");
 
-        assertFalse(service.selectTrainer(savedTrainer.getTrainerId(), "admin.admin", "password").
-                getUser().isActive());
+        assertFalse(service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                isActive());
     }
 }

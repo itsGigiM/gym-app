@@ -15,12 +15,12 @@ import java.util.Optional;
 
 @Repository
 public interface TraineesRepository extends CrudRepository<Trainee, Long> {
-    Optional<Trainee> findByUserUsername(String username);
+    Optional<Trainee> findByUsername(String username);
 
-    @Query("SELECT t FROM Training t WHERE t.trainee.user.username = :traineeUsername " +
+    @Query("SELECT t FROM Training t WHERE t.trainee.username = :traineeUsername " +
             "AND (:fromDate IS NULL OR t.trainingDate >= :fromDate) " +
             "AND (:toDate IS NULL OR t.trainingDate <= :toDate) " +
-            "AND (:trainerName IS NULL OR t.trainer.user.username = :trainerName) " +
+            "AND (:trainerName IS NULL OR t.trainer.username = :trainerName) " +
             "AND (:trainingType IS NULL OR t.trainingType = :trainingType)")
     List<Training> findTraineeTrainings(
             @Param("traineeUsername") String traineeUsername,

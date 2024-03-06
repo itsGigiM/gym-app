@@ -16,12 +16,11 @@ public class SQLAuthenticator implements Authenticator{
     private TrainersRepository trainersRepository;
     @Override
     public void authenticate(String username, String password) throws AuthenticationException {
-        Trainee trainee = traineesRepository.findByUserUsername(username).orElse(new Trainee());
-        Trainer trainer = trainersRepository.findByUserUsername(username).orElse(new Trainer());
-        boolean result = (trainee.getUser().getUsername() != null && trainee.getUser().getUsername().equals(username) &&
-                trainee.getUser().getPassword().equals(password)) ||
-                (trainer.getUser().getUsername() != null && trainer.getUser().getUsername().equals(username) &&
-                        trainer.getUser().getPassword().equals(password));
+        Trainee trainee = traineesRepository.findByUsername(username).orElse(new Trainee());
+        Trainer trainer = trainersRepository.findByUsername(username).orElse(new Trainer());
+        boolean result = (trainee.getUsername() != null && trainee.getUsername().equals(username) &&
+                trainee.getPassword().equals(password)) ||
+                (trainer.getUsername() != null && trainer.getUsername().equals(username) && trainer.getPassword().equals(password));
         if(!result) throw new AuthenticationException("Invalid username or password");
     }
 }

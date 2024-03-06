@@ -3,9 +3,7 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.TrainingType;
-import com.example.taskspring.model.User;
 import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.UsersRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
@@ -28,7 +26,6 @@ public class TrainerServiceImpl implements TrainerService {
 
     private int passwordLength;
     private TrainersRepository repository;
-    private UsersRepository usersRepository;
     private UsernameGenerator usernameGenerator;
 
     private Authenticator authenticator;
@@ -36,23 +33,19 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Autowired
     public TrainerServiceImpl(UsernameGenerator usernameGenerator, TrainersRepository repository,
-                              Authenticator authenticator, @Value("${password.length}") int passwordLength, UsersRepository usersRepository){
+                              Authenticator authenticator, @Value("${password.length}") int passwordLength){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
         this.authenticator = authenticator;
         this.passwordLength = passwordLength;
-        this.usersRepository = usersRepository;
     }
     @Transactional
     public Trainer createTrainer(String firstName, String lastName, boolean isActive,
                               TrainingType specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
         String password = PasswordGenerator.generatePassword(passwordLength);
-        User user = new User(firstName, lastName, username,
-                password, isActive);
-        usersRepository.save(user);
-        log.info("Created new user: " + user);
-        Trainer trainer = new Trainer(user, specialization);
+        Trainer trainer = new Trainer(firstName, lastName, username,
+                password, isActive, specialization);
         Trainer savedTrainer = repository.save(trainer);
         log.info("Created new trainer: " + trainer);
         return savedTrainer;
@@ -67,7 +60,7 @@ public class TrainerServiceImpl implements TrainerService {
             throw new IllegalArgumentException(errorMessage);
         }
         checkUser(trainerId);
-        trainer.setTrainerId(trainerId);
+        trainer.setUserId(trainerId);
         repository.save(trainer);
         log.info("Updated trainer: " + trainer);
     }
@@ -85,7 +78,7 @@ public class TrainerServiceImpl implements TrainerService {
         String errorMessage = "User not found with ID: " + trainerId;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
-            throw new EntityNotFoundException(errorMessage);
+            return new EntityNotFoundException(errorMessage);
         });
     }
 
@@ -93,7 +86,7 @@ public class TrainerServiceImpl implements TrainerService {
     public void changeTrainerPassword(Long trainerId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainer t = checkUser(trainerId);
-        t.getUser().setPassword(newPassword);
+        t.setPassword(newPassword);
         repository.save(t);
         log.info("Password changed for trainee #" + trainerId);
     }
@@ -102,7 +95,7 @@ public class TrainerServiceImpl implements TrainerService {
     public void activateDeactivateTrainer(Long trainerId, boolean isActive, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainer t = checkUser(trainerId);
-        t.getUser().setActive(isActive);
+        t.setActive(isActive);
         repository.save(t);
         log.info("Active status changed for trainee #" + trainerId);
     }

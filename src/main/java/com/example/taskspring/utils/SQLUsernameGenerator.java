@@ -16,12 +16,15 @@ public class SQLUsernameGenerator implements UsernameGenerator {
     public String generateUsername(String firstName, String lastName) {
         String username = firstName + "." + lastName;
         int n = 1;
-        while(trainersRepository.findByUserUsername(username).isPresent() ||
-                traineesRepository.findByUserUsername(username).isPresent()
-        ){
+        while(storageContainsUsername(username)){
             username = firstName + "." + lastName + n;
             n++;
         }
         return username;
+    }
+
+    private boolean storageContainsUsername(String username) {
+        return traineesRepository.findByUsername(username).isPresent() ||
+                trainersRepository.findByUsername(username).isPresent();
     }
 }

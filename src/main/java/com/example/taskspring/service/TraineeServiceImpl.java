@@ -3,7 +3,6 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.TraineesRepository;
-import com.example.taskspring.repository.UsersRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
@@ -29,18 +28,16 @@ import java.util.Set;
 public class TraineeServiceImpl implements TraineeService {
     private int passwordLength;
     private TraineesRepository repository;
-    private UsersRepository usersRepository;
     private UsernameGenerator usernameGenerator;
     private Authenticator authenticator;
 
     @Autowired
     public TraineeServiceImpl(TraineesRepository repository, UsernameGenerator usernameGenerator,
-                              Authenticator authenticator, @Value("${password.length}") int passwordLength, UsersRepository usersRepository){
+                              Authenticator authenticator, @Value("${password.length}") int passwordLength){
         this.usernameGenerator = usernameGenerator;
         this.authenticator = authenticator;
         this.passwordLength = passwordLength;
         this.repository = repository;
-        this.usersRepository = usersRepository;
     }
 
     @Transactional
@@ -48,11 +45,7 @@ public class TraineeServiceImpl implements TraineeService {
                                String address, LocalDate dateOfBirth){
         String password = PasswordGenerator.generatePassword(passwordLength);
         String username = usernameGenerator.generateUsername(firstName, lastName);
-        User user = new User(firstName, lastName, username,
-                password, isActive);
-        usersRepository.save(user);
-        log.info("Created new user: " + user);
-        Trainee trainee = new Trainee(user, address, dateOfBirth);
+        Trainee trainee = new Trainee(firstName, lastName, username, password, isActive, address, dateOfBirth);
         Trainee savedTrainee = repository.save(trainee);
         log.info("Created new trainee: " + trainee);
         return savedTrainee;
@@ -67,7 +60,7 @@ public class TraineeServiceImpl implements TraineeService {
             throw new IllegalArgumentException(errorMessage);
         }
         checkUser(traineeId);
-        trainee.setTraineeId(traineeId);
+        trainee.setUserId(traineeId);
         Trainee savedTrainee = repository.save(trainee);
         log.info("Updated trainee: " + savedTrainee);
     }
@@ -82,7 +75,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     public void deleteTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
-        Trainee t = repository.findByUserUsername(traineeUsername)
+        Trainee t = repository.findByUsername(traineeUsername)
                 .orElseThrow(() -> new NoSuchElementException("Trainee not found with username: " + traineeUsername));
         repository.delete(t);
         log.info("removed trainee " + traineeUsername);
@@ -99,7 +92,7 @@ public class TraineeServiceImpl implements TraineeService {
     public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainee t = checkUser(traineeId);
-        t.getUser().setPassword(newPassword);
+        t.setPassword(newPassword);
         repository.save(t);
         log.info("Password changed for trainee #" + traineeId);
     }
@@ -108,7 +101,7 @@ public class TraineeServiceImpl implements TraineeService {
     public void activateDeactivateTrainee(Long traineeId, boolean isActive, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainee t = checkUser(traineeId);
-        t.getUser().setActive(isActive);
+        t.setActive(isActive);
         repository.save(t);
         log.info("Active status changed for trainee #" + traineeId);
     }

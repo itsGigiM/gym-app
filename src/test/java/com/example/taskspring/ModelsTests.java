@@ -17,28 +17,21 @@ public class ModelsTests {
         Trainee trainee = new Trainee(10L, "Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 password, true, "Tbilisi", dateOfBirth);
 
-        Trainee secondTrainee = new Trainee("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, "Tbilisi", dateOfBirth);
-
-        Trainee nullTrainee = new Trainee();
-
-        assertEquals("Gigi", trainee.getUser().getFirstName());
-        assertEquals("Mirziashvili", trainee.getUser().getLastName());
-        assertEquals("Gigi.Mirziashvili", trainee.getUser().getUsername());
-        trainee.getUser().setFirstName("Gigi2");
-        assertEquals("Gigi2", trainee.getUser().getFirstName());
-        assertEquals(password, trainee.getUser().getPassword());
-        assertTrue(trainee.getUser().isActive());
+        assertEquals("Gigi", trainee.getFirstName());
+        assertEquals("Mirziashvili", trainee.getLastName());
+        assertEquals("Gigi.Mirziashvili", trainee.getUsername());
+        trainee.setFirstName("Gigi2");
+        assertEquals("Gigi2", trainee.getFirstName());
+        assertEquals(password, trainee.getPassword());
+        assertTrue(trainee.isActive());
         assertEquals(trainee.getTrainers().size(), 0);
         assertEquals(trainee.getTrainings().size(), 0);
-        assertEquals(10L, trainee.getTraineeId());
-        trainee.setTraineeId(15L);
-        assertEquals(15L, trainee.getTraineeId());
+        assertEquals(10L, trainee.getUserId());
+        trainee.setUserId(15L);
+        assertEquals(15L, trainee.getUserId());
         assertEquals("Tbilisi", trainee.getAddress());
         assertEquals(dateOfBirth, trainee.getDateOfBirth());
         assertNotNull(trainee.toString());
-        assertNull(nullTrainee.getUser());
-        assertNotNull(secondTrainee.getUser());
     }
 
     @Test
@@ -48,34 +41,20 @@ public class ModelsTests {
         Trainer trainer = new Trainer(10L, "Gigi", "Mirziashvili", "Gigi.Mirziashvili",
                 password, true, trainingType);
 
-        Trainer secondTrainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, trainingType);
-        User user = new User("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true);
-        User user2 = new User("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                password, true, 2L);
-        Trainer thirdTrainer = new Trainer(user, trainingType);
-
-        Trainer nullTrainer = new Trainer();
-
-        assertEquals(user2.getId(), 2L);
-
-        assertEquals("Gigi", trainer.getUser().getFirstName());
-        trainer.getUser().setFirstName("Gigi2");
-        assertEquals("Gigi2", trainer.getUser().getFirstName());
-        assertEquals("Mirziashvili", trainer.getUser().getLastName());
-        assertEquals("Gigi.Mirziashvili", trainer.getUser().getUsername());
-        assertEquals(password, trainer.getUser().getPassword());
+        assertEquals(trainer.getUserId(), 10L);
+        assertEquals("Gigi", trainer.getFirstName());
+        trainer.setFirstName("Gigi2");
+        assertEquals("Gigi2", trainer.getFirstName());
+        assertEquals("Mirziashvili", trainer.getLastName());
+        assertEquals("Gigi.Mirziashvili", trainer.getUsername());
+        assertEquals(password, trainer.getPassword());
         assertEquals(trainer.getTrainees().size(), 0);
-        assertTrue(trainer.getUser().isActive());
+        assertTrue(trainer.isActive());
         assertEquals(trainingType, trainer.getSpecialization());
-        assertEquals(10L, trainer.getTrainerId());
-        trainer.setTrainerId(15L);
-        assertEquals(15L, trainer.getTrainerId());
+        assertEquals(10L, trainer.getUserId());
+        trainer.setUserId(15L);
+        assertEquals(15L, trainer.getUserId());
         assertNotNull(trainer.toString());
-        assertNull(nullTrainer.getUser());
-        assertNotNull(secondTrainer.getUser());
-        assertNotNull(thirdTrainer.getUser());
     }
 
     @Test
@@ -90,8 +69,8 @@ public class ModelsTests {
 
         Training nullTraining = new Training();
         assertEquals(12L, training.getTrainingId());
-        assertEquals(11L, training.getTrainee().getTraineeId());
-        assertEquals(10L, training.getTrainer().getTrainerId());
+        assertEquals(11L, training.getTrainee().getUserId());
+        assertEquals(10L, training.getTrainer().getUserId());
         assertEquals("Box", training.getTrainingName());
         assertEquals(trainingType, training.getTrainingType());
         assertEquals(training.getTrainingDate(), LocalDate.of(2022, 2, 2));

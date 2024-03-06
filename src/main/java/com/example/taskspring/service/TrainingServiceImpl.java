@@ -3,10 +3,8 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.repository.TraineesRepository;
 import com.example.taskspring.repository.TrainersRepository;
 import com.example.taskspring.repository.TrainingsRepository;
-import com.example.taskspring.repository.UsersRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
@@ -29,20 +27,15 @@ public class TrainingServiceImpl implements TrainingService {
 
     private TrainingsRepository repository;
 
-    private TraineesRepository traineesRepository;
     private TrainersRepository trainersRepository;
     private Authenticator authenticator;
 
-    private UsersRepository usersRepository;
-
     @Autowired
-    public TrainingServiceImpl(TrainingsRepository repository, TraineesRepository traineesRepository,
-                               TrainersRepository trainersRepository, Authenticator authenticator, UsersRepository usersRepository) {
+    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
+                               Authenticator authenticator) {
         this.repository = repository;
-        this.traineesRepository = traineesRepository;
         this.trainersRepository = trainersRepository;
         this.authenticator = authenticator;
-        this.usersRepository = usersRepository;
     }
 
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
@@ -61,10 +54,9 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     private boolean invalidTraineeTrainer(Trainee trainee, Trainer trainer) {
-        return trainee.getUser() == null || usersRepository.findById(trainee.getUser().getId()).isEmpty() ||
-                trainer.getUser() == null || usersRepository.findById(trainer.getUser().getId()).isEmpty() ||
-                        trainersRepository.findByUserUsername(trainee.getUser().getUsername()).isEmpty() ||
-                trainersRepository.findByUserUsername(trainer.getUser().getUsername()).isEmpty();
+        return trainee == null || trainer == null ||
+                        trainersRepository.findByUsername(trainee.getUsername()).isEmpty() ||
+                trainersRepository.findByUsername(trainer.getUsername()).isEmpty();
     }
 
 

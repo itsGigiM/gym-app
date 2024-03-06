@@ -10,18 +10,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Trainer{
+@PrimaryKeyJoinColumn(name = "user_id")
+public class Trainer extends User{
     @ManyToOne
     @JoinColumn(name = "specialization_id")
     private TrainingType specialization;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long trainerId;
-
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @Column(name = "user_id")
+    private Long userId;
 
     @ManyToMany
     @JoinTable(
@@ -33,26 +31,20 @@ public class Trainer{
 
     public Trainer(String firstName, String lastName, String username,
                    String password, boolean isActive, TrainingType specialization) {
-        this.user = new User(firstName, lastName, username, password, isActive);
+        super(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
     }
 
-    public Trainer(Long trainerId, String firstName, String lastName, String username,
+    public Trainer(Long userId, String firstName, String lastName, String username,
                    String password, boolean isActive, TrainingType specialization) {
-        this.user = new User(firstName, lastName, username, password, isActive);
+        super(firstName, lastName, username, password, isActive);
         this.specialization = specialization;
-        this.trainerId = trainerId;
-    }
-
-    public Trainer(User user, TrainingType specialization) {
-        this.user = user;
-        this.specialization = specialization;
+        this.userId = userId;
     }
 
     public String toString(){
-        return  "Trainee{" + user.toString() +
+        return  "Trainee{" + super.toString() +
                 "specialization='" + specialization + '\'' +
-                ", trainerId='" + trainerId + '\'' +
                 "} ";
     }
 }
