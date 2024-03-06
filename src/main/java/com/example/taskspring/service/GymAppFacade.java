@@ -1,10 +1,10 @@
 package com.example.taskspring.service;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
-@Data
+@Getter
 @AllArgsConstructor
 @Service
 public class GymAppFacade {
