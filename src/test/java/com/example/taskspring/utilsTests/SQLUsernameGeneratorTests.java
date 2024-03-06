@@ -1,8 +1,8 @@
 package com.example.taskspring.utilsTests;
 
 import com.example.taskspring.model.Trainee;
-import com.example.taskspring.repository.TraineesRepository;
-import com.example.taskspring.repository.TrainersRepository;
+import com.example.taskspring.repository.repositories.TraineesRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.utils.SQLUsernameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

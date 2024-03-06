@@ -2,7 +2,7 @@ package com.example.taskspring.utils;
 
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.model.TrainingTypeEnum;
-import com.example.taskspring.repository.TrainingTypeRepository;
+import com.example.taskspring.repository.repositories.TrainingTypeRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

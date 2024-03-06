@@ -1,7 +1,10 @@
 package com.example.taskspring.repositoryTests;
 
 import com.example.taskspring.model.*;
-import com.example.taskspring.repository.*;
+import com.example.taskspring.repository.repositories.TraineesRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
+import com.example.taskspring.repository.repositories.TrainingTypeRepository;
+import com.example.taskspring.repository.repositories.TrainingsRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

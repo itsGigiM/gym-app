@@ -1,8 +1,8 @@
 package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.*;
-import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.TrainingsRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
+import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.service.TrainingServiceImpl;
 import com.example.taskspring.utils.Authenticator;
 import org.junit.jupiter.api.*;

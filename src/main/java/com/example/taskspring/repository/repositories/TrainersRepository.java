@@ -1,4 +1,4 @@
-package com.example.taskspring.repository;
+package com.example.taskspring.repository.repositories;
 
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;

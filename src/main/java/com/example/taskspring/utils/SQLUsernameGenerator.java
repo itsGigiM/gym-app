@@ -1,7 +1,7 @@
 package com.example.taskspring.utils;
 
-import com.example.taskspring.repository.TraineesRepository;
-import com.example.taskspring.repository.TrainersRepository;
+import com.example.taskspring.repository.repositories.TraineesRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;

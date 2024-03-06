@@ -2,7 +2,7 @@ package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.*;
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.repository.TrainersRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.service.TrainerServiceImpl;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;

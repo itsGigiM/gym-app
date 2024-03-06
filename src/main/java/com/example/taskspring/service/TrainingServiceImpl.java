@@ -3,8 +3,8 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.repository.TrainersRepository;
-import com.example.taskspring.repository.TrainingsRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
+import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
