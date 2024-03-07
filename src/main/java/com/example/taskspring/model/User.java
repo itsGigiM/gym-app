@@ -36,11 +36,10 @@ public abstract class User {
     private Long userId;
 
     public String toString(){
-        return  "id=" + userId + '\'' +
-                "firstName='" + firstName + '\'' +
+        return "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", username=" + username +
-                ", isActive=" + isActive + ", ";
+                ", isActive=" + isActive;
     }
 
 }

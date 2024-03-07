@@ -46,7 +46,7 @@ public class Trainee extends User{
     }
 
     public String toString(){
-        return  "Trainee{" + super.toString() +
+        return  "Trainee{" + "id=" + userId + '\'' + super.toString() +
                 ", address='" + address + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 "} ";
