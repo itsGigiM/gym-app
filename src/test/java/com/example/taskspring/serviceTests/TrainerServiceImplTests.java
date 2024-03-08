@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +58,34 @@ public class TrainerServiceImplTests {
 
         assertEquals("firstname", savedTrainer.getFirstName());
         assertEquals("firstname", selectedTrainer.getFirstName());
+    }
+
+    @Test
+    public void selectTrainerByItsUsername() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
+        when(trainersRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainer));
+        Trainer selectedTrainer = service.selectTrainer(savedTrainer.getUsername(), "admin.admin", "password");
+
+        assertEquals("firstname", savedTrainer.getFirstName());
+        assertEquals("firstname", selectedTrainer.getFirstName());
+    }
+
+    @Test
+    public void selectInvalidTrainerByItsUsername_ThrowsException() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(trainersRepository.findByUsername(any())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            service.selectTrainer(mockedTrainer.getUsername(), "admin.admin", "password");
+        });
     }
 
     @Test

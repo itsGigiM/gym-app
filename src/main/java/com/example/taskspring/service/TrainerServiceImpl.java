@@ -73,9 +73,25 @@ public class TrainerServiceImpl implements TrainerService {
         return t;
     }
 
+    public Trainer selectTrainer(String trainerUsername, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainer t = checkUser(trainerUsername);
+        log.info("Selected trainer: " + t);
+        return t;
+    }
+
     private Trainer checkUser(Long trainerId) {
         Optional<Trainer> t =  repository.findById(trainerId);
         String errorMessage = "User not found with ID: " + trainerId;
+        return t.orElseThrow(() -> {
+            log.error(errorMessage);
+            return new EntityNotFoundException(errorMessage);
+        });
+    }
+
+    private Trainer checkUser(String trainerUsername) {
+        Optional<Trainer> t =  repository.findByUsername(trainerUsername);
+        String errorMessage = "User not found with username: " + trainerUsername;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
             return new EntityNotFoundException(errorMessage);
