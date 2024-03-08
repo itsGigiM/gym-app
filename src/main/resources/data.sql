@@ -1,5 +1,5 @@
 INSERT INTO users (first_name, is_active, last_name, password, username)
-VALUES ('Gigi', true, 'Mirz', 'password', 'Gigi.Mirz');
+VALUES ('admin', true, 'admin', 'admin', 'admin');
 
 INSERT INTO users (first_name, is_active, last_name, password, username)
 VALUES ('John', true, 'Doe', 'password', 'John.Doe');

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -88,6 +89,20 @@ public class TraineeServiceImpl implements TraineeService {
         return t;
     }
 
+    public Trainee selectTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainee t = checkUser(traineeUsername);
+        log.info("Selected trainee: " + t);
+        return t;
+    }
+
+    public List<Trainee> getAllTrainees(String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        List<Trainee> traineeList = (List<Trainee>) repository.findAll();
+        log.info("returned all trainees");
+        return traineeList;
+    }
+
     @Transactional
     public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
@@ -119,6 +134,16 @@ public class TraineeServiceImpl implements TraineeService {
     private Trainee checkUser(Long traineeId) {
         Optional<Trainee> t =  repository.findById(traineeId);
         String errorMessage = "User not found with ID: " + traineeId;
+        return t.orElseThrow(() -> {
+            log.error(errorMessage);
+            return new EntityNotFoundException(errorMessage);
+        });
+    }
+
+
+    private Trainee checkUser(String traineeUsername) {
+        Optional<Trainee> t =  repository.findByUsername(traineeUsername);
+        String errorMessage = "User not found with username: " + traineeUsername;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
             return new EntityNotFoundException(errorMessage);

@@ -60,6 +60,34 @@ public class TraineeServiceImplTests {
     }
 
     @Test
+    public void selectValidTraineeByItsUsername() throws AuthenticationException {
+        Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
+                true, "address", LocalDate.of(2000, 1, 1));
+        when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+
+        Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
+                "address", LocalDate.of(2000, 1, 1));
+        when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainee));
+        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUsername(), "admin.admin", "password");
+
+        assertEquals("firstname", savedTrainee.getFirstName());
+        assertEquals("firstname", selectedTrainee.getFirstName());
+    }
+
+    @Test
+    public void selectInvalidTraineeByItsUsername_ThrowsException() throws AuthenticationException {
+        Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
+                true, "address", LocalDate.of(2000, 1, 1));
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(traineesRepository.findByUsername(any())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            service.selectTrainee(mockedTrainee.getUsername(), "admin.admin", "password");
+        });
+    }
+
+    @Test
     public void DeleteUserUsingIdAndRetrieve_ThrowsException() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));

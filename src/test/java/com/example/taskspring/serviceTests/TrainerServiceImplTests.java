@@ -60,6 +60,34 @@ public class TrainerServiceImplTests {
     }
 
     @Test
+    public void selectTrainerByItsUsername() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
+        when(trainersRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainer));
+        Trainer selectedTrainer = service.selectTrainer(savedTrainer.getUsername(), "admin.admin", "password");
+
+        assertEquals("firstname", savedTrainer.getFirstName());
+        assertEquals("firstname", selectedTrainer.getFirstName());
+    }
+
+    @Test
+    public void selectInvalidTrainerByItsUsername_ThrowsException() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(trainersRepository.findByUsername(any())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            service.selectTrainer(mockedTrainer.getUsername(), "admin.admin", "password");
+        });
+    }
+
+    @Test
     public void UpdateTrainersFirstName() throws AuthenticationException {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
