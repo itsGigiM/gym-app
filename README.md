@@ -1,22 +1,16 @@
 # Questions for the mentor
 
-1. In the service layer, do I need to generate the ID or should it be passed by the client?
+1. Should I use DTOs
 
+2. Is the User abstract or not? Does Trainee and Training have to extend the User class, or should I use any inheritance strategy?
 
-2. In applitaction.properties file I have following field:
-```
-"password.length=10"
-```
-TraineeService and TrainerService can access this field by:
-```
-@Value("${password.length}")
-private int passwordLength;
-```
+    ```
+    //Trainee.java/Trainer.java
+        @OneToOne(cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "user_id")
+        private User user;
+    ```
 
-When I run TaskSpringApplication.java file it works successfully,
-but it throws
-> "java.lang.IllegalArgumentException: Password n must be greater than zero."
+3. Do I need to implement postprocessor memory initialization as in the Spring part?
 
-while testing TraineeService and TrainerService.
-
-I assume that the test directory cannot access this field. How can I access the application.properties file from the test directory?
+4. Regarding the authentication, can it be any user or user that's trainee/trainer class is being modified?

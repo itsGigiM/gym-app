@@ -1,91 +1,134 @@
 package com.example.taskspring.serviceTests;
 
+import com.example.taskspring.model.*;
 import com.example.taskspring.model.Trainer;
-import com.example.taskspring.model.TrainingType;
-import com.example.taskspring.repository.TrainersInMemoryDAO;
-import com.example.taskspring.utils.UsernameGenerator;
-import org.junit.jupiter.api.*;
+import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.service.TrainerServiceImpl;
+import com.example.taskspring.utils.Authenticator;
+import com.example.taskspring.utils.UsernameGenerator;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
+import javax.naming.AuthenticationException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TrainerServiceImplTests {
-    @InjectMocks
-    private TrainerServiceImpl service;
 
     @Mock
-    private TrainersInMemoryDAO trainersInMemoryDAO;
-
+    private TrainersRepository trainersRepository;
+    
     @Mock
     private UsernameGenerator usernameGenerator;
 
+    @Mock
+    private Authenticator authenticator;
+
+    @InjectMocks
+    private TrainerServiceImpl service;
+
+    private final TrainingType trainingType = new TrainingType(1L, TrainingTypeEnum.BOXING);
+
     @BeforeEach
     public void setUp() {
-        service = new TrainerServiceImpl(trainersInMemoryDAO, usernameGenerator, 10);
+        service = new TrainerServiceImpl(usernameGenerator, trainersRepository, authenticator, 10);
+    }
+    @Test
+    public void CreateTrainerAndSelectItsFirstName() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
+        Trainer selectedTrainer = service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password");
+
+        assertEquals("firstname", savedTrainer.getFirstName());
+        assertEquals("firstname", selectedTrainer.getFirstName());
     }
 
     @Test
-    public void CreateTrainerAndRetrieveIt() {
-        Trainer trainer = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "pass", true,  TrainingType.BOXING, 10L);
-        when(usernameGenerator.generateUsername(anyString(), anyString())).thenReturn("Gigi.Mirziashvili");
-        when(trainersInMemoryDAO.add(any())).thenReturn(trainer);
-        when(trainersInMemoryDAO.get(any())).thenReturn(trainer);
-        when(trainersInMemoryDAO.exists(any())).thenReturn(true);
+    public void UpdateTrainersFirstName() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
 
-        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
-                TrainingType.BOXING);
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
 
-        assertEquals("Gigi.Mirziashvili", service.selectTrainer(trainerId).getUsername());
+        savedTrainer.setFirstName("Epam");
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
+        service.updateTrainer(savedTrainer.getUserId(), savedTrainer, "admin.admin", "password");
+
+        assertEquals("Epam", service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                getFirstName());
     }
 
     @Test
-    public void selectInvalidUser_ThrowsException() {
-        assertThrows(NoSuchElementException.class, () -> service.selectTrainer(1033L));
+    public void UpdateNullTrainer_ThrowsException() throws AuthenticationException {
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.updateTrainer(10L, null, "admin.admin", "password");
+        });
     }
 
     @Test
-    public void updateExistingTrainersUsername() {
-        Trainer t = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "pass", true,  TrainingType.BOXING, 10L);
-        when(trainersInMemoryDAO.add(any())).thenReturn(t);
-        when(trainersInMemoryDAO.get(any())).thenReturn(t);
-        when(trainersInMemoryDAO.exists(any())).thenReturn(true);
-        t.setFirstName("Epam");
-        when(trainersInMemoryDAO.set(any())).thenReturn(t);
-
-
-        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
-                TrainingType.BOXING);
-        Trainer trainer = service.selectTrainer(trainerId);
-        trainer.setFirstName("Epam");
-        service.updateTrainer(trainerId, trainer);
-
-        assertEquals(service.selectTrainer(trainerId).getFirstName(), "Epam");
+    public void UpdateNonExistingTrainer_ThrowsException() throws AuthenticationException {
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        assertThrows(EntityNotFoundException.class, () -> {
+            service.updateTrainer(10L, new Trainer("f", "s", "u", "p", true, trainingType), "admin.admin", "password");
+        });
     }
 
     @Test
-    public void updateNameOfNonExistingTrainer_throwsException() {
-        Trainer t = new Trainer("Gigi", "Mirziashvili", "Gigi.Mirziashvili",
-                "pass", true,  TrainingType.BOXING, 10L);
-        when(trainersInMemoryDAO.add(any())).thenReturn(t);
-        when(trainersInMemoryDAO.get(any())).thenReturn(t);
-        when(trainersInMemoryDAO.exists(any())).thenReturn(true);
+    public void changeTrainerPassword() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
 
-        Long trainerId = service.createTrainer("Gigi", "Mirziashvili", true,
-                TrainingType.BOXING);
-        Trainer trainer = service.selectTrainer(trainerId);
-        trainer.setFirstName("Epam");
-        assertThrows(IllegalArgumentException.class, () -> service.updateTrainer(trainerId, null));
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
+
+        savedTrainer.setPassword("epam");
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
+        service.changeTrainerPassword(savedTrainer.getUserId(), "epam", "admin.admin", "password");
+
+        assertEquals("epam", service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                getPassword());
+    }
+
+    @Test
+    public void changeTrainerActiveStatusToFalse() throws AuthenticationException {
+        Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
+                true, trainingType);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
+        doNothing().when(authenticator).authenticate(anyString(), anyString());
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
+
+        Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
+                trainingType);
+
+        savedTrainer.setActive(false);
+        when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
+        service.activateDeactivateTrainer(savedTrainer.getUserId(), false, "admin.admin", "password");
+
+        assertFalse(service.selectTrainer(savedTrainer.getUserId(), "admin.admin", "password").
+                isActive());
     }
 }

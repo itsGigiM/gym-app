@@ -12,7 +12,7 @@ import java.util.List;
 public class TraineesInMemoryDAO implements TraineesDAO {
     private InMemoryStorage storage;
     public Trainee add(Trainee trainee) {
-        storage.getTraineesData().put(trainee.getTraineeId(), trainee);
+        storage.getTraineesData().put(trainee.getUserId(), trainee);
         return trainee;
     }
 

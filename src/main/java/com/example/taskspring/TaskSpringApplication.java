@@ -1,6 +1,8 @@
 package com.example.taskspring;
 
+import com.example.taskspring.model.Trainee;
 import com.example.taskspring.service.GymAppFacade;
+import com.example.taskspring.service.TraineeService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -14,12 +16,8 @@ public class TaskSpringApplication {
 
 		ApplicationContext applicationContext = SpringApplication.run(TaskSpringApplication.class, args);
 		GymAppFacade facade = applicationContext.getBean(GymAppFacade.class);
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true
-		, "Kutaisi", LocalDate.of(2005, 9, 21));
-		facade.getTraineeService().createTrainee("Malkhaz", "Chaburgia", true
-				, "Kutaisi", LocalDate.of(2005, 9, 21));
 
-
+		TraineeService service = facade.getTraineeService();
 	}
 
 }
