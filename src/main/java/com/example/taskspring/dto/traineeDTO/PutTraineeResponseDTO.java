@@ -1,5 +1,6 @@
 package com.example.taskspring.dto.traineeDTO;
 
+import com.example.taskspring.dto.trainerDTO.BasicTrainerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import com.example.taskspring.model.Trainer;
@@ -22,6 +23,6 @@ public class PutTraineeResponseDTO {
 
     private LocalDate dateOfBirth;
 
-    private Set<Trainer> trainers;
+    private Set<BasicTrainerDTO> trainers;
 
 }

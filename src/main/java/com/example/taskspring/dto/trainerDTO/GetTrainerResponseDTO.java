@@ -11,14 +11,10 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class GetTrainerResponseDTO {
+    private String username;
     private String firstName;
-
     private String lastName;
-
     private boolean isActive;
-
     private TrainingType specialization;
-
     private Set<BasicTraineeDTO> trainees;
-
 }

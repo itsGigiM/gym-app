@@ -2,9 +2,9 @@ package com.example.taskspring.service;
 
 
 import com.example.taskspring.model.Trainer;
+import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.repository.repositories.TrainersRepository;
-import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 // Trainee Service class supports possibility to create/update/select Trainer profile.
 @Service
@@ -28,15 +29,11 @@ public class TrainerServiceImpl implements TrainerService {
     private TrainersRepository repository;
     private UsernameGenerator usernameGenerator;
 
-    private Authenticator authenticator;
-
-
     @Autowired
     public TrainerServiceImpl(UsernameGenerator usernameGenerator, TrainersRepository repository,
-                              Authenticator authenticator, @Value("${password.length}") int passwordLength){
+                              @Value("${password.length}") int passwordLength){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
-        this.authenticator = authenticator;
         this.passwordLength = passwordLength;
     }
     @Transactional
@@ -52,8 +49,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Transactional
-    public void updateTrainer(Long trainerId, Trainer trainer, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public Trainer updateTrainer(Long trainerId, Trainer trainer){
         if(trainer == null){
             String errorMessage = "Trainer can not be null";
             log.error(errorMessage);
@@ -61,20 +57,19 @@ public class TrainerServiceImpl implements TrainerService {
         }
         checkUser(trainerId);
         trainer.setUserId(trainerId);
-        repository.save(trainer);
+        Trainer savedTrainee = repository.save(trainer);
         log.info("Updated trainer: " + trainer);
+        return savedTrainee;
     }
 
 
-    public Trainer selectTrainer(Long trainerId, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public Trainer selectTrainer(Long trainerId){
         Trainer t = checkUser(trainerId);
         log.info("Selected trainer: " + t);
         return t;
     }
 
-    public Trainer selectTrainer(String trainerUsername, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public Trainer selectTrainer(String trainerUsername){
         Trainer t = checkUser(trainerUsername);
         log.info("Selected trainer: " + t);
         return t;
@@ -99,8 +94,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Transactional
-    public void changeTrainerPassword(Long trainerId, String newPassword, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public void changeTrainerPassword(Long trainerId, String newPassword){
         Trainer t = checkUser(trainerId);
         t.setPassword(newPassword);
         repository.save(t);
@@ -108,12 +102,18 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Transactional
-    public void activateDeactivateTrainer(Long trainerId, boolean isActive, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public void activateDeactivateTrainer(Long trainerId, boolean isActive){
         Trainer t = checkUser(trainerId);
         t.setActive(isActive);
         repository.save(t);
         log.info("Active status changed for trainee #" + trainerId);
+    }
+
+    @Override
+    public Set<Training> getTrainerTrainingList(String trainerUsername, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        repository.findByUsername(trainerUsername)
+                .orElseThrow(() -> new EntityNotFoundException("Trainee not found with username: " + trainerUsername));
+        return repository.findTrainerTrainings(trainerUsername, fromDate, toDate, traineeName);
     }
 
 }

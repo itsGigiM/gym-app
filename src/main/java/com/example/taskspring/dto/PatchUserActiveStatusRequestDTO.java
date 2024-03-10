@@ -2,10 +2,12 @@ package com.example.taskspring.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
-public class PostUserResponseDTO {
+public class PatchUserActiveStatusRequestDTO {
+    @NonNull
     private String username;
-    private String password;
+    private boolean isActive;
 }

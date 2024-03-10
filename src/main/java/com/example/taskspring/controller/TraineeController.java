@@ -1,27 +1,32 @@
 package com.example.taskspring.controller;
 
-import com.example.taskspring.dto.PostUserResponseDTO;
+import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
+import com.example.taskspring.dto.PatchUserActiveStatusRequestDTO;
 import com.example.taskspring.dto.traineeDTO.*;
+import com.example.taskspring.dto.trainerDTO.GetUnassignedTrainersDTO;
+import com.example.taskspring.dto.trainingDTO.GetUserTrainingListResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import javax.naming.AuthenticationException;
+import org.springframework.web.bind.annotation.PathVariable;
 
 public interface TraineeController {
 
-    ResponseEntity<PostUserResponseDTO> create(PostTraineeRequestDTO postTraineeRequestDTO);
+    ResponseEntity<AuthenticationDTO> create(PostTraineeRequestDTO postTraineeRequestDTO);
 
-    ResponseEntity<GetTraineeResponseDTO> get(String username) throws AuthenticationException;
+    ResponseEntity<GetTraineeResponseDTO> get(String username);
 
     ResponseEntity<PutTraineeResponseDTO> put(String username, PutTraineeRequestDTO putTraineeRequestDTO)
-            throws AuthenticationException;
+           ;
 
-    ResponseEntity<HttpStatus> delete(String username) throws AuthenticationException;
+    ResponseEntity<HttpStatus> delete(String username);
 
     ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO)
-            throws AuthenticationException;
+           ;
 
-    ResponseEntity<GetTraineeTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request) throws AuthenticationException;
+    ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request);
 
-    ResponseEntity<HttpStatus> updateIsActive(PatchTraineeActiveStatusRequestDTO request);
+    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request);
+
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username);
+
 }

@@ -4,22 +4,18 @@ import com.example.taskspring.model.*;
 import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.service.TrainingServiceImpl;
-import com.example.taskspring.utils.Authenticator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,12 +29,10 @@ public class TrainingServiceImplTests {
     @Mock
     private TrainersRepository trainersRepository;
 
-    @Mock
-    private Authenticator authenticator;
 
     @BeforeEach
     public void setUp() {
-        service = new TrainingServiceImpl(repository, trainersRepository, authenticator);
+        service = new TrainingServiceImpl(repository, trainersRepository);
     }
     @Test
     public void createTrainingAndSelectItsFirstName() throws AuthenticationException {
@@ -49,22 +43,19 @@ public class TrainingServiceImplTests {
                 LocalDate.of(2000, 1, 1), Duration.ofHours(1));
         when(repository.save(any(Training.class))).thenReturn(mockedTraining);
         when(trainersRepository.findByUsername(any())).thenReturn(Optional.of(trainer));
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
 
         Training savedTraining = service.createTraining(trainee, trainer, "boxing", trainingType,
-                LocalDate.of(2000, 1, 1), Duration.ofHours(1), "admin.admin", "password");
+                LocalDate.of(2000, 1, 1), Duration.ofHours(1));
         when(repository.findById(any())).thenReturn(Optional.of(mockedTraining));
-        Training selectedTrainer = service.selectTraining(savedTraining.getTrainingId(), "admin.admin", "password");
+        Training selectedTrainer = service.selectTraining(savedTraining.getTrainingId());
 
         assertEquals("boxing", selectedTrainer.getTrainingName());
     }
 
     @Test
     public void selectNonExistingTraining_ThrowsException() throws AuthenticationException {
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
-
         assertThrows(NoSuchElementException.class, () -> {
-            service.selectTraining(10L,"admin.admin", "password");
+            service.selectTraining(10L);
         });
     }
 
@@ -74,7 +65,7 @@ public class TrainingServiceImplTests {
 
         assertThrows(IllegalArgumentException.class, () -> {
             service.createTraining(new Trainee(), new Trainer(), "boxing", trainingType,
-                    LocalDate.of(2000, 1, 1), Duration.ofHours(1), "admin.admin", "password");
+                    LocalDate.of(2000, 1, 1), Duration.ofHours(1));
         });
     }
 

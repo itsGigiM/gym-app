@@ -41,7 +41,7 @@ public class TraineeServiceImplTests {
 
     @BeforeEach
     public void setUp() {
-        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, authenticator, 10);
+        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, 10);
     }
     @Test
     public void createTraineeAndSelectItsFirstName() throws AuthenticationException {
@@ -53,7 +53,7 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
-        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
+        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUserId());
 
         assertEquals("firstname", savedTrainee.getFirstName());
         assertEquals("firstname", selectedTrainee.getFirstName());
@@ -69,7 +69,7 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainee));
-        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUsername(), "admin.admin", "password");
+        Trainee selectedTrainee = service.selectTrainee(savedTrainee.getUsername());
 
         assertEquals("firstname", savedTrainee.getFirstName());
         assertEquals("firstname", selectedTrainee.getFirstName());
@@ -83,7 +83,7 @@ public class TraineeServiceImplTests {
         when(traineesRepository.findByUsername(any())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> {
-            service.selectTrainee(mockedTrainee.getUsername(), "admin.admin", "password");
+            service.selectTrainee(mockedTrainee.getUsername());
         });
     }
 
@@ -100,11 +100,11 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        service.deleteTrainee(savedTrainee.getUserId(), "admin.admin", "password");
+        service.deleteTrainee(savedTrainee.getUserId());
 
         assertThrows(EntityNotFoundException.class, () -> {
             when(traineesRepository.findById(eq(savedTrainee.getUserId()))).thenReturn(Optional.empty());
-            service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
+            service.selectTrainee(savedTrainee.getUserId());
         });
     }
 
@@ -121,11 +121,11 @@ public class TraineeServiceImplTests {
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
-        service.deleteTrainee("username", "admin.admin", "password");
+        service.deleteTrainee("username");
 
         assertThrows(EntityNotFoundException.class, () -> {
             when(traineesRepository.findById(eq(savedTrainee.getUserId()))).thenReturn(Optional.empty());
-            service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password");
+            service.selectTrainee(savedTrainee.getUserId());
         });
     }
 
@@ -142,9 +142,9 @@ public class TraineeServiceImplTests {
 
         savedTrainee.setFirstName("Epam");
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.updateTrainee(savedTrainee.getUserId(), savedTrainee, "admin.admin", "password");
+        service.updateTrainee(savedTrainee.getUserId(), savedTrainee);
 
-        assertEquals("Epam", service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+        assertEquals("Epam", service.selectTrainee(savedTrainee.getUserId()).
                 getFirstName());
     }
 
@@ -152,7 +152,7 @@ public class TraineeServiceImplTests {
     public void updateNullTrainee_ThrowsException() throws AuthenticationException {
         doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(IllegalArgumentException.class, () -> {
-            service.updateTrainee(10L, null, "admin.admin", "password");
+            service.updateTrainee(10L, null);
         });
     }
 
@@ -169,9 +169,9 @@ public class TraineeServiceImplTests {
 
         savedTrainee.setPassword("epam");
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.changeTraineePassword(savedTrainee.getUserId(), "epam", "admin.admin", "password");
+        service.changeTraineePassword(savedTrainee.getUserId(), "epam");
 
-        assertEquals("epam", service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+        assertEquals("epam", service.selectTrainee(savedTrainee.getUserId()).
                 getPassword());
     }
 
@@ -188,9 +188,9 @@ public class TraineeServiceImplTests {
 
         savedTrainee.setActive(false);
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.activateDeactivateTrainee(savedTrainee.getUserId(), false, "admin.admin", "password");
+        service.activateDeactivateTrainee(savedTrainee.getUserId(), false);
 
-        assertFalse(service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+        assertFalse(service.selectTrainee(savedTrainee.getUserId()).
                 isActive());
     }
 
@@ -210,9 +210,9 @@ public class TraineeServiceImplTests {
                 "address", LocalDate.of(2000, 1, 1));
         savedTrainee.setTrainers(trainerSet);
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
-        service.updateTrainersList(savedTrainee.getUserId(), trainerSet, "admin.admin", "password");
+        service.updateTrainersList(savedTrainee.getUserId(), trainerSet);
 
-        assertEquals(3, service.selectTrainee(savedTrainee.getUserId(), "admin.admin", "password").
+        assertEquals(3, service.selectTrainee(savedTrainee.getUserId()).
                 getTrainers().size());
     }
 }

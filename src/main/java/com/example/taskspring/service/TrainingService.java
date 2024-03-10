@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 public interface TrainingService {
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                               LocalDate trainingDate, Duration trainingDuration, String username, String password) throws AuthenticationException;
+                               LocalDate trainingDate, Duration trainingDuration);
 
-    public Training selectTraining(Long trainingId, String username, String password) throws AuthenticationException;
+    public Training selectTraining(Long trainingId);
 }

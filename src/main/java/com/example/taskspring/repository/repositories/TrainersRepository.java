@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface TrainersRepository extends CrudRepository<Trainer, Long> {
@@ -19,14 +20,10 @@ public interface TrainersRepository extends CrudRepository<Trainer, Long> {
             "AND (:fromDate IS NULL OR t.trainingDate >= :fromDate) " +
             "AND (:toDate IS NULL OR t.trainingDate <= :toDate) " +
             "AND (:traineeName IS NULL OR t.trainee.username = :traineeName)")
-    List<Training> findTrainerTrainings(
+    Set<Training> findTrainerTrainings(
             @Param("trainerUsername") String trainerUsername,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate,
             @Param("traineeName") String traineeName
     );
-
-    @Query("SELECT DISTINCT t FROM Trainer t " +
-            "WHERE t NOT IN (SELECT DISTINCT tr.trainer FROM Training tr WHERE tr.trainee.username = :traineeUsername)")
-    List<Trainer> findUnassignedTrainers(@Param("traineeUsername") String traineeUsername);
 }

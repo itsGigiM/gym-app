@@ -80,4 +80,23 @@ public class TraineesRepositoryTests {
         assertTrue(trainingList.contains(training));
     }
 
+    @Test
+    public void findUnassignedTrainersWithTraineesUsername(){
+        Trainee trainee = new Trainee("TraineeFirst", "TraineeLast", "trainee_username", "password", true, "TraineeAddress", LocalDate.of(2002, 7, 18));
+        TrainingType trainingType = trainingTypeRepository.getTrainingTypeByTrainingTypeName(TrainingTypeEnum.BOXING);
+        Trainer trainer1 = new Trainer("TrainerFirst1", "TrainerLast1", "trainer_username1", "password", true, trainingType);
+        Trainer trainer2 = new Trainer("TrainerFirst2", "TrainerLast2", "trainer_username2", "password", true, trainingType);
+        Training training = new Training(trainee, trainer1, "Boxing session", trainingType,
+                LocalDate.of(2024, 1, 10), Duration.ofHours(1));
+
+        traineesRepository.save(trainee);
+        trainersRepository.save(trainer1);
+        trainersRepository.save(trainer2);
+        trainingsRepository.save(training);
+        Set<Trainer> trainerList = traineesRepository.findUnassignedTrainers("trainee_username");
+
+        assertEquals(trainerList.size(), 1);
+        assertTrue(trainerList.contains(trainer2));
+    }
+
 }

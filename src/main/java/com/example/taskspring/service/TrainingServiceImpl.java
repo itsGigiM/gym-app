@@ -5,7 +5,6 @@ import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.repository.repositories.TrainingsRepository;
-import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -28,18 +26,15 @@ public class TrainingServiceImpl implements TrainingService {
     private TrainingsRepository repository;
 
     private TrainersRepository trainersRepository;
-    private Authenticator authenticator;
 
     @Autowired
-    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               Authenticator authenticator) {
+    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
-        this.authenticator = authenticator;
     }
 
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                                   LocalDate trainingDate, Duration trainingDuration, String username, String password) throws AuthenticationException {
+                                   LocalDate trainingDate, Duration trainingDuration){
         if(invalidTraineeTrainer(trainee, trainer)){
             String errorMessage = "Trainer or Trainee not found";
             log.error(errorMessage);
@@ -47,7 +42,6 @@ public class TrainingServiceImpl implements TrainingService {
         }
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
-        authenticator.authenticate(username, password);
         Training savedTraining = repository.save(training);
         log.info("Created new trainer: " + training);
         return savedTraining;
@@ -60,8 +54,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
 
-    public Training selectTraining(Long trainingId, String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
+    public Training selectTraining(Long trainingId){
         Training training = checkTraining(trainingId);
         log.info("Selected trainer: " + training);
         return training;
