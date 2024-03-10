@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -53,7 +52,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional
-    public void updateTrainee(Long traineeId, Trainee trainee, String username, String password) throws AuthenticationException {
+    public Trainee updateTrainee(Long traineeId, Trainee trainee, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         if(trainee == null){
             String errorMessage = "Trainee can not be null";
@@ -64,6 +63,7 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.setUserId(traineeId);
         Trainee savedTrainee = repository.save(trainee);
         log.info("Updated trainee: " + savedTrainee);
+        return savedTrainee;
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class TraineeServiceImpl implements TraineeService {
     public void deleteTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
         Trainee t = repository.findByUsername(traineeUsername)
-                .orElseThrow(() -> new NoSuchElementException("Trainee not found with username: " + traineeUsername));
+                .orElseThrow(() -> new EntityNotFoundException("Trainee not found with username: " + traineeUsername));
         repository.delete(t);
         log.info("removed trainee " + traineeUsername);
     }
@@ -94,13 +94,6 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee t = checkUser(traineeUsername);
         log.info("Selected trainee: " + t);
         return t;
-    }
-
-    public List<Trainee> getAllTrainees(String username, String password) throws AuthenticationException {
-        authenticator.authenticate(username, password);
-        List<Trainee> traineeList = (List<Trainee>) repository.findAll();
-        log.info("returned all trainees");
-        return traineeList;
     }
 
     @Transactional
@@ -129,6 +122,15 @@ public class TraineeServiceImpl implements TraineeService {
         t.setTrainers(trainers);
         repository.save(t);
         log.info("trainee #" + traineeId + "'s trainers list updated");
+    }
+
+    @Override
+    public Set<Training> getTraineeTrainingList(String traineeUsername, LocalDate fromDate, LocalDate toDate, String trainerName,
+                                       TrainingType trainingType) throws AuthenticationException {
+//      authenticator.authenticate(username, password);
+        repository.findByUsername(traineeUsername)
+                .orElseThrow(() -> new EntityNotFoundException("Trainee not found with username: " + traineeUsername));
+        return repository.findTraineeTrainings(traineeUsername, fromDate, toDate, trainerName, trainingType);
     }
 
     private Trainee checkUser(Long traineeId) {

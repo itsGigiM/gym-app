@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SQLAuthenticatorTest {
+class SQLAuthenticatorTests {
 
     @Mock
     private TraineesRepository traineesRepository;

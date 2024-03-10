@@ -2,7 +2,7 @@ INSERT INTO users (first_name, is_active, last_name, password, username)
 VALUES ('admin', true, 'admin', 'admin', 'admin');
 
 INSERT INTO users (first_name, is_active, last_name, password, username)
-VALUES ('John', true, 'Doe', 'password', 'John.Doe');
+VALUES ('admin', true, 'admin', 'admin1', 'admin1');
 
 INSERT INTO training_types (id, training_type_name)
 VALUES (1, 'BOXING');

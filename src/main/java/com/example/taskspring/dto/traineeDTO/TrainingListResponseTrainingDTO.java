@@ -1,4 +1,4 @@
-package com.example.taskspring.dto;
+package com.example.taskspring.dto.traineeDTO;
 
 import com.example.taskspring.model.TrainingType;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class GetTraineeTrainingListResponseDTO {
+public class TrainingListResponseTrainingDTO {
     private String trainingName;
     private LocalDate trainingDate;
     private TrainingType trainingType;

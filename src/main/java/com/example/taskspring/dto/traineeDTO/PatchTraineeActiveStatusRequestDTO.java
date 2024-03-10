@@ -1,4 +1,4 @@
-package com.example.taskspring.dto;
+package com.example.taskspring.dto.traineeDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -44,7 +44,7 @@ public class TraineeServiceImplTests {
         service = new TraineeServiceImpl(traineesRepository, usernameGenerator, authenticator, 10);
     }
     @Test
-    public void CreateTraineeAndSelectItsFirstName() throws AuthenticationException {
+    public void createTraineeAndSelectItsFirstName() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
@@ -88,7 +88,7 @@ public class TraineeServiceImplTests {
     }
 
     @Test
-    public void DeleteUserUsingIdAndRetrieve_ThrowsException() throws AuthenticationException {
+    public void deleteUserUsingIdAndRetrieve_ThrowsException() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
 
@@ -109,7 +109,7 @@ public class TraineeServiceImplTests {
     }
 
     @Test
-    public void DeleteUserUsingUsernameAndRetrieve_ThrowsException() throws AuthenticationException {
+    public void deleteUserUsingUsernameAndRetrieve_ThrowsException() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
 
@@ -130,7 +130,7 @@ public class TraineeServiceImplTests {
     }
 
     @Test
-    public void UpdateTraineesFirstName() throws AuthenticationException {
+    public void updateTraineesFirstName() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
@@ -149,7 +149,7 @@ public class TraineeServiceImplTests {
     }
 
     @Test
-    public void UpdateNullTrainee_ThrowsException() throws AuthenticationException {
+    public void updateNullTrainee_ThrowsException() throws AuthenticationException {
         doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(IllegalArgumentException.class, () -> {
             service.updateTrainee(10L, null, "admin.admin", "password");

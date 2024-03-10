@@ -44,7 +44,7 @@ public class TrainerServiceImplTests {
         service = new TrainerServiceImpl(usernameGenerator, trainersRepository, authenticator, 10);
     }
     @Test
-    public void CreateTrainerAndSelectItsFirstName() throws AuthenticationException {
+    public void createTrainerAndSelectItsFirstName() throws AuthenticationException {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -88,7 +88,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void UpdateTrainersFirstName() throws AuthenticationException {
+    public void updateTrainersFirstName() throws AuthenticationException {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -107,7 +107,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void UpdateNullTrainer_ThrowsException() throws AuthenticationException {
+    public void updateNullTrainer_ThrowsException() throws AuthenticationException {
         doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(IllegalArgumentException.class, () -> {
             service.updateTrainer(10L, null, "admin.admin", "password");
@@ -115,7 +115,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void UpdateNonExistingTrainer_ThrowsException() throws AuthenticationException {
+    public void updateNonExistingTrainer_ThrowsException() throws AuthenticationException {
         doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(EntityNotFoundException.class, () -> {
             service.updateTrainer(10L, new Trainer("f", "s", "u", "p", true, trainingType), "admin.admin", "password");

@@ -1,15 +1,15 @@
-package com.example.taskspring.dto;
+package com.example.taskspring.dto.traineeDTO;
 
+import com.example.taskspring.model.Trainer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import com.example.taskspring.model.Trainer;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class PutTraineeResponseDTO {
+public class PutTraineeRequestDTO {
     private String username;
 
     private String firstName;
@@ -21,7 +21,4 @@ public class PutTraineeResponseDTO {
     private String address;
 
     private LocalDate dateOfBirth;
-
-    private Set<Trainer> trainers;
-
 }

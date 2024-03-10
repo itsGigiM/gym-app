@@ -1,4 +1,4 @@
-package com.example.taskspring.dto;
+package com.example.taskspring.dto.traineeDTO;
 
 import com.example.taskspring.model.TrainingType;
 import lombok.AllArgsConstructor;

@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,12 +72,12 @@ public class TraineesRepositoryTests {
                 LocalDate.of(2024, 1, 10), Duration.ofHours(1));
         trainingsRepository.save(training);
 
-        List<Training> trainingList = traineesRepository.findTraineeTrainings(trainee.getUsername(),
+        Set<Training> trainingList = traineesRepository.findTraineeTrainings(trainee.getUsername(),
                 LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 15),
                 "trainer_username", trainingType);
 
         assertEquals(trainingList.size(), 1);
-        assertEquals(trainingList.getFirst(), training);
+        assertTrue(trainingList.contains(training));
     }
 
 }

@@ -3,15 +3,14 @@ package com.example.taskspring.repository.repositories;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface TraineesRepository extends CrudRepository<Trainee, Long> {
@@ -22,7 +21,7 @@ public interface TraineesRepository extends CrudRepository<Trainee, Long> {
             "AND (:toDate IS NULL OR t.trainingDate <= :toDate) " +
             "AND (:trainerName IS NULL OR t.trainer.username = :trainerName) " +
             "AND (:trainingType IS NULL OR t.trainingType = :trainingType)")
-    List<Training> findTraineeTrainings(
+    Set<Training> findTraineeTrainings(
             @Param("traineeUsername") String traineeUsername,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate,

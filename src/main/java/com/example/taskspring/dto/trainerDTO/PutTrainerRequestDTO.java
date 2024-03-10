@@ -1,15 +1,14 @@
-package com.example.taskspring.dto;
+package com.example.taskspring.dto.trainerDTO;
 
-import com.example.taskspring.model.Trainer;
+import com.example.taskspring.model.TrainingType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class PutTraineeRequestDTO {
+public class PutTrainerRequestDTO {
     private String username;
 
     private String firstName;
@@ -18,7 +17,6 @@ public class PutTraineeRequestDTO {
 
     private boolean isActive;
 
-    private String address;
+    private TrainingType specialization;
 
-    private LocalDate dateOfBirth;
 }
