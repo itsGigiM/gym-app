@@ -11,17 +11,15 @@
 //
 //@WebFilter("/")
 //public class LoginFilter extends OncePerRequestFilter {
-//    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-//                                    FilterChain filterChain) throws ServletException, IOException {
-//        if(!isCreateEndpoint(request)) {
-//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized access");
-//                return;
+//            FilterChain filterChain) throws ServletException, IOException {
 //
-//        }
-//        filterChain.doFilter(request, response);
+//        String username = request.getHeader("username");
+//        String password = request.getHeader("password");
+//
+//        User user = authService.authenticate(username, password);
+//
 //    }
-//
 //    private boolean isCreateEndpoint(HttpServletRequest request) {
 //        return "POST".equals(request.getMethod()) &&
 //                (request.getRequestURI().endsWith("/trainers") ||
