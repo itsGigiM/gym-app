@@ -13,6 +13,8 @@ public interface TrainerService {
 
     public Trainer selectTrainer(Long trainerId, String username, String password) throws AuthenticationException;
 
+    public Trainer selectTrainer(String trainerUsername, String username, String password) throws AuthenticationException;
+
     public void changeTrainerPassword(Long trainerId, String newPassword, String username, String password) throws AuthenticationException;
 
     public void activateDeactivateTrainer(Long trainerId, boolean isActive, String username, String password) throws AuthenticationException;

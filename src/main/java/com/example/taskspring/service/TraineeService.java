@@ -16,6 +16,9 @@ public interface TraineeService {
     public void deleteTrainee(Long traineeId, String username, String password) throws AuthenticationException;
     public void deleteTrainee(String traineeUsername, String username, String password) throws AuthenticationException;
     public Trainee selectTrainee(Long traineeId, String username, String password) throws AuthenticationException;
+
+    public Trainee selectTrainee(String traineeUsername, String username, String password) throws AuthenticationException;
+
     public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException;
     public void activateDeactivateTrainee(Long traineeId, boolean isActive, String username, String password) throws AuthenticationException;
     public void updateTrainersList(Long traineeId, Set<Trainer> trainers, String username, String password) throws AuthenticationException;

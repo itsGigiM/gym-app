@@ -88,6 +88,13 @@ public class TraineeServiceImpl implements TraineeService {
         return t;
     }
 
+    public Trainee selectTrainee(String traineeUsername, String username, String password) throws AuthenticationException {
+        authenticator.authenticate(username, password);
+        Trainee t = checkUser(traineeUsername);
+        log.info("Selected trainee: " + t);
+        return t;
+    }
+
     @Transactional
     public void changeTraineePassword(Long traineeId, String newPassword, String username, String password) throws AuthenticationException {
         authenticator.authenticate(username, password);
@@ -119,6 +126,15 @@ public class TraineeServiceImpl implements TraineeService {
     private Trainee checkUser(Long traineeId) {
         Optional<Trainee> t =  repository.findById(traineeId);
         String errorMessage = "User not found with ID: " + traineeId;
+        return t.orElseThrow(() -> {
+            log.error(errorMessage);
+            return new EntityNotFoundException(errorMessage);
+        });
+    }
+
+    private Trainee checkUser(String traineeUsername) {
+        Optional<Trainee> t =  repository.findByUsername(traineeUsername);
+        String errorMessage = "User not found with username: " + traineeUsername;
         return t.orElseThrow(() -> {
             log.error(errorMessage);
             return new EntityNotFoundException(errorMessage);
