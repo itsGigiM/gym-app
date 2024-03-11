@@ -11,13 +11,13 @@ public interface TrainerController {
 
     ResponseEntity<AuthenticationDTO> create(PostTrainerRequestDTO postTrainerRequestDTO);
 
-    ResponseEntity<GetTrainerResponseDTO> get(String username, AuthenticationDTO authenticationDTO);
+    ResponseEntity<GetTrainerResponseDTO> get(String username, String user, String password);
 
     ResponseEntity<PutTrainerResponseDTO> put(String username, PutTrainerRequestDTO putTrainerRequestDTO,
-                                              AuthenticationDTO authenticationDTO);
+                                              String user, String password);
 
     ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTrainerTrainingListRequestDTO request,
-                                                                   AuthenticationDTO authenticationDTO);
+                                                                   String username, String password);
 
-    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, AuthenticationDTO authenticationDTO);
+    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password);
 }

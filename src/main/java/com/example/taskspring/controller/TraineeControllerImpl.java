@@ -12,6 +12,10 @@ import com.example.taskspring.model.Training;
 import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
+import com.example.taskspring.service.TrainingTypeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +39,7 @@ public class TraineeControllerImpl implements TraineeController{
     private TraineeService traineeService;
 
     private TrainerService trainerService;
-    
+
     private AuthenticationService authenticationService;
 
     @Autowired
@@ -47,6 +51,9 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PostMapping
+    @Operation(summary = "Register trainee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Trainee Registered")})
     public ResponseEntity<AuthenticationDTO> create(@RequestBody PostTraineeRequestDTO postTraineeRequestDTO) {
         try {
             log.info("Received POST request to create a trainee. Request details: {}", postTraineeRequestDTO);
@@ -55,8 +62,8 @@ public class TraineeControllerImpl implements TraineeController{
                     postTraineeRequestDTO.getLastName(), true, postTraineeRequestDTO.getAddress(),
                     postTraineeRequestDTO.getDateOfBirth());
 
-            AuthenticationDTO responseDTO = new AuthenticationDTO(createdTrainee.getUsername(), createdTrainee.getPassword());
-            ResponseEntity<AuthenticationDTO> responseEntity = new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+            AuthenticationDTO authenticationDTO = new AuthenticationDTO(createdTrainee.getUsername(), createdTrainee.getPassword());
+            ResponseEntity<AuthenticationDTO> responseEntity = new ResponseEntity<>(authenticationDTO, HttpStatus.CREATED);
 
             log.info("Trainee created successfully. Response details: {}", responseEntity);
             return responseEntity;
@@ -67,8 +74,13 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO) {
-        if (isNotAuthorized(authenticationDTO)){
+    @Operation(summary = "Retrieve user by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
+    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username, @RequestParam String user, @RequestParam String password) {
+        if (isNotAuthorized(user, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -95,9 +107,14 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/{username}")
+    @Operation(summary = "Modify trainee by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully modified trainee"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO,
-                                                     @RequestBody AuthenticationDTO authenticationDTO) {
-        if (isNotAuthorized(authenticationDTO)){
+                                                     @RequestParam String user, @RequestParam String password) {
+        if (isNotAuthorized(user, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -105,7 +122,6 @@ public class TraineeControllerImpl implements TraineeController{
         try {
             Trainee existingTrainee = traineeService.selectTrainee(username);
 
-            existingTrainee.setUsername(putTraineeRequestDTO.getUsername());
             existingTrainee.setFirstName(putTraineeRequestDTO.getFirstName());
             existingTrainee.setLastName(putTraineeRequestDTO.getLastName());
             existingTrainee.setDateOfBirth(putTraineeRequestDTO.getDateOfBirth());
@@ -135,8 +151,13 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @DeleteMapping(value = "/{username}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO){
-        if (isNotAuthorized(authenticationDTO)){
+    @Operation(summary = "Remove user by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully removed trainer"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
+    public ResponseEntity<HttpStatus> delete(@PathVariable String username, @RequestParam String user, @RequestParam String password){
+        if (isNotAuthorized(user, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -153,9 +174,14 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/trainer-list")
+    @Operation(summary = "Update trainee's trainers list")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the list"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
-            @RequestBody AuthenticationDTO authenticationDTO) {
-        if (isNotAuthorized(authenticationDTO)){
+            @RequestParam String username, @RequestParam String password) {
+        if (isNotAuthorized(username, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -188,9 +214,14 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/training-list")
-    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@RequestBody GetTraineeTrainingListRequestDTO request,
-            @RequestBody AuthenticationDTO authenticationDTO){
-        if (isNotAuthorized(authenticationDTO)){
+    @Operation(summary = "Retrieve trainings list by trainee's username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
+    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTraineeTrainingListRequestDTO request,
+            @RequestParam String username, @RequestParam String password){
+        if (isNotAuthorized(username, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -210,8 +241,13 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PatchMapping("/is-active")
-    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request, @RequestBody AuthenticationDTO authenticationDTO) {
-        if (isNotAuthorized(authenticationDTO)){
+    @Operation(summary = "Modify active status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully modified active status"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
+    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request, @RequestParam String username, @RequestParam String password) {
+        if (isNotAuthorized(username, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -232,8 +268,13 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/unassigned-trainers/{username}")
-    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO){
-        if (isNotAuthorized(authenticationDTO)){
+    @Operation(summary = "Retrieve Unassigned trainers")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
+            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username, @RequestParam String user, @RequestParam String password){
+        if (isNotAuthorized(user, password)){
             log.error("Incorrect authentication details");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -254,9 +295,9 @@ public class TraineeControllerImpl implements TraineeController{
         }
     }
 
-    private boolean isNotAuthorized(AuthenticationDTO authenticationDTO) {
+    private boolean isNotAuthorized(String username, String password) {
         try {
-            authenticationService.authenticate(authenticationDTO.getUsername(), authenticationDTO.getPassword());
+            authenticationService.authenticate(username, password);
         } catch (AuthenticationException e) {
             return true;
         }

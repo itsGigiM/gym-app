@@ -15,5 +15,5 @@ public class PostTrainerRequestDTO{
     @NonNull
     private String lastName;
     @NonNull
-    private TrainingType specialization;
+    private Long specializationId;
 }

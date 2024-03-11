@@ -3,6 +3,7 @@ package com.example.taskspring.service;
 
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
+import com.example.taskspring.repository.repositories.TraineesRepository;
 import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.model.Training;
@@ -27,10 +28,14 @@ public class TrainingServiceImpl implements TrainingService {
 
     private TrainersRepository trainersRepository;
 
+    private TraineesRepository traineesRepository;
+
     @Autowired
-    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository) {
+    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
+                               TraineesRepository traineesRepository) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
+        this.traineesRepository = traineesRepository;
     }
 
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
@@ -49,7 +54,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     private boolean invalidTraineeTrainer(Trainee trainee, Trainer trainer) {
         return trainee == null || trainer == null ||
-                        trainersRepository.findByUsername(trainee.getUsername()).isEmpty() ||
+                        traineesRepository.findByUsername(trainee.getUsername()).isEmpty() ||
                 trainersRepository.findByUsername(trainer.getUsername()).isEmpty();
     }
 

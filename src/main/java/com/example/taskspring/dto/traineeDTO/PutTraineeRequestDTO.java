@@ -12,8 +12,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class PutTraineeRequestDTO {
     @NonNull
-    private String username;
-    @NonNull
     private String firstName;
     @NonNull
     private String lastName;

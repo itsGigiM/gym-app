@@ -6,4 +6,5 @@ import java.util.Set;
 
 public interface TrainingTypeService {
     public Set<TrainingType> getAll();
+    public TrainingType getById(Long id);
 }

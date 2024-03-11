@@ -11,14 +11,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PutTrainerRequestDTO {
     @NonNull
-    private String username;
-    @NonNull
     private String firstName;
     @NonNull
     private String lastName;
 
     private boolean isActive;
     @NonNull
-    private TrainingType specialization;
+    private Long specializationId;
 
 }

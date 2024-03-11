@@ -11,4 +11,6 @@ import java.util.Set;
 public interface TrainingTypeRepository extends CrudRepository<TrainingType, Long> {
     public TrainingType getTrainingTypeByTrainingTypeName(TrainingTypeEnum trainingTypeEnum);
     public Set<TrainingType> findAll();
+
+    public TrainingType findTrainingTypeById(Long id);
 }

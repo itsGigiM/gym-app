@@ -6,16 +6,18 @@ import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.User;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -32,7 +34,11 @@ public class LoginControllerImpl implements LoginController {
     }
 
     @GetMapping(value = "/login")
-    public ResponseEntity<HttpStatus> login(@RequestBody AuthenticationDTO request) {
+    @Operation(summary = "Login by providing username and password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Welcome"),
+            @ApiResponse(responseCode = "401", description = "Wrong username or password")})
+    public ResponseEntity<HttpStatus> login(@ModelAttribute AuthenticationDTO request) {
         User user = findUser(request.getUsername());
         if(user == null){
             return failedLogin();
@@ -45,6 +51,7 @@ public class LoginControllerImpl implements LoginController {
         return failedLogin();
     }
 
+    @Operation(summary = "Replace old password with a new one")
     @PutMapping(value = "/login")
     public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDTO request) {
         User user = findUser(request.getUsername());

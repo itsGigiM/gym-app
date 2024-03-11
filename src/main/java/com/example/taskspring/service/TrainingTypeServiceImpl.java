@@ -32,4 +32,10 @@ public class TrainingTypeServiceImpl implements TrainingTypeService{
         log.info("retrieved all training types");
         return trainingTypes;
     }
+
+    public TrainingType getById(Long id){
+        TrainingType trainingType = repository.findTrainingTypeById(id);
+        log.info("retrieved training type {}", trainingType);
+        return trainingType;
+    }
 }

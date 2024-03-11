@@ -13,20 +13,20 @@ public interface TraineeController {
 
     ResponseEntity<AuthenticationDTO> create(PostTraineeRequestDTO postTraineeRequestDTO);
 
-    ResponseEntity<GetTraineeResponseDTO> get(String username, AuthenticationDTO authenticationDTO);
+    ResponseEntity<GetTraineeResponseDTO> get(String username, String user, String password);
 
-    ResponseEntity<PutTraineeResponseDTO> put(String username, PutTraineeRequestDTO putTraineeRequestDTO, AuthenticationDTO authenticationDTO)
+    ResponseEntity<PutTraineeResponseDTO> put(String username, PutTraineeRequestDTO putTraineeRequestDTO, String user, String password)
            ;
 
-    ResponseEntity<HttpStatus> delete(String username, AuthenticationDTO authenticationDTO);
+    ResponseEntity<HttpStatus> delete(String username, String user, String password);
 
     ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
-                                                                          AuthenticationDTO authenticationDTO);
+                                                                          String username, String password);
 
-    ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request, AuthenticationDTO authenticationDTO);
+    ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request, String username, String password);
 
-    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, AuthenticationDTO authenticationDTO);
+    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password);
 
-    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(String username, AuthenticationDTO authenticationDTO);
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(String username, String user, String password);
 
 }

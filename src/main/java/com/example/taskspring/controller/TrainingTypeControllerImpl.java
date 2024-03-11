@@ -4,7 +4,9 @@ import com.example.taskspring.dto.trainingTypeDTO.BasicTrainingTypeDTO;
 import com.example.taskspring.dto.trainingTypeDTO.GetTrainingTypesDTO;
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.service.TrainingTypeService;
-import com.example.taskspring.service.TrainingTypeServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class TrainingTypeControllerImpl implements TrainingTypeController {
     }
 
     @GetMapping()
+    @Operation(summary = "Retrieve all training types")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved")})
     public ResponseEntity<GetTrainingTypesDTO> getAll(){
         log.info("Received GET request to retrieve all training types.");
         Set<TrainingType> trainingTypes = trainingTypeService.getAll();

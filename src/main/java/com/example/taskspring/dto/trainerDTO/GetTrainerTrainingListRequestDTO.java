@@ -14,7 +14,6 @@ public class GetTrainerTrainingListRequestDTO {
     private String username;
     private LocalDate from;
     private LocalDate to;
-    private String trainerName;
-    private TrainingType trainingType;
+    private String traineeName;
 }
 

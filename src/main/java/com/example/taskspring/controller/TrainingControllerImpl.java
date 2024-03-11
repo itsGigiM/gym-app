@@ -6,6 +6,9 @@ import com.example.taskspring.model.Trainer;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import com.example.taskspring.service.TrainingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,10 @@ public class TrainingControllerImpl implements TrainingController {
     }
 
     @PostMapping
+    @Operation(summary = "Register training")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucessfully registered"),
+            @ApiResponse(responseCode = "404", description = "Trainee or trainer could not be found")})
     public ResponseEntity<HttpStatus> create(@RequestBody PostTrainingRequest request) {
         log.info("Received POST request to create a training. Request details: {}", request);
         try {
