@@ -9,6 +9,7 @@ import com.example.taskspring.dto.trainingDTO.GetUserTrainingListResponseDTO;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
+import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,10 +35,15 @@ public class TraineeControllerImpl implements TraineeController{
     private TraineeService traineeService;
 
     private TrainerService trainerService;
+    
+    private AuthenticationService authenticationService;
+
     @Autowired
-    public TraineeControllerImpl(TraineeService traineeService, TrainerService trainerService) {
+    public TraineeControllerImpl(TraineeService traineeService, TrainerService trainerService,
+                                 AuthenticationService authenticationService) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping
@@ -60,7 +67,11 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username) {
+    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO) {
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received GET request to retrieve a trainee. Request details: {}", username);
         try {
             Trainee trainee = traineeService.selectTrainee(username);
@@ -84,7 +95,12 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO) {
+    public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO,
+                                                     @RequestBody AuthenticationDTO authenticationDTO) {
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received PUT request to modify a trainee. Request details: {} {}", username, putTraineeRequestDTO);
         try {
             Trainee existingTrainee = traineeService.selectTrainee(username);
@@ -119,7 +135,11 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @DeleteMapping(value = "/{username}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable String username){
+    public ResponseEntity<HttpStatus> delete(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received DELETE request to remove a trainee. Request details: {}", username);
         try {
             traineeService.deleteTrainee(username);
@@ -133,7 +153,12 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/trainer-list")
-    public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO) {
+    public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
+            @RequestBody AuthenticationDTO authenticationDTO) {
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received PUT request to update trainer list of a trainee. Request details: {}", updateTraineeTrainingListRequestDTO);
         try {
             Trainee trainee = traineeService.selectTrainee(updateTraineeTrainingListRequestDTO.getUsername());
@@ -163,7 +188,12 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/training-list")
-    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@RequestBody GetTraineeTrainingListRequestDTO request){
+    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@RequestBody GetTraineeTrainingListRequestDTO request,
+            @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received GET request to retrieve training list of a trainee. Request details: {}", request);
         try {
             Set<Training> trainings = traineeService.getTraineeTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
@@ -180,7 +210,11 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PatchMapping("/is-active")
-    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request) {
+    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request, @RequestBody AuthenticationDTO authenticationDTO) {
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received PATCH request to modify active status of a trainee. Request details: {}", request);
         try {
             Trainee t = traineeService.selectTrainee(request.getUsername());
@@ -198,7 +232,11 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/unassigned-trainers/{username}")
-    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username){
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username, @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received GET request to retrieve not assigned on trainee active trainers. Request details: {}", username);
         try {
             Set<Trainer> trainers = traineeService.getUnassignedTrainers(username);
@@ -214,6 +252,15 @@ public class TraineeControllerImpl implements TraineeController{
             log.error("there is no trainee " + username);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    private boolean isNotAuthorized(AuthenticationDTO authenticationDTO) {
+        try {
+            authenticationService.authenticate(authenticationDTO.getUsername(), authenticationDTO.getPassword());
+        } catch (AuthenticationException e) {
+            return true;
+        }
+        return false;
     }
 
 }

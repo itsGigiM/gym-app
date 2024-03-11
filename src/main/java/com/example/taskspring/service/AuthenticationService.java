@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-public interface AuthenticationService {
+import javax.naming.AuthenticationException;
 
+public interface AuthenticationService {
+    public void authenticate(String username, String password) throws AuthenticationException;
 }

@@ -8,6 +8,7 @@ import com.example.taskspring.dto.trainingDTO.GetUserTrainingListResponseDTO;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
+import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TrainerService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.naming.AuthenticationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +32,12 @@ public class TrainerControllerImpl implements TrainerController{
 
     private TrainerService trainerService;
 
+    private AuthenticationService authenticationService;
+
+
     @Autowired
-    public TrainerControllerImpl(TrainerService trainerService) {
+    public TrainerControllerImpl(TrainerService trainerService, AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
         this.trainerService = trainerService;
     }
 
@@ -51,7 +58,11 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<GetTrainerResponseDTO> get(@PathVariable String username){
+    public ResponseEntity<GetTrainerResponseDTO> get(@PathVariable String username,  @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received GET request to retrieve a trainer. Request details: {}", username);
         try {
             Trainer trainer = trainerService.selectTrainer(username);
@@ -71,7 +82,12 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<PutTrainerResponseDTO> put(@PathVariable String username, @RequestBody PutTrainerRequestDTO putTrainerRequestDTO){
+    public ResponseEntity<PutTrainerResponseDTO> put(@PathVariable String username, @RequestBody PutTrainerRequestDTO putTrainerRequestDTO,
+                                                     @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received PUT request to modify a trainer. Request details: {} {}", username, putTrainerRequestDTO);
         try {
             Trainer existingTrainer = trainerService.selectTrainer(username);
@@ -104,7 +120,12 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/training-list")
-    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@RequestBody GetTrainerTrainingListRequestDTO request){
+    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@RequestBody GetTrainerTrainingListRequestDTO request,
+                                                                          @RequestBody AuthenticationDTO authenticationDTO){
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received GET request to retrieve training list of a trainer. Request details: {}", request);
         try {
             Set<Training> trainings = trainerService.getTrainerTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
@@ -132,7 +153,11 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PatchMapping("/is-active")
-    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request) {
+    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request,  @RequestBody AuthenticationDTO authenticationDTO) {
+        if (isNotAuthorized(authenticationDTO)){
+            log.error("Incorrect authentication details");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         log.info("Received PATCH request to modify active status of a trainer. Request details: {}", request);
         try {
             Trainer t = trainerService.selectTrainer(request.getUsername());
@@ -147,5 +172,14 @@ public class TrainerControllerImpl implements TrainerController{
             log.error("One of the required parameter is null");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private boolean isNotAuthorized(AuthenticationDTO authenticationDTO) {
+        try {
+            authenticationService.authenticate(authenticationDTO.getUsername(), authenticationDTO.getPassword());
+        } catch (AuthenticationException e) {
+            return true;
+        }
+        return false;
     }
 }

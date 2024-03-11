@@ -30,6 +30,7 @@ public class LoginControllerImpl implements LoginController {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
     }
+
     @GetMapping(value = "/login")
     public ResponseEntity<HttpStatus> login(@RequestBody AuthenticationDTO request) {
         User user = findUser(request.getUsername());
@@ -74,7 +75,7 @@ public class LoginControllerImpl implements LoginController {
         }
     }
 
-    private static ResponseEntity<HttpStatus> failedLogin() {
+    private ResponseEntity<HttpStatus> failedLogin() {
         log.error("Authentication failed, wrong username or password.");
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
