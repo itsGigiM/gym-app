@@ -16,7 +16,6 @@ public interface TrainerService {
     public Trainer selectTrainer(String trainerUsername);
     public void changeTrainerPassword(Long trainerId, String newPassword);
     public void activateDeactivateTrainer(Long trainerId, boolean isActive);
-
     public Set<Training> getTrainerTrainingList(String trainerUsername, LocalDate fromDate,
                                                 LocalDate toDate, String traineeName);
 }

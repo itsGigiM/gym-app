@@ -28,5 +28,4 @@ public interface TraineeService {
                                                 TrainingType trainingType);
 
     public Set<Trainer> getUnassignedTrainers(String traineeUsername);
-
 }

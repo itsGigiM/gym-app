@@ -137,7 +137,6 @@ public class TraineeServiceImpl implements TraineeService {
         });
     }
 
-
     private Trainee checkUser(String traineeUsername) {
         Optional<Trainee> t =  repository.findByUsername(traineeUsername);
         String errorMessage = "User not found with username: " + traineeUsername;
