@@ -13,7 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +41,7 @@ public class TrainerServiceImplTests {
         service = new TrainerServiceImpl(usernameGenerator, trainersRepository, 10);
     }
     @Test
-    public void createTrainerAndSelectItsFirstName() throws AuthenticationException {
+    public void createTrainerAndSelectItsFirstName() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -53,7 +56,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void selectTrainerByItsUsername() throws AuthenticationException {
+    public void selectTrainerByItsUsername() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -68,7 +71,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void selectInvalidTrainerByItsUsername_ThrowsException() throws AuthenticationException {
+    public void selectInvalidTrainerByItsUsername_ThrowsException() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.findByUsername(any())).thenReturn(Optional.empty());
@@ -79,7 +82,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void updateTrainersFirstName() throws AuthenticationException {
+    public void updateTrainersFirstName() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -97,21 +100,21 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void updateNullTrainer_ThrowsException() throws AuthenticationException {
+    public void updateNullTrainer_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> {
             service.updateTrainer(10L, null);
         });
     }
 
     @Test
-    public void updateNonExistingTrainer_ThrowsException() throws AuthenticationException {
+    public void updateNonExistingTrainer_ThrowsException() {
         assertThrows(EntityNotFoundException.class, () -> {
             service.updateTrainer(10L, new Trainer("f", "s", "u", "p", true, trainingType));
         });
     }
 
     @Test
-    public void changeTrainerPassword() throws AuthenticationException {
+    public void changeTrainerPassword() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -129,7 +132,7 @@ public class TrainerServiceImplTests {
     }
 
     @Test
-    public void changeTrainerActiveStatusToFalse() throws AuthenticationException {
+    public void changeTrainerActiveStatusToFalse() {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
@@ -144,5 +147,22 @@ public class TrainerServiceImplTests {
 
         assertFalse(service.selectTrainer(savedTrainer.getUserId()).
                 isActive());
+    }
+
+    @Test
+    public void testGetTrainerTrainingList() {
+        String trainerUsername = "trainer";
+        LocalDate fromDate = LocalDate.now().minusDays(7);
+        LocalDate toDate = LocalDate.now();
+
+        Set<Training> trainings = new HashSet<>();
+
+        when(trainersRepository.findByUsername(trainerUsername)).thenReturn(Optional.of(new Trainer()));
+        when(trainersRepository.findTrainerTrainings(trainerUsername, fromDate, toDate, "trainee")).thenReturn(trainings);
+
+        Set<Training> result = service.getTrainerTrainingList(trainerUsername, fromDate, toDate, "trainee");
+
+        assertEquals(trainings, result);
+
     }
 }

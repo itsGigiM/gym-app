@@ -34,7 +34,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TraineeControllerTests {
+public class TraineeControllerImplTests {
     @Mock
     private TraineeService traineeService;
 
@@ -107,7 +107,7 @@ public class TraineeControllerTests {
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws AuthenticationException {
         String traineeUsername = "traineeUsername";
 
         ResponseEntity<HttpStatus> response = traineeController.delete(traineeUsername, "username", "password");
@@ -116,7 +116,7 @@ public class TraineeControllerTests {
     }
 
     @Test
-    public void updateTrainerList() {
+    public void updateTrainerList() throws AuthenticationException {
         UpdateTraineeTrainerListRequestDTO requestDTO = new UpdateTraineeTrainerListRequestDTO("traineeUsername", Set.of("trainer1", "trainer2"));
         Trainee trainee = new Trainee();
         Trainer trainer1 = new Trainer("g", "m", "u", "p", true , new TrainingType());
@@ -133,7 +133,7 @@ public class TraineeControllerTests {
     }
 
     @Test
-    public void getTrainingList() {
+    public void getTrainingList() throws AuthenticationException {
         GetTraineeTrainingListRequestDTO requestDTO = new GetTraineeTrainingListRequestDTO("traineeUsername", LocalDate.now(), LocalDate.now(), "trainerName", new TrainingType());
         Set<Training> trainings = new HashSet<>();
         when(traineeService.getTraineeTrainingList(anyString(), any(LocalDate.class), any(LocalDate.class), anyString(), any()))
@@ -145,7 +145,7 @@ public class TraineeControllerTests {
     }
 
     @Test
-    public void updateIsActive() {
+    public void updateIsActive() throws AuthenticationException {
         PatchUserActiveStatusRequestDTO requestDTO = new PatchUserActiveStatusRequestDTO("traineeUsername", true);
         Trainee trainee = new Trainee();
         when(traineeService.selectTrainee(requestDTO.getUsername())).thenReturn(trainee);
@@ -156,7 +156,7 @@ public class TraineeControllerTests {
     }
 
     @Test
-    public void getUnassignedTrainers() {
+    public void getUnassignedTrainers() throws AuthenticationException {
         String traineeUsername = "traineeUsername";
         Set<Trainer> trainers = new HashSet<>();
         trainers.add(new Trainer("g", "m", "u", "p", true , new TrainingType()));

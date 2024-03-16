@@ -79,9 +79,7 @@ public class TraineeControllerImpl implements TraineeController{
         Trainee trainee = traineeService.selectTrainee(username);
 
         Set<BasicTrainerDTO> basicTrainerDTOs = new HashSet<>();
-        for(Trainer t : trainee.getTrainers()){
-            basicTrainerDTOs.add(new BasicTrainerDTO(t.getUsername(), t.getFirstName(), t.getLastName(), t.getSpecialization()));
-        }
+        for(Trainer t : trainee.getTrainers()) basicTrainerDTOs.add(new BasicTrainerDTO(t.getUsername(), t.getFirstName(), t.getLastName(), t.getSpecialization()));
         GetTraineeResponseDTO dto = new GetTraineeResponseDTO(trainee.getFirstName(), trainee.getLastName(), trainee.isActive(),
                 trainee.getAddress(), trainee.getDateOfBirth(), basicTrainerDTOs);
         ResponseEntity<GetTraineeResponseDTO> responseEntity = new ResponseEntity<>(dto, HttpStatus.OK);
@@ -109,9 +107,7 @@ public class TraineeControllerImpl implements TraineeController{
         existingTrainee.setActive(putTraineeRequestDTO.isActive());
 
         Set<BasicTrainerDTO> basicTrainerDTOs = new HashSet<>();
-        for(Trainer t : existingTrainee.getTrainers()){
-            basicTrainerDTOs.add(new BasicTrainerDTO(t.getUsername(), t.getFirstName(), t.getLastName(), t.getSpecialization()));
-        }
+        for(Trainer t : existingTrainee.getTrainers()) basicTrainerDTOs.add(new BasicTrainerDTO(t.getUsername(), t.getFirstName(), t.getLastName(), t.getSpecialization()));
 
         Trainee updatedTrainee = traineeService.updateTrainee(existingTrainee.getUserId(), existingTrainee);
         PutTraineeResponseDTO responseDTO = new PutTraineeResponseDTO(updatedTrainee.getUsername(), updatedTrainee.getFirstName(),
