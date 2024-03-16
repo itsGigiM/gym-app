@@ -7,17 +7,19 @@ import com.example.taskspring.dto.PatchUserActiveStatusRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.naming.AuthenticationException;
+
 public interface TrainerController {
 
     ResponseEntity<AuthenticationDTO> create(PostTrainerRequestDTO postTrainerRequestDTO);
 
-    ResponseEntity<GetTrainerResponseDTO> get(String username, String user, String password);
+    ResponseEntity<GetTrainerResponseDTO> get(String username, String user, String password) throws AuthenticationException;
 
     ResponseEntity<PutTrainerResponseDTO> put(String username, PutTrainerRequestDTO putTrainerRequestDTO,
-                                              String user, String password);
+                                              String user, String password) throws AuthenticationException;
 
     ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTrainerTrainingListRequestDTO request,
-                                                                   String username, String password);
+                                                                   String username, String password) throws AuthenticationException;
 
-    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password);
+    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password) throws AuthenticationException;
 }

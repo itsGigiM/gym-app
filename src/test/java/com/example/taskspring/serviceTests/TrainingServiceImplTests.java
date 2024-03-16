@@ -1,8 +1,7 @@
 package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.*;
-import com.example.taskspring.repository.repositories.TrainersRepository;
-import com.example.taskspring.repository.repositories.TrainingsRepository;
+import com.example.taskspring.repository.repositories.*;
 import com.example.taskspring.service.TrainingServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +28,12 @@ public class TrainingServiceImplTests {
     @Mock
     private TrainersRepository trainersRepository;
 
+    @Mock
+    private TraineesRepository traineesRepository;
 
     @BeforeEach
     public void setUp() {
-        service = new TrainingServiceImpl(repository, trainersRepository);
+        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository);
     }
     @Test
     public void createTrainingAndSelectItsFirstName() throws AuthenticationException {
@@ -43,6 +44,7 @@ public class TrainingServiceImplTests {
                 LocalDate.of(2000, 1, 1), Duration.ofHours(1));
         when(repository.save(any(Training.class))).thenReturn(mockedTraining);
         when(trainersRepository.findByUsername(any())).thenReturn(Optional.of(trainer));
+        when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(trainee));
 
         Training savedTraining = service.createTraining(trainee, trainer, "boxing", trainingType,
                 LocalDate.of(2000, 1, 1), Duration.ofHours(1));

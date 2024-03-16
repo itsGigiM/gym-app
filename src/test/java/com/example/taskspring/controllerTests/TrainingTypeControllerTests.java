@@ -1,52 +1,56 @@
 package com.example.taskspring.controllerTests;
 
-
-import com.example.taskspring.controller.TrainingTypeController;
-import com.example.taskspring.dto.traineeDTO.PostTraineeRequestDTO;
+import com.example.taskspring.controller.TrainingControllerImpl;
+import com.example.taskspring.controller.TrainingTypeControllerImpl;
+import com.example.taskspring.dto.trainingDTO.PostTrainingRequest;
+import com.example.taskspring.dto.trainingTypeDTO.GetTrainingTypesDTO;
+import com.example.taskspring.model.Trainee;
+import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.TrainingType;
-import com.example.taskspring.service.TraineeServiceImpl;
-import com.example.taskspring.service.TrainingTypeServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.taskspring.model.TrainingTypeEnum;
+import com.example.taskspring.service.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcTest(TrainingTypeController.class)
-@AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class TrainingTypeControllerTests {
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private TrainingTypeService trainingTypeService;
 
-    @MockBean
-    private TrainingTypeServiceImpl trainingTypeService;
+    @InjectMocks
+    private TrainingTypeControllerImpl controller;
+
+    @BeforeEach
+    public void setUp() {
+        controller = new TrainingTypeControllerImpl(trainingTypeService);
+    }
 
     @Test
-    public void getAllRetrievesAllTypes() throws Exception {
+    public void getAll() {
+        Set<TrainingType> trainingTypes = new HashSet<>();
+        trainingTypes.add(new TrainingType(1L, TrainingTypeEnum.BOXING));
+        trainingTypes.add(new TrainingType(2L, TrainingTypeEnum.KARATE));
 
-        Set<TrainingType> s = new HashSet<>();
-        when(trainingTypeService.getAll()).
-                thenReturn(s);
+        when(trainingTypeService.getAll()).thenReturn(trainingTypes);
+        ResponseEntity<GetTrainingTypesDTO> response = controller.getAll();
 
-        ResultActions response = mockMvc.perform(get("/training-types")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        response.andExpect(MockMvcResultMatchers.status().isOk());
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
+
 
 }

@@ -48,7 +48,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
@@ -64,7 +63,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
@@ -79,7 +77,6 @@ public class TraineeServiceImplTests {
     public void selectInvalidTraineeByItsUsername_ThrowsException() throws AuthenticationException {
         Trainee mockedTrainee = new Trainee("firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findByUsername(any())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> {
@@ -93,7 +90,6 @@ public class TraineeServiceImplTests {
                 true, "address", LocalDate.of(2000, 1, 1));
 
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
         doNothing().when(traineesRepository).delete(any());
 
@@ -114,7 +110,6 @@ public class TraineeServiceImplTests {
                 true, "address", LocalDate.of(2000, 1, 1));
 
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(mockedTrainee));
         doNothing().when(traineesRepository).delete(any());
 
@@ -134,7 +129,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
@@ -150,7 +144,6 @@ public class TraineeServiceImplTests {
 
     @Test
     public void updateNullTrainee_ThrowsException() throws AuthenticationException {
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         assertThrows(IllegalArgumentException.class, () -> {
             service.updateTrainee(10L, null);
         });
@@ -161,7 +154,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
@@ -180,7 +172,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
@@ -203,7 +194,6 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        doNothing().when(authenticator).authenticate(anyString(), anyString());
         when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,

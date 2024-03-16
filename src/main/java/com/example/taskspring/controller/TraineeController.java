@@ -9,24 +9,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.naming.AuthenticationException;
+
 public interface TraineeController {
 
     ResponseEntity<AuthenticationDTO> create(PostTraineeRequestDTO postTraineeRequestDTO);
 
-    ResponseEntity<GetTraineeResponseDTO> get(String username, String user, String password);
+    ResponseEntity<GetTraineeResponseDTO> get(String username, String user, String password) throws AuthenticationException;
 
-    ResponseEntity<PutTraineeResponseDTO> put(String username, PutTraineeRequestDTO putTraineeRequestDTO, String user, String password)
-           ;
+    ResponseEntity<PutTraineeResponseDTO> put(String username, PutTraineeRequestDTO putTraineeRequestDTO, String user, String password) throws AuthenticationException
+            ;
 
-    ResponseEntity<HttpStatus> delete(String username, String user, String password);
+    ResponseEntity<HttpStatus> delete(String username, String user, String password) throws AuthenticationException;
 
     ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
-                                                                          String username, String password);
+                                                                          String username, String password) throws AuthenticationException;
 
-    ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request, String username, String password);
+    ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(GetTraineeTrainingListRequestDTO request, String username, String password) throws AuthenticationException;
 
-    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password);
+    ResponseEntity<HttpStatus> updateIsActive(PatchUserActiveStatusRequestDTO request, String username, String password) throws AuthenticationException;
 
-    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(String username, String user, String password);
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(String username, String user, String password) throws AuthenticationException;
 
 }

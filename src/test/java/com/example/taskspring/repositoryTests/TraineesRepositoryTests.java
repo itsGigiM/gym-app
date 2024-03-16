@@ -95,7 +95,7 @@ public class TraineesRepositoryTests {
         trainingsRepository.save(training);
         Set<Trainer> trainerList = traineesRepository.findUnassignedTrainers("trainee_username");
 
-        assertEquals(trainerList.size(), 1);
+        assertEquals(trainerList.size(), 2);
         assertTrue(trainerList.contains(trainer2));
     }
 

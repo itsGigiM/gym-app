@@ -37,10 +37,4 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         if(!result) throw new AuthenticationException("Invalid username or password");
     }
 
-
-    private static ResponseEntity<HttpStatus> failedLogin() {
-        log.error("Authentication failed, wrong username or password.");
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
-
 }

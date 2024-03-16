@@ -1,63 +1,67 @@
 package com.example.taskspring.controllerTests;
 
-
-import com.example.taskspring.controller.TrainingTypeController;
+import com.example.taskspring.controller.TrainingControllerImpl;
 import com.example.taskspring.dto.trainingDTO.PostTrainingRequest;
-import com.example.taskspring.model.*;
-import com.example.taskspring.service.TrainingServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.taskspring.model.Trainee;
+import com.example.taskspring.model.Trainer;
+import com.example.taskspring.service.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcTest(TrainingTypeController.class)
-@AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class TrainingControllerTests {
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private TrainingService trainingService;
 
-    @MockBean
-    private TrainingServiceImpl trainingService;
+    @Mock
+    private TrainerService trainerService;
 
-    @Autowired
-    private ObjectMapper om;
+    @Mock
+    private TraineeService traineeService;
+
+    @Mock
+    private AuthenticationService authenticationService;
+
+    @InjectMocks
+    private TrainingControllerImpl controller;
+
+    @BeforeEach
+    public void setUp() {
+        controller = new TrainingControllerImpl(trainingService, trainerService, traineeService, authenticationService);
+    }
 
     @Test
-    public void getAllRetrievesAllTypes() throws Exception {
-        TrainingType trainingType = new TrainingType(1L, TrainingTypeEnum.BOXING);
-        Trainer trainer = new Trainer("g", "m", "u", "p", true, trainingType);
-        Trainee trainee = new Trainee("g", "m", "u", "p", true, "t", LocalDate.of(2000, 1, 1));
-        Training t = new Training(trainee, trainer, "boxing", trainingType,
-                LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+    public void createTraining() throws AuthenticationException {
+        PostTrainingRequest request = new PostTrainingRequest("trainerUsername", "traineeUsername",
+                "Training Name", LocalDate.now(), Duration.ofHours(1));
 
-        when(trainingService.createTraining(any(), any(), any(), any(), any(), any())).
-                thenReturn(t);
-        PostTrainingRequest postTrainingRequest = new PostTrainingRequest(t.getTrainee().getUsername(), t.getTrainer().getUsername(),
-                t.getTrainingName(), t.getTrainingDate(), t.getDuration());
+        Trainer trainer = new Trainer();
+        Trainee trainee = new Trainee();
 
-        ResultActions response = mockMvc.perform(get("/training-types")
-                .contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(postTrainingRequest)));
+        when(trainerService.selectTrainer(request.getTrainerUsername())).thenReturn(trainer);
+        when(traineeService.selectTrainee(request.getTraineeUsername())).thenReturn(trainee);
+        doNothing().when(authenticationService).authenticate(anyString(), anyString());
 
-        response.andExpect(MockMvcResultMatchers.status().isCreated());
+        ResponseEntity<HttpStatus> response = controller.create(request, "admin", "admin");
 
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
+
+
 
 }
