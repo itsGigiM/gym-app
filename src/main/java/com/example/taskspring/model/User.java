@@ -1,5 +1,6 @@
 package com.example.taskspring.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 

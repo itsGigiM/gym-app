@@ -1,5 +1,6 @@
 package com.example.taskspring.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class Trainee extends User{
     @ManyToMany(mappedBy = "trainees")
     private Set<Trainer> trainers = new HashSet<>();
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Training> trainings = new HashSet<>();
 
     public Trainee(Long userId, String firstName, String lastName, String username,

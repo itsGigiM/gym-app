@@ -1,9 +1,9 @@
-package com.example.taskspring.utilsTests;
+package com.example.taskspring.serviceTests;
 
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.repository.repositories.TraineesRepository;
 import com.example.taskspring.repository.repositories.TrainersRepository;
-import com.example.taskspring.utils.SQLAuthenticator;
+import com.example.taskspring.service.AuthenticationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SQLAuthenticatorTest {
+class AuthenticatorServiceTests {
 
     @Mock
     private TraineesRepository traineesRepository;
@@ -27,7 +27,7 @@ class SQLAuthenticatorTest {
     private TrainersRepository trainersRepository;
 
     @InjectMocks
-    private SQLAuthenticator sqlAuthenticator;
+    private AuthenticationServiceImpl sqlAuthenticator;
 
     @Test
     void authenticateWithValidTraineeCredentials() throws AuthenticationException {

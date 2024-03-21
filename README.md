@@ -1,16 +1,5 @@
-# Questions for the mentor
+# Topics for the mentor
 
-1. Should I use DTOs
+1. Unit testing
 
-2. Is the User abstract or not? Does Trainee and Training have to extend the User class, or should I use any inheritance strategy?
-
-    ```
-    //Trainee.java/Trainer.java
-        @OneToOne(cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "user_id")
-        private User user;
-    ```
-
-3. Do I need to implement postprocessor memory initialization as in the Spring part?
-
-4. Regarding the authentication, can it be any user or user that's trainee/trainer class is being modified?
+2. Transaction level (generate transactionId  by which you can track all operations for this transaction the same transactionId can later be passed to downstream services) 
