@@ -1,5 +1,6 @@
 package com.example.taskspring.controller;
 
+import com.example.taskspring.actuator.metric.TrainingMetrics;
 import com.example.taskspring.dto.trainingDTO.PostTrainingRequest;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
@@ -7,10 +8,6 @@ import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import com.example.taskspring.service.TrainingService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +26,18 @@ public class TrainingControllerImpl implements TrainingController {
     private TrainingService trainingService;
     private TrainerService trainerService;
     private TraineeService traineeService;
-
+    private TrainingMetrics trainingMetrics;
     private AuthenticationService authenticationService;
 
     @Autowired
     public TrainingControllerImpl(TrainingService trainingService, TrainerService trainerService,
-                                  TraineeService traineeService, AuthenticationService authenticationService) {
+                                  TraineeService traineeService, AuthenticationService authenticationService,
+                                  TrainingMetrics trainingMetrics) {
         this.trainingService = trainingService;
         this.trainerService = trainerService;
         this.traineeService = traineeService;
         this.authenticationService = authenticationService;
+        this.trainingMetrics = trainingMetrics;
     }
 
     @PostMapping
@@ -52,7 +51,9 @@ public class TrainingControllerImpl implements TrainingController {
                 request.getTrainingName(), trainer.getSpecialization(), request.getTrainingDate(),
                 request.getTrainingDuration());
         ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
+        trainingMetrics.incrementTrainingsCreatedCounter();
         log.info("Trainer created successfully. Response details: {}", responseEntity);
+
         return responseEntity;
     }
 
