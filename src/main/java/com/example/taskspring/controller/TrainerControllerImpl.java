@@ -51,9 +51,6 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PostMapping
-    @Operation(summary = "Register trainer")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully registered trainer")})
     public ResponseEntity<AuthenticationDTO> create(@RequestBody PostTrainerRequestDTO postTrainerRequestDTO) {
         log.info("Received POST request to create a trainer. Request details: {}", postTrainerRequestDTO);
         TrainingType trainingType = trainingTypeService.getById(postTrainerRequestDTO.getSpecializationId());
@@ -66,11 +63,6 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/{username}")
-    @Operation(summary = "Retrieve trainer by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainer with this username")})
     public ResponseEntity<GetTrainerResponseDTO> get(@PathVariable String username,  @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
 
@@ -86,11 +78,6 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PutMapping(value = "/{username}")
-    @Operation(summary = "Modify trainer by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully modified trainer"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainer with this username")})
     public ResponseEntity<PutTrainerResponseDTO> put(@PathVariable String username, @RequestBody PutTrainerRequestDTO putTrainerRequestDTO,
                                                      @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
@@ -117,11 +104,6 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/training-list")
-    @Operation(summary = "Retrieve trainings list by trainer's username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainer with this username")})
     public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTrainerTrainingListRequestDTO request,
                                                                           @RequestParam String username, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
@@ -144,17 +126,12 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PatchMapping("/is-active")
-    @Operation(summary = "Modify activity status of a trainer")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully modified activity status of a trainer"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainer with this username")})
     public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request,  @RequestParam String username, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
         log.info("Received PATCH request to modify active status of a trainer. Request details: {}", request);
         Trainer t = trainerService.selectTrainer(request.getUsername());
         trainerService.activateDeactivateTrainer(t.getUserId(), request.isActive());
-        ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainer's activity status changed successfully. Response details: {}", response);
         return response;
     }

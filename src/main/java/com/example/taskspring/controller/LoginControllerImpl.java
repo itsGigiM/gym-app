@@ -32,10 +32,6 @@ public class LoginControllerImpl implements LoginController {
     }
 
     @GetMapping(value = "/login")
-    @Operation(summary = "Login by providing username and password")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Welcome"),
-            @ApiResponse(responseCode = "401", description = "Wrong username or password")})
     public ResponseEntity<HttpStatus> login(@ModelAttribute AuthenticationDTO request) {
         User user = findUser(request.getUsername());
         if(user == null){
@@ -49,7 +45,6 @@ public class LoginControllerImpl implements LoginController {
         return failedLogin();
     }
 
-    @Operation(summary = "Replace old password with a new one")
     @PutMapping(value = "/login")
     public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDTO request) {
         User user = findUser(request.getUsername());
@@ -60,7 +55,7 @@ public class LoginControllerImpl implements LoginController {
             if(user instanceof Trainee) {
                 traineeService.changeTraineePassword(user.getUserId(), request.getNewPassword());
             }else trainerService.changeTrainerPassword(user.getUserId(), request.getNewPassword());
-            ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+            ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
             log.info("Password changed successfully");
             return responseEntity;
         }

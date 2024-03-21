@@ -42,10 +42,6 @@ public class TrainingControllerImpl implements TrainingController {
     }
 
     @PostMapping
-    @Operation(summary = "Register training")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Sucessfully registered"),
-            @ApiResponse(responseCode = "404", description = "Trainee or trainer could not be found")})
     public ResponseEntity<HttpStatus> create(@RequestBody PostTrainingRequest request, @RequestParam String username,
                                              @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);

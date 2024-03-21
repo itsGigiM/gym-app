@@ -32,9 +32,6 @@ public class TrainingTypeControllerImpl implements TrainingTypeController {
     }
 
     @GetMapping()
-    @Operation(summary = "Retrieve all training types")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved")})
     public ResponseEntity<GetTrainingTypesDTO> getAll(){
         log.info("Received GET request to retrieve all training types.");
         Set<TrainingType> trainingTypes = trainingTypeService.getAll();

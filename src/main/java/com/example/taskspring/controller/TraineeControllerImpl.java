@@ -49,9 +49,6 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PostMapping
-    @Operation(summary = "Register trainee")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Trainee Registered")})
     public ResponseEntity<AuthenticationDTO> create(@RequestBody PostTraineeRequestDTO postTraineeRequestDTO) {
             log.info("Received POST request to create a trainee. Request details: {}", postTraineeRequestDTO);
 
@@ -67,11 +64,6 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/{username}")
-    @Operation(summary = "Retrieve user by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
 
@@ -88,11 +80,6 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/{username}")
-    @Operation(summary = "Modify trainee by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully modified trainee"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO,
                                                      @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
@@ -120,27 +107,17 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @DeleteMapping(value = "/{username}")
-    @Operation(summary = "Remove user by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully removed trainer"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<HttpStatus> delete(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
 
         log.info("Received DELETE request to remove a trainee. Request details: {}", username);
         traineeService.deleteTrainee(username);
-        ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainee removed successfully. Response details: {}", responseEntity);
         return responseEntity;
     }
 
     @PutMapping(value = "/trainer-list")
-    @Operation(summary = "Update trainee's trainers list")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully updated the list"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
             @RequestParam String username, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
@@ -166,11 +143,6 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/training-list")
-    @Operation(summary = "Retrieve trainings list by trainee's username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTraineeTrainingListRequestDTO request,
             @RequestParam String username, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
@@ -183,27 +155,17 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PatchMapping("/is-active")
-    @Operation(summary = "Modify active status")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully modified active status"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request, @RequestParam String username, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
         log.info("Received PATCH request to modify active status of a trainee. Request details: {}", request);
         Trainee t = traineeService.selectTrainee(request.getUsername());
         traineeService.activateDeactivateTrainee(t.getUserId(), request.isActive());
-        ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainee's activity status changed successfully. Response details: {}", response);
         return response;
     }
 
     @GetMapping(value = "/unassigned-trainers/{username}")
-    @Operation(summary = "Retrieve Unassigned trainers")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "401", description = "Wrong user or password provided"),
-            @ApiResponse(responseCode = "404", description = "No trainee with this username")})
     public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
         authenticationService.authenticate(username, password);
         log.info("Received GET request to retrieve not assigned on trainee active trainers. Request details: {}", username);
