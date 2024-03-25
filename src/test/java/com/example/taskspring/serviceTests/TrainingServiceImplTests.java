@@ -55,7 +55,7 @@ public class TrainingServiceImplTests {
     }
 
     @Test
-    public void selectNonExistingTraining_ThrowsException() throws AuthenticationException {
+    public void selectNonExistingTraining_ThrowsException() {
         assertThrows(NoSuchElementException.class, () -> {
             service.selectTraining(10L);
         });

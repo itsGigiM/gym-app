@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class TrainingMetrics{
 
     private final Counter totalTrainingsCreated;
+    private final Counter totalTrainingsCreatedFailed;
 
 
     @Autowired
@@ -16,10 +17,16 @@ public class TrainingMetrics{
         this.totalTrainingsCreated  = Counter.builder("Trainings created counter")
                 .description("Number of trainings created successfully")
                 .register(meterRegistry);
+        this.totalTrainingsCreatedFailed  = Counter.builder("Trainings created counter failed")
+                .description("Number of trainings create failed")
+                .register(meterRegistry);
     }
 
     public void incrementTrainingsCreatedCounter() {
         totalTrainingsCreated.increment();
+    }
+    public void incrementTrainingsCreatedFailedCounter() {
+        totalTrainingsCreatedFailed.increment();
     }
 
 }

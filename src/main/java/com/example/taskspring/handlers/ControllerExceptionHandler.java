@@ -1,6 +1,11 @@
 package com.example.taskspring.handlers;
 
-import com.example.taskspring.actuator.metric.ExceptionHandlerMetrics;
+import com.example.taskspring.actuator.metric.LoginMetrics;
+import com.example.taskspring.actuator.metric.TraineeMetrics;
+import com.example.taskspring.actuator.metric.TrainerMetrics;
+import com.example.taskspring.actuator.metric.TrainingMetrics;
+import com.example.taskspring.utils.Endpoint;
+import com.example.taskspring.utils.RequestContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,20 +22,26 @@ import javax.naming.AuthenticationException;
 @AllArgsConstructor
 public class ControllerExceptionHandler {
 
-    private ExceptionHandlerMetrics exceptionHandlerMetrics;
+    private RequestContext requestContext;
+    private LoginMetrics loginMetrics;
+    private TraineeMetrics traineeMetrics;
+    private TrainerMetrics trainerMetrics;
+    private TrainingMetrics trainingMetrics;
+
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResponseEntity<HttpStatus> handleNullPointerException(Exception ex) {
         log.error("One of the required parameter is null");
-        exceptionHandlerMetrics.incrementNullPointerException();
+        Endpoint endpoint = requestContext.getEndpoint();
+        updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseBody
     public ResponseEntity<HttpStatus> handleEntityNotFoundException(Exception ex) {
         log.error("Trainee/Trainer does not exists");
-        exceptionHandlerMetrics.incrementEntityNotFoundException();
+        Endpoint endpoint = requestContext.getEndpoint();
+        updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -38,7 +49,64 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public ResponseEntity<HttpStatus> handleAuthenticationException(Exception ex) {
         log.error("Wrong username or password");
-        exceptionHandlerMetrics.incrementAuthenticationException();
+        Endpoint endpoint = requestContext.getEndpoint();
+        updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    private void updateMetrics(Endpoint endpoint) {
+        switch (endpoint) {
+            case LOGIN:
+                loginMetrics.incrementFailedCounter();
+                break;
+            case CHANGE_PASSWORD:
+                loginMetrics.incrementFailedPasswordChangeCounter();
+                break;
+            case REGISTER_TRAINEE:
+                traineeMetrics.incrementCreateTraineeFailed();
+                break;
+            case RETRIEVE_TRAINEE:
+                traineeMetrics.incrementGetTraineeFailed();
+                break;
+            case MODIFY_TRAINEE:
+                traineeMetrics.incrementUpdateTraineeFailed();
+                break;
+            case REMOVE_TRAINEE:
+                traineeMetrics.incrementDeleteTraineeFailed();
+                break;
+            case UPDATE_TRAINER_LIST:
+                traineeMetrics.incrementUpdateTraineeTrainerListFailed();
+                break;
+            case TRAINEE_RETRIEVE_TRAININGS_LIST:
+                traineeMetrics.incrementGetTrainingListFailed();
+                break;
+            case TRAINEE_MODIFY_ACTIVE_STATUS:
+                traineeMetrics.incrementPatchTraineeFailed();
+                break;
+            case RETRIEVE_UNASSIGNED_TRAINERS:
+                traineeMetrics.incrementUnassignedTrainerFailed();
+                break;
+            case CREATE_TRAINING:
+                trainingMetrics.incrementTrainingsCreatedFailedCounter();
+                break;
+            case REGISTER_TRAINER:
+                trainerMetrics.incrementCreateTrainerFailedCounter();
+                break;
+            case RETRIEVE_TRAINER:
+                trainerMetrics.incrementGetTrainerFailedCounter();
+                break;
+            case MODIFY_TRAINER:
+                trainerMetrics.incrementUpdateTrainerFailedCounter();
+                break;
+            case TRAINER_RETRIEVE_TRAININGS_LIST:
+                trainerMetrics.incrementGetTrainingListFailedCounter();
+                break;
+            case TRAINER_MODIFY_ACTIVE_STATUS:
+                trainerMetrics.incrementPatchIsActiveFailedCounter();
+                break;
+            default:
+                break;
+        }
+    }
+
 }

@@ -13,10 +13,6 @@ import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TrainerService;
 import com.example.taskspring.service.TrainingTypeService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -63,7 +59,7 @@ public class TrainerControllerImpl implements TrainerController{
         AuthenticationDTO responseDTO = new AuthenticationDTO(createdTrainer.getUsername(), createdTrainer.getPassword());
         ResponseEntity<AuthenticationDTO> responseEntity = new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
         log.info("Trainer created successfully. Response details: {}", responseEntity);
-        trainerMetrics.incrementCreateTrainerCounter();
+        trainerMetrics.incrementCreateTrainerSuccessCounter();
         return responseEntity;
     }
 
@@ -79,7 +75,7 @@ public class TrainerControllerImpl implements TrainerController{
                 trainer.getLastName(), trainer.isActive(), trainer.getSpecialization(), basicTraineeDTOs);
         ResponseEntity<GetTrainerResponseDTO> responseEntity = new ResponseEntity<>(dto, HttpStatus.OK);
         log.info("Trainer retrieved successfully. Response details: {}", responseEntity);
-        trainerMetrics.incrementGetTrainerCounter();
+        trainerMetrics.incrementGetTrainerSuccessCounter();
         return responseEntity;
     }
 
@@ -106,7 +102,7 @@ public class TrainerControllerImpl implements TrainerController{
 
         ResponseEntity<PutTrainerResponseDTO> responseEntity = new ResponseEntity<>(responseDTO, HttpStatus.OK);
         log.info("Trainer retrieved successfully. Response details: {}", responseEntity);
-        trainerMetrics.incrementUpdateTrainerCounter();
+        trainerMetrics.incrementUpdateTrainerSuccessCounter();
         return responseEntity;
     }
 
@@ -117,7 +113,7 @@ public class TrainerControllerImpl implements TrainerController{
         log.info("Received GET request to retrieve training list of a trainer. Request details: {}", request);
         Set<Training> trainings = trainerService.getTrainerTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
                 request.getTraineeName());
-        trainerMetrics.incrementGetTrainingListCounter();
+        trainerMetrics.incrementGetTrainingListSuccessCounter();
         return trainingToTrainingDTO(trainings, log);
     }
 
@@ -140,7 +136,7 @@ public class TrainerControllerImpl implements TrainerController{
         trainerService.activateDeactivateTrainer(t.getUserId(), request.isActive());
         ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainer's activity status changed successfully. Response details: {}", response);
-        trainerMetrics.incrementPatchIsActiveCounter();
+        trainerMetrics.incrementPatchIsActiveSuccessCounter();
         return response;
     }
 }
