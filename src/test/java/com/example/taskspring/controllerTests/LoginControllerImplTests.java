@@ -1,12 +1,12 @@
 package com.example.taskspring.controllerTests;
 
+import com.example.taskspring.actuator.metric.LoginMetrics;
 import com.example.taskspring.controller.LoginControllerImpl;
 import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.loginDTO.ChangePasswordDTO;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.naming.AuthenticationException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -28,16 +31,19 @@ public class LoginControllerImplTests {
     @Mock
     private TrainerService trainerService;
 
+    @Mock
+    private LoginMetrics loginMetrics;
+
     @InjectMocks
     private LoginControllerImpl loginController;
 
     @BeforeEach
     public void setUp() {
-        loginController = new LoginControllerImpl(traineeService, trainerService);
+        loginController = new LoginControllerImpl(traineeService, trainerService, loginMetrics);
     }
 
     @Test
-    public void successfulLogin() {
+    public void successfulLogin() throws AuthenticationException {
         AuthenticationDTO authenticationDTO = new AuthenticationDTO("username", "password");
         Trainee mockUser = new Trainee();
         mockUser.setUsername("username");
@@ -55,13 +61,13 @@ public class LoginControllerImplTests {
         AuthenticationDTO authenticationDTO = new AuthenticationDTO("username", "password");
 
         when(traineeService.selectTrainee("username")).thenReturn(null);
-        ResponseEntity<HttpStatus> response = loginController.login(authenticationDTO);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertThrows(AuthenticationException.class, () -> {
+            loginController.login(authenticationDTO);
+        });
     }
 
     @Test
-    public void successfulChangePassword() {
+    public void successfulChangePassword() throws AuthenticationException {
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO("u", "oldPassword", "newPassword");
         Trainee mockUser = new Trainee();
         mockUser.setUsername("u");
@@ -72,7 +78,7 @@ public class LoginControllerImplTests {
 
         ResponseEntity<HttpStatus> response = loginController.changePassword(changePasswordDTO);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -84,20 +90,20 @@ public class LoginControllerImplTests {
 
         when(traineeService.selectTrainee("username")).thenReturn(mockUser);
 
-        ResponseEntity<HttpStatus> response = loginController.changePassword(changePasswordDTO);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertThrows(AuthenticationException.class, () -> {
+            loginController.changePassword(changePasswordDTO);
+        });
     }
 
     @Test
-    public void changePasswordUserNotFound_throwsException() {
+    public void changePasswordUserNotFound_throwsException(){
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO("username", "oldPassword", "newPassword");
 
         when(traineeService.selectTrainee("username")).thenReturn(null);
 
-        ResponseEntity<HttpStatus> response = loginController.changePassword(changePasswordDTO);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertThrows(AuthenticationException.class, () -> {
+            loginController.changePassword(changePasswordDTO);
+        });
     }
 
 

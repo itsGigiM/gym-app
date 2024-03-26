@@ -12,9 +12,8 @@ import com.example.taskspring.model.Training;
 import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.example.taskspring.actuator.metric.TraineeMetrics;
+
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +36,16 @@ public class TraineeControllerImpl implements TraineeController{
     private TraineeService traineeService;
 
     private TrainerService trainerService;
-
+    private TraineeMetrics traineeMetrics;
     private AuthenticationService authenticationService;
 
     @Autowired
     public TraineeControllerImpl(TraineeService traineeService, TrainerService trainerService,
-                                 AuthenticationService authenticationService) {
+                                 AuthenticationService authenticationService, TraineeMetrics traineeMetrics) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.authenticationService = authenticationService;
+        this.traineeMetrics = traineeMetrics;
     }
 
     @PostMapping
@@ -60,6 +60,7 @@ public class TraineeControllerImpl implements TraineeController{
             ResponseEntity<AuthenticationDTO> responseEntity = new ResponseEntity<>(authenticationDTO, HttpStatus.CREATED);
 
             log.info("Trainee created successfully. Response details: {}", responseEntity);
+            traineeMetrics.incrementCreateTrainee();
             return responseEntity;
     }
 
@@ -76,6 +77,7 @@ public class TraineeControllerImpl implements TraineeController{
                 trainee.getAddress(), trainee.getDateOfBirth(), basicTrainerDTOs);
         ResponseEntity<GetTraineeResponseDTO> responseEntity = new ResponseEntity<>(dto, HttpStatus.OK);
         log.info("Trainee retrieved successfully. Response details: {}", responseEntity);
+        traineeMetrics.incrementGetTrainee();
         return responseEntity;
     }
 
@@ -103,6 +105,7 @@ public class TraineeControllerImpl implements TraineeController{
 
         ResponseEntity<PutTraineeResponseDTO> responseEntity = new ResponseEntity<>(responseDTO, HttpStatus.OK);
         log.info("Trainee retrieved successfully. Response details: {}", responseEntity);
+        traineeMetrics.incrementUpdateTrainee();
         return responseEntity;
     }
 
@@ -114,6 +117,7 @@ public class TraineeControllerImpl implements TraineeController{
         traineeService.deleteTrainee(username);
         ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainee removed successfully. Response details: {}", responseEntity);
+        traineeMetrics.incrementDeleteTrainee();
         return responseEntity;
     }
 
@@ -139,6 +143,7 @@ public class TraineeControllerImpl implements TraineeController{
                 new ResponseEntity<>(new UpdateTraineeTrainerListResponseDTO(trainerDTOList), HttpStatus.OK);
 
         log.info("Trainers list retrieved successfully. Response details: {}", responseEntity);
+        traineeMetrics.incrementUpdateTrainee();
         return responseEntity;
     }
 
@@ -150,7 +155,7 @@ public class TraineeControllerImpl implements TraineeController{
         log.info("Received GET request to retrieve training list of a trainee. Request details: {}", request);
         Set<Training> trainings = traineeService.getTraineeTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
                 request.getTrainerName(), request.getTrainingType());
-
+        traineeMetrics.incrementGetTrainingList();
         return trainingToTrainingDTO(trainings, log);
     }
 
@@ -162,6 +167,7 @@ public class TraineeControllerImpl implements TraineeController{
         traineeService.activateDeactivateTrainee(t.getUserId(), request.isActive());
         ResponseEntity<HttpStatus> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         log.info("Trainee's activity status changed successfully. Response details: {}", response);
+        traineeMetrics.incrementPatchTrainee();
         return response;
     }
 
@@ -177,6 +183,7 @@ public class TraineeControllerImpl implements TraineeController{
         GetUnassignedTrainersDTO dto = new GetUnassignedTrainersDTO(basicTrainerDTOs);
         ResponseEntity<GetUnassignedTrainersDTO> responseEntity = new ResponseEntity<>(dto, HttpStatus.OK);
         log.info("Trainers retrieved successfully. Response details: {}", responseEntity);
+        traineeMetrics.incrementGetTrainee();
         return responseEntity;
     }
 

@@ -1,5 +1,6 @@
 package com.example.taskspring.controllerTests;
 
+import com.example.taskspring.actuator.metric.TraineeMetrics;
 import com.example.taskspring.controller.TraineeControllerImpl;
 import com.example.taskspring.dto.PatchUserActiveStatusRequestDTO;
 import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
@@ -44,12 +45,15 @@ public class TraineeControllerImplTests {
     @Mock
     private AuthenticationService authenticationService;
 
+    @Mock
+    private TraineeMetrics traineeMetrics;
+
     @InjectMocks
     private TraineeControllerImpl traineeController;
 
     @BeforeEach
     public void setUp() {
-        traineeController = new TraineeControllerImpl(traineeService, trainerService, authenticationService);
+        traineeController = new TraineeControllerImpl(traineeService, trainerService, authenticationService, traineeMetrics);
     }
 
     @Test
@@ -112,7 +116,7 @@ public class TraineeControllerImplTests {
 
         ResponseEntity<HttpStatus> response = traineeController.delete(traineeUsername, "username", "password");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -152,7 +156,7 @@ public class TraineeControllerImplTests {
 
         ResponseEntity<HttpStatus> response = traineeController.updateIsActive(requestDTO, "username", "password");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test

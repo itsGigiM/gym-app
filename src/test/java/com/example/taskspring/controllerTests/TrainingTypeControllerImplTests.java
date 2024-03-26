@@ -1,5 +1,6 @@
 package com.example.taskspring.controllerTests;
 
+import com.example.taskspring.actuator.metric.TrainingTypeMetrics;
 import com.example.taskspring.controller.TrainingTypeControllerImpl;
 import com.example.taskspring.dto.trainingTypeDTO.GetTrainingTypesDTO;
 import com.example.taskspring.model.TrainingType;
@@ -28,9 +29,12 @@ public class TrainingTypeControllerImplTests {
     @InjectMocks
     private TrainingTypeControllerImpl controller;
 
+    @Mock
+    private TrainingTypeMetrics metrics;
+
     @BeforeEach
     public void setUp() {
-        controller = new TrainingTypeControllerImpl(trainingTypeService);
+        controller = new TrainingTypeControllerImpl(trainingTypeService, metrics);
     }
 
     @Test

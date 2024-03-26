@@ -4,9 +4,7 @@ import com.example.taskspring.dto.trainingTypeDTO.BasicTrainingTypeDTO;
 import com.example.taskspring.dto.trainingTypeDTO.GetTrainingTypesDTO;
 import com.example.taskspring.model.TrainingType;
 import com.example.taskspring.service.TrainingTypeService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.example.taskspring.actuator.metric.TrainingTypeMetrics;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +24,11 @@ import java.util.Set;
 public class TrainingTypeControllerImpl implements TrainingTypeController {
 
     private TrainingTypeService trainingTypeService;
+    private TrainingTypeMetrics trainingTypeMetrics;
     @Autowired
-    public TrainingTypeControllerImpl(TrainingTypeService trainingTypeService) {
+    public TrainingTypeControllerImpl(TrainingTypeService trainingTypeService, TrainingTypeMetrics trainingTypeMetrics) {
         this.trainingTypeService = trainingTypeService;
+        this.trainingTypeMetrics = trainingTypeMetrics;
     }
 
     @GetMapping()
@@ -42,6 +42,7 @@ public class TrainingTypeControllerImpl implements TrainingTypeController {
         GetTrainingTypesDTO dto = new GetTrainingTypesDTO(basicTrainingTypeDTOs);
         ResponseEntity<GetTrainingTypesDTO> responseEntity = new ResponseEntity<>(dto, HttpStatus.OK);
         log.info("Training types retrieved successfully. Response details: {}", responseEntity);
+        trainingTypeMetrics.incrementGetAllCounter();
         return responseEntity;
     }
 }
