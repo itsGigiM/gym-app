@@ -1,8 +1,8 @@
 INSERT INTO users (first_name, is_active, last_name, password, username)
-VALUES ('admin', true, 'admin', 'admin', 'admin');
+VALUES ('admin', true, 'admin', '$2a$10$YguKinxXFVtNxnupPCkuOe90N53dr7ofp1HKZqZGA2nP0rG3479XW', 'admin');
 
 INSERT INTO users (first_name, is_active, last_name, password, username)
-VALUES ('admin', true, 'admin', 'admin1', 'admin1');
+VALUES ('admin', true, 'admin', '$2a$10$YguKinxXFVtNxnupPCkuOe90N53dr7ofp1HKZqZGA2nP0rG3479XW', 'admin1');
 
 INSERT INTO training_types (id, training_type_name)
 VALUES (1, 'BOXING');

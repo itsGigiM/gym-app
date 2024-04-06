@@ -4,7 +4,9 @@ import com.example.taskspring.actuator.metric.LoginMetrics;
 import com.example.taskspring.controller.LoginControllerImpl;
 import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.loginDTO.ChangePasswordDTO;
+import com.example.taskspring.dto.loginDTO.TokenDTO;
 import com.example.taskspring.model.Trainee;
+import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import javax.naming.AuthenticationException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -37,9 +40,13 @@ public class LoginControllerImplTests {
     @InjectMocks
     private LoginControllerImpl loginController;
 
+    @Mock
+    private AuthenticationService authenticationService;
+
     @BeforeEach
     public void setUp() {
-        loginController = new LoginControllerImpl(traineeService, trainerService, loginMetrics);
+        loginController = new LoginControllerImpl(traineeService, loginMetrics, trainerService,
+                authenticationService);
     }
 
     @Test
@@ -49,9 +56,9 @@ public class LoginControllerImplTests {
         mockUser.setUsername("username");
         mockUser.setPassword("password");
 
-        when(traineeService.selectTrainee("username")).thenReturn(mockUser);
+        when(authenticationService.authenticate(any(), any())).thenReturn(new TokenDTO("token"));
 
-        ResponseEntity<HttpStatus> response = loginController.login(authenticationDTO);
+        ResponseEntity<TokenDTO> response = loginController.login(authenticationDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

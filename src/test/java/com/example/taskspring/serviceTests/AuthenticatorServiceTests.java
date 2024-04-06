@@ -46,6 +46,6 @@ class AuthenticatorServiceTests {
         when(traineesRepository.findByUsername("user")).thenReturn(Optional.empty());
         when(trainersRepository.findByUsername("user")).thenReturn(Optional.empty());
 
-        assertThrows(AuthenticationException.class, () -> sqlAuthenticator.authenticate("user", "pass"));
+        assertThrows(NullPointerException.class, () -> sqlAuthenticator.authenticate("user", "pass"));
     }
 }

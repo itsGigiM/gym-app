@@ -2,8 +2,8 @@ package com.example.taskspring.service;
 
 
 import com.example.taskspring.model.Trainer;
+import com.example.taskspring.repository.repositories.TokenRepository;
 import com.example.taskspring.repository.repositories.TraineesRepository;
-import com.example.taskspring.utils.Authenticator;
 import com.example.taskspring.utils.UsernameGenerator;
 import com.example.taskspring.utils.PasswordGenerator;
 import com.example.taskspring.model.*;
@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,24 +29,27 @@ public class TraineeServiceImpl implements TraineeService {
     private int passwordLength;
     private TraineesRepository repository;
     private UsernameGenerator usernameGenerator;
+    private PasswordEncoder encoder;
 
     @Autowired
     public TraineeServiceImpl(TraineesRepository repository, UsernameGenerator usernameGenerator,
-                              @Value("${password.length}") int passwordLength){
+                              @Value("${password.length}") int passwordLength, PasswordEncoder encoder){
         this.usernameGenerator = usernameGenerator;
         this.passwordLength = passwordLength;
         this.repository = repository;
+        this.encoder = encoder;
     }
 
     @Transactional
     public Trainee createTrainee(String firstName, String lastName, boolean isActive,
                                String address, LocalDate dateOfBirth){
-        String password = PasswordGenerator.generatePassword(passwordLength);
+        String generatedPass = PasswordGenerator.generatePassword(passwordLength);
+        String password = encoder.encode(generatedPass);
         String username = usernameGenerator.generateUsername(firstName, lastName);
         Trainee trainee = new Trainee(firstName, lastName, username, password, isActive, address, dateOfBirth);
         Trainee savedTrainee = repository.save(trainee);
-        log.info("Created new trainee: " + trainee);
-        return savedTrainee;
+        log.info("Created new trainee: " + savedTrainee);
+        return new Trainee(firstName, lastName, username, generatedPass, isActive, address, dateOfBirth);
     }
 
     @Transactional
