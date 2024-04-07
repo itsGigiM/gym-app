@@ -89,13 +89,13 @@ public class TrainerServiceImplTests {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
-        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
 
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
 
         savedTrainer.setFirstName("Epam");
         when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(savedTrainer));
         service.updateTrainer(savedTrainer.getUserId(), savedTrainer);
 
         assertEquals("Epam", service.selectTrainer(savedTrainer.getUserId()).

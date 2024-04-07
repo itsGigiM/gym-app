@@ -6,6 +6,7 @@ import com.example.taskspring.dto.loginDTO.ChangePasswordDTO;
 import com.example.taskspring.dto.loginDTO.TokenDTO;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.User;
+import com.example.taskspring.repository.repositories.UserRepository;
 import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
@@ -28,14 +29,16 @@ public class LoginControllerImpl implements LoginController {
     private LoginMetrics loginMetrics;
     private TrainerService trainerService;
     private AuthenticationService authenticationService;
+    private UserRepository userRepository;
 
     @Autowired
     public LoginControllerImpl(TraineeService traineeService, LoginMetrics loginMetrics, TrainerService trainerService,
-                               AuthenticationService authenticationService) {
+                               AuthenticationService authenticationService, UserRepository userRepository) {
         this.traineeService = traineeService;
         this.loginMetrics = loginMetrics;
         this.trainerService = trainerService;
         this.authenticationService = authenticationService;
+        this.userRepository = userRepository;
     }
     @GetMapping(value = "/login")
     public ResponseEntity<TokenDTO> login(@ModelAttribute AuthenticationDTO request) throws AuthenticationException {
@@ -45,10 +48,9 @@ public class LoginControllerImpl implements LoginController {
 
     @PutMapping(value = "/login")
     public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDTO request) throws AuthenticationException {
-        User user = findUser(request.getUsername());
-        if(user == null){
-            throw new AuthenticationException();
-        }
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
+                AuthenticationException::new
+        );
         if(user.getPassword().equals(request.getOldPassword())){
             if(user instanceof Trainee) {
                 traineeService.changeTraineePassword(user.getUserId(), request.getNewPassword());
@@ -61,18 +63,6 @@ public class LoginControllerImpl implements LoginController {
         throw new AuthenticationException();
     }
 
-
-    private User findUser(String username) {
-        try {
-            return traineeService.selectTrainee(username);
-        } catch (EntityNotFoundException e) {
-            try {
-                return trainerService.selectTrainer(username);
-            } catch (EntityNotFoundException en) {
-                return null;
-            }
-        }
-    }
 
     @GetMapping("/home")
     public ResponseEntity<HttpStatus> home() {

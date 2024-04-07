@@ -129,13 +129,17 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
+        when(usernameGenerator.generateUsername(any(), any())).thenReturn("user");
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
+
         savedTrainee.setFirstName("Epam");
+
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
+        when(traineesRepository.findById(any())).thenReturn(Optional.of(savedTrainee));
+
         service.updateTrainee(savedTrainee.getUserId(), savedTrainee);
 
         assertEquals("Epam", service.selectTrainee(savedTrainee.getUserId()).
