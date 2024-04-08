@@ -23,6 +23,7 @@ import javax.naming.AuthenticationException;
 @RestController
 @Slf4j
 @NoArgsConstructor
+@CrossOrigin(origins = "http://epam.com", maxAge = 3600)
 public class LoginControllerImpl implements LoginController {
 
     private TraineeService traineeService;
@@ -61,12 +62,6 @@ public class LoginControllerImpl implements LoginController {
             return responseEntity;
         }
         throw new AuthenticationException();
-    }
-
-
-    @GetMapping("/home")
-    public ResponseEntity<HttpStatus> home() {
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

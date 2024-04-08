@@ -28,6 +28,7 @@ import java.util.Set;
 @RequestMapping("/trainers")
 @Slf4j
 @NoArgsConstructor
+@CrossOrigin(origins = "http://epam.com", maxAge = 3600)
 public class TrainerControllerImpl implements TrainerController{
 
     private TrainerService trainerService;

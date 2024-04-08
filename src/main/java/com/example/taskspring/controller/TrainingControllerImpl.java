@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/trainings")
 @Slf4j
 @NoArgsConstructor
+@CrossOrigin(origins = "http://epam.com", maxAge = 3600)
 public class TrainingControllerImpl implements TrainingController {
 
     private TrainingService trainingService;

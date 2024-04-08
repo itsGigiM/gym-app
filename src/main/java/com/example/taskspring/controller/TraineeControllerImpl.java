@@ -31,6 +31,7 @@ import static com.example.taskspring.controller.TrainerControllerImpl.trainingTo
 @RequestMapping("/trainees")
 @Slf4j
 @NoArgsConstructor
+@CrossOrigin(origins = "http://epam.com", maxAge = 3600)
 public class TraineeControllerImpl implements TraineeController{
 
     private TraineeService traineeService;
