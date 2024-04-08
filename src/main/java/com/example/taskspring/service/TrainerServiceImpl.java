@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,23 +30,27 @@ public class TrainerServiceImpl implements TrainerService {
     private TrainersRepository repository;
     private UsernameGenerator usernameGenerator;
 
+    private PasswordEncoder encoder;
+
     @Autowired
     public TrainerServiceImpl(UsernameGenerator usernameGenerator, TrainersRepository repository,
-                              @Value("${password.length}") int passwordLength){
+                              @Value("${password.length}") int passwordLength, PasswordEncoder encoder){
         this.repository = repository;
         this.usernameGenerator = usernameGenerator;
         this.passwordLength = passwordLength;
+        this.encoder = encoder;
     }
     @Transactional
     public Trainer createTrainer(String firstName, String lastName, boolean isActive,
                               TrainingType specialization){
         String username = usernameGenerator.generateUsername(firstName, lastName);
-        String password = PasswordGenerator.generatePassword(passwordLength);
+        String generatedPass = PasswordGenerator.generatePassword(passwordLength);
+        String password = encoder.encode(generatedPass);
         Trainer trainer = new Trainer(firstName, lastName, username,
                 password, isActive, specialization);
         Trainer savedTrainer = repository.save(trainer);
-        log.info("Created new trainer: " + trainer);
-        return savedTrainer;
+        log.info("Created new trainer: " + savedTrainer);
+        return new Trainer(firstName, lastName, username, generatedPass, isActive, specialization);
     }
 
     @Transactional

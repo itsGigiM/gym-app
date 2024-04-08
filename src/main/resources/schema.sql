@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS trainee_trainer;
 DROP TABLE IF EXISTS trainings;
 DROP TABLE IF EXISTS trainer;
 DROP TABLE IF EXISTS trainee;
+DROP TABLE IF EXISTS token;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS training_types;
 
@@ -52,4 +53,12 @@ create table trainee_trainer
     primary key (trainer_id, trainee_id),
     foreign key (trainee_id) references trainee(user_id) on delete cascade,
     foreign key (trainer_id) references trainer(user_id) on delete cascade
+);
+
+create table token (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255),
+    inactive BOOLEAN,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

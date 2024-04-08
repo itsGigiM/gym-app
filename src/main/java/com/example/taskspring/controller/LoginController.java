@@ -2,6 +2,7 @@ package com.example.taskspring.controller;
 
 import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.loginDTO.ChangePasswordDTO;
+import com.example.taskspring.dto.loginDTO.TokenDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,7 +17,7 @@ public interface LoginController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Welcome"),
             @ApiResponse(responseCode = "401", description = "Wrong username or password")})
-    public ResponseEntity<HttpStatus> login(@RequestBody AuthenticationDTO request) throws AuthenticationException;
+    public ResponseEntity<TokenDTO> login(AuthenticationDTO request) throws AuthenticationException;
 
     @Operation(summary = "Replace old password with a new one")
     public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDTO request) throws AuthenticationException;

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
@@ -34,11 +34,14 @@ public class TrainerServiceImplTests {
     @InjectMocks
     private TrainerServiceImpl service;
 
+    @Mock
+    private PasswordEncoder encoder;
+
     private final TrainingType trainingType = new TrainingType(1L, TrainingTypeEnum.BOXING);
 
     @BeforeEach
     public void setUp() {
-        service = new TrainerServiceImpl(usernameGenerator, trainersRepository, 10);
+        service = new TrainerServiceImpl(usernameGenerator, trainersRepository, 10, encoder);
     }
     @Test
     public void createTrainerAndSelectItsFirstName() {
@@ -86,13 +89,13 @@ public class TrainerServiceImplTests {
         Trainer mockedTrainer = new Trainer("firstname", "lastname", "username", "password",
                 true, trainingType);
         when(trainersRepository.save(any(Trainer.class))).thenReturn(mockedTrainer);
-        when(trainersRepository.findById(any())).thenReturn(Optional.of(mockedTrainer));
 
         Trainer savedTrainer = service.createTrainer("firstname", "lastname", true,
                 trainingType);
 
         savedTrainer.setFirstName("Epam");
         when(trainersRepository.save(any(Trainer.class))).thenReturn(savedTrainer);
+        when(trainersRepository.findById(any())).thenReturn(Optional.of(savedTrainer));
         service.updateTrainer(savedTrainer.getUserId(), savedTrainer);
 
         assertEquals("Epam", service.selectTrainer(savedTrainer.getUserId()).

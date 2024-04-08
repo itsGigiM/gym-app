@@ -15,13 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,9 +33,6 @@ public class TrainingControllerImplTests {
     private TraineeService traineeService;
 
     @Mock
-    private AuthenticationService authenticationService;
-
-    @Mock
     private TrainingMetrics trainingMetrics;
 
     @InjectMocks
@@ -46,12 +40,11 @@ public class TrainingControllerImplTests {
 
     @BeforeEach
     public void setUp() {
-        controller = new TrainingControllerImpl(trainingService, trainerService, traineeService, authenticationService,
-                trainingMetrics);
+        controller = new TrainingControllerImpl(trainingService, trainerService, traineeService, trainingMetrics);
     }
 
     @Test
-    public void createTraining() throws AuthenticationException {
+    public void createTraining(){
         PostTrainingRequest request = new PostTrainingRequest("trainerUsername", "traineeUsername",
                 "Training Name", LocalDate.now(), Duration.ofHours(1));
 
@@ -60,9 +53,8 @@ public class TrainingControllerImplTests {
 
         when(trainerService.selectTrainer(request.getTrainerUsername())).thenReturn(trainer);
         when(traineeService.selectTrainee(request.getTraineeUsername())).thenReturn(trainee);
-        doNothing().when(authenticationService).authenticate(anyString(), anyString());
 
-        ResponseEntity<HttpStatus> response = controller.create(request, "admin", "admin");
+        ResponseEntity<HttpStatus> response = controller.create(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }

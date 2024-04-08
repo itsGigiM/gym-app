@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -35,9 +36,12 @@ public class TraineeServiceImplTests {
     @InjectMocks
     private TraineeServiceImpl service;
 
+    @Mock
+    private PasswordEncoder encoder;
+
     @BeforeEach
     public void setUp() {
-        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, 10);
+        service = new TraineeServiceImpl(traineesRepository, usernameGenerator, 10, encoder);
     }
     @Test
     public void createTraineeAndSelectItsFirstName() {
@@ -125,13 +129,17 @@ public class TraineeServiceImplTests {
         Trainee mockedTrainee = new Trainee(10L, "firstname", "lastname", "username", "password",
                 true, "address", LocalDate.of(2000, 1, 1));
         when(traineesRepository.save(any(Trainee.class))).thenReturn(mockedTrainee);
-        when(traineesRepository.findById(any())).thenReturn(Optional.of(mockedTrainee));
+        when(usernameGenerator.generateUsername(any(), any())).thenReturn("user");
 
         Trainee savedTrainee = service.createTrainee("firstname", "lastname", true,
                 "address", LocalDate.of(2000, 1, 1));
 
+
         savedTrainee.setFirstName("Epam");
+
         when(traineesRepository.save(any(Trainee.class))).thenReturn(savedTrainee);
+        when(traineesRepository.findById(any())).thenReturn(Optional.of(savedTrainee));
+
         service.updateTrainee(savedTrainee.getUserId(), savedTrainee);
 
         assertEquals("Epam", service.selectTrainee(savedTrainee.getUserId()).

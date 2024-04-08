@@ -10,7 +10,6 @@ import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
-import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TrainerService;
 import com.example.taskspring.service.TrainingTypeService;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +32,6 @@ public class TrainerControllerImpl implements TrainerController{
 
     private TrainerService trainerService;
 
-    private AuthenticationService authenticationService;
 
     private TrainingTypeService trainingTypeService;
 
@@ -42,9 +39,8 @@ public class TrainerControllerImpl implements TrainerController{
 
 
     @Autowired
-    public TrainerControllerImpl(TrainerService trainerService, AuthenticationService authenticationService,
-                                 TrainingTypeService trainingTypeService, TrainerMetrics trainerMetrics) {
-        this.authenticationService = authenticationService;
+    public TrainerControllerImpl(TrainerService trainerService, TrainingTypeService trainingTypeService,
+                                 TrainerMetrics trainerMetrics) {
         this.trainerService = trainerService;
         this.trainingTypeService = trainingTypeService;
         this.trainerMetrics = trainerMetrics;
@@ -64,9 +60,7 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<GetTrainerResponseDTO> get(@PathVariable String username,  @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
-
+    public ResponseEntity<GetTrainerResponseDTO> get(@PathVariable String username){
         log.info("Received GET request to retrieve a trainer. Request details: {}", username);
         Trainer trainer = trainerService.selectTrainer(username);
         Set<BasicTraineeDTO> basicTraineeDTOs = new HashSet<>();
@@ -80,10 +74,7 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<PutTrainerResponseDTO> put(@PathVariable String username, @RequestBody PutTrainerRequestDTO putTrainerRequestDTO,
-                                                     @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
-
+    public ResponseEntity<PutTrainerResponseDTO> put(@PathVariable String username, @RequestBody PutTrainerRequestDTO putTrainerRequestDTO){
         log.info("Received PUT request to modify a trainer. Request details: {} {}", username, putTrainerRequestDTO);
         Trainer existingTrainer = trainerService.selectTrainer(username);
 
@@ -107,9 +98,7 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @GetMapping(value = "/training-list")
-    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTrainerTrainingListRequestDTO request,
-                                                                          @RequestParam String username, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTrainerTrainingListRequestDTO request){
         log.info("Received GET request to retrieve training list of a trainer. Request details: {}", request);
         Set<Training> trainings = trainerService.getTrainerTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
                 request.getTraineeName());
@@ -129,8 +118,7 @@ public class TrainerControllerImpl implements TrainerController{
     }
 
     @PatchMapping("/is-active")
-    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request,  @RequestParam String username, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request){
         log.info("Received PATCH request to modify active status of a trainer. Request details: {}", request);
         Trainer t = trainerService.selectTrainer(request.getUsername());
         trainerService.activateDeactivateTrainer(t.getUserId(), request.isActive());

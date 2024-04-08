@@ -4,16 +4,13 @@ import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
-import org.springframework.data.repository.query.Param;
 
-import javax.naming.AuthenticationException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 public interface TraineeService {
     public Trainee createTrainee(String firstName, String lastName, boolean isActive,
-                              String address, LocalDate dateOfBirth);
+                                             String address, LocalDate dateOfBirth);
 
     public Trainee updateTrainee(Long traineeId, Trainee trainee);
 

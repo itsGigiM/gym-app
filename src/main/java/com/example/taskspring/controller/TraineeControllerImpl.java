@@ -1,7 +1,7 @@
 package com.example.taskspring.controller;
 
-import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.PatchUserActiveStatusRequestDTO;
+import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.traineeDTO.*;
 import com.example.taskspring.dto.trainerDTO.BasicTrainerDTO;
 import com.example.taskspring.dto.trainerDTO.GetUnassignedTrainersDTO;
@@ -34,17 +34,12 @@ import static com.example.taskspring.controller.TrainerControllerImpl.trainingTo
 public class TraineeControllerImpl implements TraineeController{
 
     private TraineeService traineeService;
-
     private TrainerService trainerService;
     private TraineeMetrics traineeMetrics;
-    private AuthenticationService authenticationService;
-
     @Autowired
-    public TraineeControllerImpl(TraineeService traineeService, TrainerService trainerService,
-                                 AuthenticationService authenticationService, TraineeMetrics traineeMetrics) {
+    public TraineeControllerImpl(TraineeService traineeService, TrainerService trainerService, TraineeMetrics traineeMetrics) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
-        this.authenticationService = authenticationService;
         this.traineeMetrics = traineeMetrics;
     }
 
@@ -65,9 +60,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
-
+    public ResponseEntity<GetTraineeResponseDTO> get(@PathVariable String username) {
         log.info("Received GET request to retrieve a trainee. Request details: {}", username);
         Trainee trainee = traineeService.selectTrainee(username);
 
@@ -82,9 +75,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO,
-                                                     @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<PutTraineeResponseDTO> put(@PathVariable String username, @RequestBody PutTraineeRequestDTO putTraineeRequestDTO){
 
         log.info("Received PUT request to modify a trainee. Request details: {} {}", username, putTraineeRequestDTO);
         Trainee existingTrainee = traineeService.selectTrainee(username);
@@ -110,8 +101,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @DeleteMapping(value = "/{username}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<HttpStatus> delete(@PathVariable String username){
 
         log.info("Received DELETE request to remove a trainee. Request details: {}", username);
         traineeService.deleteTrainee(username);
@@ -122,9 +112,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PutMapping(value = "/trainer-list")
-    public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO,
-            @RequestParam String username, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<UpdateTraineeTrainerListResponseDTO> updateTrainerList(@RequestBody UpdateTraineeTrainerListRequestDTO updateTraineeTrainingListRequestDTO){
 
         log.info("Received PUT request to update trainer list of a trainee. Request details: {}", updateTraineeTrainingListRequestDTO);
         Trainee trainee = traineeService.selectTrainee(updateTraineeTrainingListRequestDTO.getUsername());
@@ -148,9 +136,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/training-list")
-    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTraineeTrainingListRequestDTO request,
-            @RequestParam String username, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<GetUserTrainingListResponseDTO> getTrainingList(@ModelAttribute GetTraineeTrainingListRequestDTO request){
 
         log.info("Received GET request to retrieve training list of a trainee. Request details: {}", request);
         Set<Training> trainings = traineeService.getTraineeTrainingList(request.getUsername(), request.getFrom(), request.getTo(),
@@ -160,8 +146,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @PatchMapping("/is-active")
-    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request, @RequestParam String username, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<HttpStatus> updateIsActive(@RequestBody PatchUserActiveStatusRequestDTO request){
         log.info("Received PATCH request to modify active status of a trainee. Request details: {}", request);
         Trainee t = traineeService.selectTrainee(request.getUsername());
         traineeService.activateDeactivateTrainee(t.getUserId(), request.isActive());
@@ -172,8 +157,7 @@ public class TraineeControllerImpl implements TraineeController{
     }
 
     @GetMapping(value = "/unassigned-trainers/{username}")
-    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username, @RequestParam String user, @RequestParam String password) throws AuthenticationException {
-        authenticationService.authenticate(username, password);
+    public ResponseEntity<GetUnassignedTrainersDTO> getUnassignedTrainers(@PathVariable String username){
         log.info("Received GET request to retrieve not assigned on trainee active trainers. Request details: {}", username);
             Set<Trainer> trainers = traineeService.getUnassignedTrainers(username);
             Set<BasicTrainerDTO> basicTrainerDTOs = new HashSet<>();

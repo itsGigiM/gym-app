@@ -4,7 +4,10 @@ import com.example.taskspring.actuator.metric.LoginMetrics;
 import com.example.taskspring.controller.LoginControllerImpl;
 import com.example.taskspring.dto.loginDTO.AuthenticationDTO;
 import com.example.taskspring.dto.loginDTO.ChangePasswordDTO;
+import com.example.taskspring.dto.loginDTO.TokenDTO;
 import com.example.taskspring.model.Trainee;
+import com.example.taskspring.repository.repositories.UserRepository;
+import com.example.taskspring.service.AuthenticationService;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +21,11 @@ import org.springframework.http.ResponseEntity;
 
 import javax.naming.AuthenticationException;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,9 +42,16 @@ public class LoginControllerImplTests {
     @InjectMocks
     private LoginControllerImpl loginController;
 
+    @Mock
+    private AuthenticationService authenticationService;
+
+    @Mock
+    private UserRepository userRepository;
+
     @BeforeEach
     public void setUp() {
-        loginController = new LoginControllerImpl(traineeService, trainerService, loginMetrics);
+        loginController = new LoginControllerImpl(traineeService, loginMetrics, trainerService,
+                authenticationService, userRepository);
     }
 
     @Test
@@ -49,21 +61,11 @@ public class LoginControllerImplTests {
         mockUser.setUsername("username");
         mockUser.setPassword("password");
 
-        when(traineeService.selectTrainee("username")).thenReturn(mockUser);
+        when(authenticationService.authenticate(any(), any())).thenReturn(new TokenDTO("token"));
 
-        ResponseEntity<HttpStatus> response = loginController.login(authenticationDTO);
+        ResponseEntity<TokenDTO> response = loginController.login(authenticationDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    public void failedLogin() {
-        AuthenticationDTO authenticationDTO = new AuthenticationDTO("username", "password");
-
-        when(traineeService.selectTrainee("username")).thenReturn(null);
-        assertThrows(AuthenticationException.class, () -> {
-            loginController.login(authenticationDTO);
-        });
     }
 
     @Test
@@ -73,8 +75,8 @@ public class LoginControllerImplTests {
         mockUser.setUsername("u");
         mockUser.setPassword("oldPassword");
 
-        when(traineeService.selectTrainee("u")).thenReturn(mockUser);
-        doNothing().when(traineeService).changeTraineePassword(mockUser.getUserId(), "newPassword");
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(mockUser));
+
 
         ResponseEntity<HttpStatus> response = loginController.changePassword(changePasswordDTO);
 
@@ -88,8 +90,6 @@ public class LoginControllerImplTests {
         mockUser.setUsername("username");
         mockUser.setPassword("oldPassword");
 
-        when(traineeService.selectTrainee("username")).thenReturn(mockUser);
-
         assertThrows(AuthenticationException.class, () -> {
             loginController.changePassword(changePasswordDTO);
         });
@@ -98,8 +98,6 @@ public class LoginControllerImplTests {
     @Test
     public void changePasswordUserNotFound_throwsException(){
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO("username", "oldPassword", "newPassword");
-
-        when(traineeService.selectTrainee("username")).thenReturn(null);
 
         assertThrows(AuthenticationException.class, () -> {
             loginController.changePassword(changePasswordDTO);

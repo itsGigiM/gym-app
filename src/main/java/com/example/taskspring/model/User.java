@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +32,8 @@ public abstract class User {
     private String password;
     @Column(nullable = false)
     private boolean isActive;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -38,9 +38,6 @@ public class TrainerControllerImplTests {
     @Mock
     private TrainerService trainerService;
 
-    @Mock
-    private AuthenticationService authenticationService;
-
     @InjectMocks
     private TrainerControllerImpl trainerController;
 
@@ -49,7 +46,7 @@ public class TrainerControllerImplTests {
 
     @BeforeEach
     public void setUp() {
-        trainerController = new TrainerControllerImpl(trainerService, authenticationService, trainingTypeService, trainerMetrics);
+        trainerController = new TrainerControllerImpl(trainerService, trainingTypeService, trainerMetrics);
     }
 
     @Test
@@ -74,12 +71,10 @@ public class TrainerControllerImplTests {
 
         when(trainerService.selectTrainer(anyString())).thenReturn(t);
 
-        doNothing().when(authenticationService).authenticate(anyString(), anyString());
-
         GetTrainerResponseDTO dto1 = new GetTrainerResponseDTO(t.getUsername(), t.getFirstName(), t.getLastName(), t.isActive(),
                 new TrainingType(), new HashSet<>());
 
-        assertEquals(trainerController.get("g.m", "admin", "admin"),
+        assertEquals(trainerController.get("g.m"),
                 new ResponseEntity<>(dto1, HttpStatus.OK));
     }
 
@@ -90,7 +85,6 @@ public class TrainerControllerImplTests {
                 true, new TrainingType());
 
         when(trainerService.selectTrainer(anyString())).thenReturn(t);
-        doNothing().when(authenticationService).authenticate(anyString(), anyString());
 
         PutTrainerRequestDTO dto1 = new PutTrainerRequestDTO(t.getFirstName(), "epam", t.isActive(),
                 2L);
@@ -101,7 +95,7 @@ public class TrainerControllerImplTests {
         t.setLastName("epam");
         when(trainerService.updateTrainer(any(), any())).thenReturn(t);
 
-        assertEquals(trainerController.put("g.m", dto1, "admin", "admin"),
+        assertEquals(trainerController.put("g.m", dto1),
                 new ResponseEntity<>(dto2, HttpStatus.OK));
     }
 
@@ -111,7 +105,7 @@ public class TrainerControllerImplTests {
         Trainer trainer = new Trainer();
         when(trainerService.selectTrainer(requestDTO.getUsername())).thenReturn(trainer);
 
-        ResponseEntity<HttpStatus> response = trainerController.updateIsActive(requestDTO, "username", "password");
+        ResponseEntity<HttpStatus> response = trainerController.updateIsActive(requestDTO);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
@@ -120,11 +114,10 @@ public class TrainerControllerImplTests {
     public void getTrainingList() throws AuthenticationException {
         GetTrainerTrainingListRequestDTO requestDTO = new GetTrainerTrainingListRequestDTO("trainerUsername", LocalDate.now(), LocalDate.now(), "traineeName");
         Set<Training> trainings = new HashSet<>();
-        doNothing().when(authenticationService).authenticate(anyString(), anyString());
         when(trainerService.getTrainerTrainingList(anyString(), any(), any(), anyString()))
                 .thenReturn(trainings);
 
-        ResponseEntity<GetUserTrainingListResponseDTO> response = trainerController.getTrainingList(requestDTO, "username", "password");
+        ResponseEntity<GetUserTrainingListResponseDTO> response = trainerController.getTrainingList(requestDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

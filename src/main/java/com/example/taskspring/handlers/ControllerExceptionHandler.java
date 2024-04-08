@@ -6,6 +6,7 @@ import com.example.taskspring.actuator.metric.TrainerMetrics;
 import com.example.taskspring.actuator.metric.TrainingMetrics;
 import com.example.taskspring.utils.Endpoint;
 import com.example.taskspring.utils.RequestContext;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,13 @@ public class ControllerExceptionHandler {
     private TrainerMetrics trainerMetrics;
     private TrainingMetrics trainingMetrics;
 
+    @ExceptionHandler(MalformedJwtException.class)
+    @ResponseBody
+    public ResponseEntity<HttpStatus> handleMalformedJwtException(MalformedJwtException ex) {
+        log.error("Invalid JWT");
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResponseEntity<HttpStatus> handleNullPointerException(Exception ex) {
@@ -49,6 +57,24 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public ResponseEntity<HttpStatus> handleAuthenticationException(Exception ex) {
         log.error("Wrong username or password");
+        Endpoint endpoint = requestContext.getEndpoint();
+        updateMetrics(endpoint);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SecurityException.class)
+    @ResponseBody
+    public ResponseEntity<HttpStatus> handleSecurityException(Exception ex) {
+        log.error("You attempted too much wrong credentials. Try again in 5 minutes");
+        Endpoint endpoint = requestContext.getEndpoint();
+        updateMetrics(endpoint);
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseBody
+    public ResponseEntity<HttpStatus> handleIllegalStateException(Exception ex) {
+        log.error("Token can not be found");
         Endpoint endpoint = requestContext.getEndpoint();
         updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
