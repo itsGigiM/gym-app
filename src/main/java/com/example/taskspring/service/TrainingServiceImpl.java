@@ -1,47 +1,77 @@
 package com.example.taskspring.service;
 
 
-import lombok.AllArgsConstructor;
+import com.example.taskspring.model.Trainee;
+import com.example.taskspring.model.Trainer;
+import com.example.taskspring.repository.repositories.TraineesRepository;
+import com.example.taskspring.repository.repositories.TrainersRepository;
+import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.taskspring.repository.TrainingsDAO;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 // Trainee Service class supports possibility to create/select Training profile.
-@AllArgsConstructor
 @Service
 @Slf4j
 @NoArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
 
+    private TrainingsRepository repository;
 
-    private TrainingsDAO repository;
-    public void createTraining(Long trainingId, Long traineeId, Long trainerId, String trainingName, TrainingType trainingType,
-                                 LocalDate trainingDate, Duration trainingDuration){
-        Training training = new Training(trainingId, traineeId, trainerId, trainingName,
+    private TrainersRepository trainersRepository;
+
+    private TraineesRepository traineesRepository;
+
+    @Autowired
+    public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
+                               TraineesRepository traineesRepository) {
+        this.repository = repository;
+        this.trainersRepository = trainersRepository;
+        this.traineesRepository = traineesRepository;
+    }
+
+    public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
+                                   LocalDate trainingDate, Duration trainingDuration){
+        if(invalidTraineeTrainer(trainee, trainer)){
+            String errorMessage = "Trainer or Trainee not found";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
-        repository.add(training);
+        Training savedTraining = repository.save(training);
         log.info("Created new trainer: " + training);
+        return savedTraining;
+    }
+
+    private boolean invalidTraineeTrainer(Trainee trainee, Trainer trainer) {
+        return trainee == null || trainer == null ||
+                        traineesRepository.findByUsername(trainee.getUsername()).isEmpty() ||
+                trainersRepository.findByUsername(trainer.getUsername()).isEmpty();
     }
 
 
     public Training selectTraining(Long trainingId){
-        checkTraining(trainingId);
-        Training training = repository.get(trainingId);
+        Training training = checkTraining(trainingId);
         log.info("Selected trainer: " + training);
         return training;
     }
 
-    private void checkTraining(Long trainingId) {
-        if(repository.exists(trainingId)) return;
+    private Training checkTraining(Long trainingId) {
+        Optional<Training> t =  repository.findById(trainingId);
         String errorMessage = "Training not found with ID: " + trainingId;
-        log.error(errorMessage);
-        throw new NoSuchElementException(errorMessage);
+        return t.orElseThrow(() -> {
+            log.error(errorMessage);
+            return new NoSuchElementException(errorMessage);
+        });
     }
 
 }

@@ -1,18 +1,18 @@
 package com.example.taskspring.serviceTests;
 
-import com.example.taskspring.model.Training;
-import com.example.taskspring.model.TrainingType;
-import org.junit.jupiter.api.*;
-import com.example.taskspring.repository.TrainingsInMemoryDAO;
+import com.example.taskspring.model.*;
+import com.example.taskspring.repository.repositories.*;
 import com.example.taskspring.service.TrainingServiceImpl;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
-
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -23,26 +23,52 @@ public class TrainingServiceImplTests {
     private TrainingServiceImpl service;
 
     @Mock
-    private TrainingsInMemoryDAO trainingsInMemoryDAO;
-    
+    private TrainingsRepository repository;
+
+    @Mock
+    private TrainersRepository trainersRepository;
+
+    @Mock
+    private TraineesRepository traineesRepository;
+
+    @BeforeEach
+    public void setUp() {
+        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository);
+    }
     @Test
-    public void createTrainingAndRetrieveIt() {
-        Training t = new Training(10L, 11L, 12L, "Boxing",
-                TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(1));
-        when(trainingsInMemoryDAO.add(any())).thenReturn(t);
-        when(trainingsInMemoryDAO.get(any())).thenReturn(t);
-        when(trainingsInMemoryDAO.exists(any())).thenReturn(true);
+    public void createTrainingAndSelectItsFirstName() throws AuthenticationException {
+        TrainingType trainingType = new TrainingType(1L, TrainingTypeEnum.BOXING);
+        Trainer trainer = new Trainer("g", "m", "u", "p", true, trainingType);
+        Trainee trainee = new Trainee("g", "m", "u", "p", true, "t", LocalDate.of(2000, 1, 1));
+        Training mockedTraining = new Training(trainee, trainer, "boxing", trainingType,
+                LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+        when(repository.save(any(Training.class))).thenReturn(mockedTraining);
+        when(trainersRepository.findByUsername(any())).thenReturn(Optional.of(trainer));
+        when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(trainee));
 
-        service.createTraining(10L, 11L, 12L, "Boxing",
-                TrainingType.BOXING, LocalDate.of(2022, 2, 2), Duration.ofHours(1));
+        Training savedTraining = service.createTraining(trainee, trainer, "boxing", trainingType,
+                LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+        when(repository.findById(any())).thenReturn(Optional.of(mockedTraining));
+        Training selectedTrainer = service.selectTraining(savedTraining.getTrainingId());
 
-        assertEquals("Boxing", service.selectTraining(10L).getTrainingName());
+        assertEquals("boxing", selectedTrainer.getTrainingName());
     }
 
     @Test
-    public void selectInvalidTraining_ThrowsException() {
-        assertThrows(NoSuchElementException.class, () -> service.selectTraining(1033L));
+    public void selectNonExistingTraining_ThrowsException() {
+        assertThrows(NoSuchElementException.class, () -> {
+            service.selectTraining(10L);
+        });
     }
 
+    @Test
+    public void createTrainingWithInvalidTrainerA_throws_Exception() {
+        TrainingType trainingType = new TrainingType(1L, TrainingTypeEnum.BOXING);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.createTraining(new Trainee(), new Trainer(), "boxing", trainingType,
+                    LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+        });
+    }
 
 }

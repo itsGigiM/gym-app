@@ -1,6 +1,5 @@
 package com.example.taskspring.repository;
 
-import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,7 +12,7 @@ import java.util.List;
 public class TrainersInMemoryDAO implements TrainersDAO{
     private InMemoryStorage storage;
     public Trainer add(Trainer trainer) {
-        storage.getTrainersData().put(trainer.getTrainerId(), trainer);
+        storage.getTrainersData().put(trainer.getUserId(), trainer);
         return trainer;
     }
 

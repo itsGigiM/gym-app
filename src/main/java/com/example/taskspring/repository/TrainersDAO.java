@@ -1,12 +1,11 @@
 package com.example.taskspring.repository;
 
-import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 
 import java.util.List;
 
 public interface TrainersDAO {
-    public Trainer add(Trainer trainee);
+    public Trainer add(Trainer trainer);
 
     public boolean exists(Long userId);
 
@@ -14,5 +13,5 @@ public interface TrainersDAO {
 
     public List<Trainer> getAll();
 
-    public Trainer set(Trainer trainee);
+    public Trainer set(Trainer trainer);
 }
