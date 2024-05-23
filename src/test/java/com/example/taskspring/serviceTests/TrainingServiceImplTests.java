@@ -1,5 +1,6 @@
 package com.example.taskspring.serviceTests;
 
+import com.example.taskspring.interfaces.DurationServiceInterface;
 import com.example.taskspring.model.*;
 import com.example.taskspring.repository.repositories.*;
 import com.example.taskspring.service.TrainingServiceImpl;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
+
 import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,9 +34,12 @@ public class TrainingServiceImplTests {
     @Mock
     private TraineesRepository traineesRepository;
 
+    @Mock
+    private DurationServiceInterface restTemplate;
+
     @BeforeEach
     public void setUp() {
-        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository);
+        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository, restTemplate);
     }
     @Test
     public void createTrainingAndSelectItsFirstName() throws AuthenticationException {

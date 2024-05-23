@@ -1,6 +1,8 @@
 package com.example.taskspring.service;
 
 
+import com.example.taskspring.dto.trainingDTO.TrainerSessionWorkHoursUpdateDTO;
+import com.example.taskspring.interfaces.DurationServiceInterface;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.repositories.TraineesRepository;
@@ -30,12 +32,15 @@ public class TrainingServiceImpl implements TrainingService {
 
     private TraineesRepository traineesRepository;
 
+    private DurationServiceInterface durationService;
+
     @Autowired
     public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               TraineesRepository traineesRepository) {
+                               TraineesRepository traineesRepository, DurationServiceInterface durationService) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
         this.traineesRepository = traineesRepository;
+        this.durationService = durationService;
     }
 
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
@@ -48,6 +53,11 @@ public class TrainingServiceImpl implements TrainingService {
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         Training savedTraining = repository.save(training);
+
+        TrainerSessionWorkHoursUpdateDTO updateDTO = new TrainerSessionWorkHoursUpdateDTO(trainer.getUsername(),
+                trainer.getFirstName(), trainer.getLastName(), trainer.isActive(), trainingDate,
+                trainingDuration.toHours(), "ADD");
+        durationService.updateWorkHours(updateDTO);
         log.info("Created new trainer: " + training);
         return savedTraining;
     }
