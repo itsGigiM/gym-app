@@ -1,6 +1,7 @@
 package com.example.taskspring.service;
 
 
+import com.example.taskspring.config.FeignClientInterceptor;
 import com.example.taskspring.dto.trainingDTO.TrainerSessionWorkHoursUpdateDTO;
 import com.example.taskspring.interfaces.DurationServiceInterface;
 import com.example.taskspring.model.Trainee;
@@ -10,9 +11,12 @@ import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -34,17 +38,22 @@ public class TrainingServiceImpl implements TrainingService {
 
     private DurationServiceInterface durationService;
 
+    private FeignClientInterceptor feignClientInterceptor;
+
     @Autowired
     public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               TraineesRepository traineesRepository, DurationServiceInterface durationService) {
+                               TraineesRepository traineesRepository, DurationServiceInterface durationService,
+                               FeignClientInterceptor feignClientInterceptor) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
         this.traineesRepository = traineesRepository;
         this.durationService = durationService;
+        this.feignClientInterceptor = feignClientInterceptor;
     }
 
+    @CircuitBreaker(name = "updateWorkHours")
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                                   LocalDate trainingDate, Duration trainingDuration){
+                                   LocalDate trainingDate, Duration trainingDuration, String token){
         if(invalidTraineeTrainer(trainee, trainer)){
             String errorMessage = "Trainer or Trainee not found";
             log.error(errorMessage);
@@ -53,7 +62,7 @@ public class TrainingServiceImpl implements TrainingService {
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         Training savedTraining = repository.save(training);
-
+        feignClientInterceptor.setToken(token);
         TrainerSessionWorkHoursUpdateDTO updateDTO = new TrainerSessionWorkHoursUpdateDTO(trainer.getUsername(),
                 trainer.getFirstName(), trainer.getLastName(), trainer.isActive(), trainingDate,
                 trainingDuration.toHours(), "ADD");

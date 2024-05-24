@@ -7,9 +7,11 @@ import com.example.taskspring.model.Trainer;
 import com.example.taskspring.service.TraineeService;
 import com.example.taskspring.service.TrainerService;
 import com.example.taskspring.service.TrainingService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,13 +37,13 @@ public class TrainingControllerImpl implements TrainingController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody PostTrainingRequest request){
+    public ResponseEntity<HttpStatus> create(@RequestBody PostTrainingRequest request, HttpServletRequest httpServletRequest){
         log.info("Received POST request to create a training. Request details: {}", request);
         Trainer trainer = trainerService.selectTrainer(request.getTrainerUsername());
         Trainee trainee = traineeService.selectTrainee(request.getTraineeUsername());
         trainingService.createTraining(trainee, trainer,
                 request.getTrainingName(), trainer.getSpecialization(), request.getTrainingDate(),
-                request.getTrainingDuration());
+                request.getTrainingDuration(), httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
         ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
         trainingMetrics.incrementTrainingsCreatedCounter();
         log.info("Trainer created successfully. Response details: {}", responseEntity);

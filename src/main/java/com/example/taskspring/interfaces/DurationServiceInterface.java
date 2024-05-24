@@ -7,8 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient("totalDuration")
-//@CircuitBreaker(name = "breaker")
+@FeignClient(name = "totalDuration")
 public interface DurationServiceInterface {
     @PostMapping("/work-hours")
     ResponseEntity<HttpStatus> updateWorkHours(@RequestBody TrainerSessionWorkHoursUpdateDTO updateDto);
