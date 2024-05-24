@@ -38,22 +38,18 @@ public class TrainingServiceImpl implements TrainingService {
 
     private DurationServiceInterface durationService;
 
-    private FeignClientInterceptor feignClientInterceptor;
-
     @Autowired
     public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               TraineesRepository traineesRepository, DurationServiceInterface durationService,
-                               FeignClientInterceptor feignClientInterceptor) {
+                               TraineesRepository traineesRepository, DurationServiceInterface durationService) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
         this.traineesRepository = traineesRepository;
         this.durationService = durationService;
-        this.feignClientInterceptor = feignClientInterceptor;
     }
 
     @CircuitBreaker(name = "updateWorkHours")
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                                   LocalDate trainingDate, Duration trainingDuration, String token){
+                                   LocalDate trainingDate, Duration trainingDuration){
         if(invalidTraineeTrainer(trainee, trainer)){
             String errorMessage = "Trainer or Trainee not found";
             log.error(errorMessage);
@@ -62,7 +58,6 @@ public class TrainingServiceImpl implements TrainingService {
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         Training savedTraining = repository.save(training);
-        feignClientInterceptor.setToken(token);
         TrainerSessionWorkHoursUpdateDTO updateDTO = new TrainerSessionWorkHoursUpdateDTO(trainer.getUsername(),
                 trainer.getFirstName(), trainer.getLastName(), trainer.isActive(), trainingDate,
                 trainingDuration.toHours(), "ADD");
