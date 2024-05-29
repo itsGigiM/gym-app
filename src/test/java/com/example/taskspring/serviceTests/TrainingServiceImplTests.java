@@ -38,13 +38,9 @@ public class TrainingServiceImplTests {
     @Mock
     private DurationServiceInterface restTemplate;
 
-    @Mock
-    private FeignClientInterceptor feignClientInterceptor;
-
     @BeforeEach
     public void setUp() {
-        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository, restTemplate,
-                feignClientInterceptor);
+        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository, restTemplate);
     }
     @Test
     public void createTrainingAndSelectItsFirstName() throws AuthenticationException {
