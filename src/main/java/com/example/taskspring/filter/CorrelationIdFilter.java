@@ -1,6 +1,5 @@
 package com.example.taskspring.filter;
 
-import com.example.taskspring.config.FeignClientInterceptor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

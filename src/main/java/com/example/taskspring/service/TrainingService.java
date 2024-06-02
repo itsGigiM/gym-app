@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 public interface TrainingService {
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                               LocalDate trainingDate, Duration trainingDuration);
+                               LocalDate trainingDate, Duration trainingDuration, String token);
 
     public Training selectTraining(Long trainingId);
 }

@@ -46,10 +46,11 @@ public class TrainingControllerImpl implements TrainingController {
         log.info("Received POST request to create a training. Request details: {}", request);
         Trainer trainer = trainerService.selectTrainer(request.getTrainerUsername());
         Trainee trainee = traineeService.selectTrainee(request.getTraineeUsername());
-        interceptor.setToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+        String token = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        interceptor.setToken(token);
         trainingService.createTraining(trainee, trainer,
                 request.getTrainingName(), trainer.getSpecialization(), request.getTrainingDate(),
-                request.getTrainingDuration());
+                request.getTrainingDuration(), token);
         ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
         trainingMetrics.incrementTrainingsCreatedCounter();
         log.info("Trainer created successfully. Response details: {}", responseEntity);
