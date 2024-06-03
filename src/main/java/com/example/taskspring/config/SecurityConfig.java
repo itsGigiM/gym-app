@@ -51,7 +51,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/trainees", "/trainers", "/login", "/logout", "/home").permitAll();
+            auth.requestMatchers("/trainees", "/trainers", "/login", "/logout", "/home", "/**").permitAll();
             auth.anyRequest().authenticated();
         })      .userDetailsService(userService)
                 .sessionManagement(session -> session
