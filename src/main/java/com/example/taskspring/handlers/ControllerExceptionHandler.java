@@ -40,7 +40,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResponseEntity<HttpStatus> handleNullPointerException(Exception ex) {
-        log.error("One of the required parameter is null");
+        log.error("One of the required parameter is null {}", ex.toString());
         Endpoint endpoint = requestContext.getEndpoint();
         updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -1,9 +1,9 @@
 package com.example.taskspring.service;
 
 
-import com.example.taskspring.config.FeignClientInterceptor;
 import com.example.taskspring.dto.trainingDTO.TrainerSessionWorkHoursUpdateDTO;
 import com.example.taskspring.interfaces.DurationServiceInterface;
+import com.example.taskspring.message.MessageProducer;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.repositories.TraineesRepository;
@@ -36,20 +36,20 @@ public class TrainingServiceImpl implements TrainingService {
 
     private TraineesRepository traineesRepository;
 
-    private DurationServiceInterface durationService;
+    private MessageProducer messageProducer;
 
     @Autowired
     public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               TraineesRepository traineesRepository, DurationServiceInterface durationService) {
+                               TraineesRepository traineesRepository, MessageProducer messageProducer) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
         this.traineesRepository = traineesRepository;
-        this.durationService = durationService;
+        this.messageProducer = messageProducer;
     }
 
     @CircuitBreaker(name = "updateWorkHours")
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                                   LocalDate trainingDate, Duration trainingDuration){
+                                   LocalDate trainingDate, Duration trainingDuration, String token){
         if(invalidTraineeTrainer(trainee, trainer)){
             String errorMessage = "Trainer or Trainee not found";
             log.error(errorMessage);
@@ -61,7 +61,9 @@ public class TrainingServiceImpl implements TrainingService {
         TrainerSessionWorkHoursUpdateDTO updateDTO = new TrainerSessionWorkHoursUpdateDTO(trainer.getUsername(),
                 trainer.getFirstName(), trainer.getLastName(), trainer.isActive(), trainingDate,
                 trainingDuration.toHours(), "ADD");
-        durationService.updateWorkHours(updateDTO);
+
+        messageProducer.sendWorkHoursUpdate(updateDTO, token);
+
         log.info("Created new trainer: " + training);
         return savedTraining;
     }
