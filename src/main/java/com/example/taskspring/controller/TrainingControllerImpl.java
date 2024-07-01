@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @NoArgsConstructor
 @CrossOrigin(origins = "http://epam.com", maxAge = 3600)
+@Transactional
 public class TrainingControllerImpl implements TrainingController {
 
     private TrainingService trainingService;
@@ -53,7 +55,7 @@ public class TrainingControllerImpl implements TrainingController {
                 request.getTrainingDuration(), token);
         ResponseEntity<HttpStatus> responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
         trainingMetrics.incrementTrainingsCreatedCounter();
-        log.info("Trainer created successfully. Response details: {}", responseEntity);
+        log.info("Training created successfully. Response details: {}", responseEntity);
 
         return responseEntity;
     }

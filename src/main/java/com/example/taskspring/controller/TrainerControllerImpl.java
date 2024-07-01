@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import java.util.Set;
 @Slf4j
 @NoArgsConstructor
 @CrossOrigin(origins = "http://epam.com", maxAge = 3600)
+@Transactional
 public class TrainerControllerImpl implements TrainerController{
 
     private TrainerService trainerService;

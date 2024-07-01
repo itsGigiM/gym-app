@@ -64,7 +64,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         messageProducer.sendWorkHoursUpdate(updateDTO, token);
 
-        log.info("Created new trainer: " + training);
+        log.info("Created new training: " + training);
         return savedTraining;
     }
 
@@ -77,7 +77,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     public Training selectTraining(Long trainingId){
         Training training = checkTraining(trainingId);
-        log.info("Selected trainer: " + training);
+        log.info("Selected training: " + training);
         return training;
     }
 
