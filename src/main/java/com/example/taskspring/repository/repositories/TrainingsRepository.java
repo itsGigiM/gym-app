@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrainingsRepository extends CrudRepository<Training, Long> {
+    Training findByTrainingName(String trainingName);
 }
