@@ -59,6 +59,6 @@ create table token (
     id INT AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(255),
     inactive BOOLEAN,
-    user_id INT,
+    user_id bigint,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
