@@ -1,6 +1,9 @@
 package com.example.taskspring.service;
 
 
+import com.example.taskspring.dto.trainingDTO.TrainerSessionWorkHoursUpdateDTO;
+import com.example.taskspring.interfaces.DurationServiceInterface;
+import com.example.taskspring.message.MessageProducer;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.repository.repositories.TraineesRepository;
@@ -8,9 +11,12 @@ import com.example.taskspring.repository.repositories.TrainersRepository;
 import com.example.taskspring.repository.repositories.TrainingsRepository;
 import com.example.taskspring.model.Training;
 import com.example.taskspring.model.TrainingType;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -30,16 +36,20 @@ public class TrainingServiceImpl implements TrainingService {
 
     private TraineesRepository traineesRepository;
 
+    private MessageProducer messageProducer;
+
     @Autowired
     public TrainingServiceImpl(TrainingsRepository repository, TrainersRepository trainersRepository,
-                               TraineesRepository traineesRepository) {
+                               TraineesRepository traineesRepository, MessageProducer messageProducer) {
         this.repository = repository;
         this.trainersRepository = trainersRepository;
         this.traineesRepository = traineesRepository;
+        this.messageProducer = messageProducer;
     }
 
+    @CircuitBreaker(name = "updateWorkHours")
     public Training createTraining(Trainee trainee, Trainer trainer, String trainingName, TrainingType trainingType,
-                                   LocalDate trainingDate, Duration trainingDuration){
+                                   LocalDate trainingDate, Duration trainingDuration, String token){
         if(invalidTraineeTrainer(trainee, trainer)){
             String errorMessage = "Trainer or Trainee not found";
             log.error(errorMessage);
@@ -48,7 +58,13 @@ public class TrainingServiceImpl implements TrainingService {
         Training training = new Training(trainee, trainer, trainingName,
                 trainingType, trainingDate, trainingDuration);
         Training savedTraining = repository.save(training);
-        log.info("Created new trainer: " + training);
+        TrainerSessionWorkHoursUpdateDTO updateDTO = new TrainerSessionWorkHoursUpdateDTO(trainer.getUsername(),
+                trainer.getFirstName(), trainer.getLastName(), trainer.isActive(), trainingDate,
+                trainingDuration.toHours(), "ADD");
+
+        messageProducer.sendWorkHoursUpdate(updateDTO, token);
+
+        log.info("Created new training: " + training);
         return savedTraining;
     }
 
@@ -61,7 +77,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     public Training selectTraining(Long trainingId){
         Training training = checkTraining(trainingId);
-        log.info("Selected trainer: " + training);
+        log.info("Selected training: " + training);
         return training;
     }
 

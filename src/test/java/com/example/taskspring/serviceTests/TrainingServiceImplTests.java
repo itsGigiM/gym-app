@@ -1,5 +1,7 @@
 package com.example.taskspring.serviceTests;
 
+
+import com.example.taskspring.message.MessageProducer;
 import com.example.taskspring.model.*;
 import com.example.taskspring.repository.repositories.*;
 import com.example.taskspring.service.TrainingServiceImpl;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,9 +34,12 @@ public class TrainingServiceImplTests {
     @Mock
     private TraineesRepository traineesRepository;
 
+    @Mock
+    private MessageProducer messageProducer;
+
     @BeforeEach
     public void setUp() {
-        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository);
+        service = new TrainingServiceImpl(repository, trainersRepository, traineesRepository, messageProducer);
     }
     @Test
     public void createTrainingAndSelectItsFirstName() throws AuthenticationException {
@@ -47,7 +53,7 @@ public class TrainingServiceImplTests {
         when(traineesRepository.findByUsername(any())).thenReturn(Optional.of(trainee));
 
         Training savedTraining = service.createTraining(trainee, trainer, "boxing", trainingType,
-                LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+                LocalDate.of(2000, 1, 1), Duration.ofHours(1), "token");
         when(repository.findById(any())).thenReturn(Optional.of(mockedTraining));
         Training selectedTrainer = service.selectTraining(savedTraining.getTrainingId());
 
@@ -67,7 +73,7 @@ public class TrainingServiceImplTests {
 
         assertThrows(IllegalArgumentException.class, () -> {
             service.createTraining(new Trainee(), new Trainer(), "boxing", trainingType,
-                    LocalDate.of(2000, 1, 1), Duration.ofHours(1));
+                    LocalDate.of(2000, 1, 1), Duration.ofHours(1), "token");
         });
     }
 

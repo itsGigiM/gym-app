@@ -6,6 +6,7 @@ import com.example.taskspring.actuator.metric.TrainerMetrics;
 import com.example.taskspring.actuator.metric.TrainingMetrics;
 import com.example.taskspring.utils.Endpoint;
 import com.example.taskspring.utils.RequestContext;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MalformedJwtException.class)
     @ResponseBody
-    public ResponseEntity<HttpStatus> handleMalformedJwtException(MalformedJwtException ex) {
+    public ResponseEntity<HttpStatus> handleMalformedJwtException() {
         log.error("Invalid JWT");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
@@ -39,7 +40,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResponseEntity<HttpStatus> handleNullPointerException(Exception ex) {
-        log.error("One of the required parameter is null");
+        log.error("One of the required parameter is null {}", ex.toString());
         Endpoint endpoint = requestContext.getEndpoint();
         updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -79,6 +80,7 @@ public class ControllerExceptionHandler {
         updateMetrics(endpoint);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
 
     private void updateMetrics(Endpoint endpoint) {
         switch (endpoint) {

@@ -21,11 +21,11 @@ public class RequestContext {
         String uri = request.getRequestURI();
         switch (requestMethod) {
             case "POST" -> {
-                if (uri.contains("/trainers/")) {
+                if (uri.contains("/trainer")) {
                     return Endpoint.REGISTER_TRAINER;
-                } else if (uri.contains("/trainees/")) {
+                } else if (uri.contains("/trainees")) {
                     return Endpoint.REGISTER_TRAINER;
-                } else if (uri.contains("/trainings/")) {
+                } else if (uri.contains("/trainings")) {
                     return Endpoint.CREATE_TRAINING;
                 }
             }

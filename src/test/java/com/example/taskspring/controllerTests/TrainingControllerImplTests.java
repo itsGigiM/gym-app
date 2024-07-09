@@ -1,11 +1,13 @@
 package com.example.taskspring.controllerTests;
 
 import com.example.taskspring.actuator.metric.TrainingMetrics;
+import com.example.taskspring.config.FeignClientInterceptor;
 import com.example.taskspring.controller.TrainingControllerImpl;
 import com.example.taskspring.dto.trainingDTO.PostTrainingRequest;
 import com.example.taskspring.model.Trainee;
 import com.example.taskspring.model.Trainer;
 import com.example.taskspring.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +40,15 @@ public class TrainingControllerImplTests {
     @InjectMocks
     private TrainingControllerImpl controller;
 
+    @Mock
+    private FeignClientInterceptor interceptor;
+
+    @Mock
+    private HttpServletRequest http;
+
     @BeforeEach
     public void setUp() {
-        controller = new TrainingControllerImpl(trainingService, trainerService, traineeService, trainingMetrics);
+        controller = new TrainingControllerImpl(trainingService, trainerService, traineeService, trainingMetrics, interceptor);
     }
 
     @Test
@@ -54,7 +62,7 @@ public class TrainingControllerImplTests {
         when(trainerService.selectTrainer(request.getTrainerUsername())).thenReturn(trainer);
         when(traineeService.selectTrainee(request.getTraineeUsername())).thenReturn(trainee);
 
-        ResponseEntity<HttpStatus> response = controller.create(request);
+        ResponseEntity<HttpStatus> response = controller.create(request, http);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
